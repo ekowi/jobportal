@@ -1,0 +1,15 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=repositories/jobportal
+    - /bin/cp -R * $DEPLOYPATH
+
+    # Proses Laravel
+    - cd $DEPLOYPATH
+    - composer install --no-dev
+    - php artisan key:generate
+    - php artisan config:clear
+    - php artisan cache:clear
+    - php artisan migrate --force
+    - chmod -R 755 storage
+    - chmod -R 755 bootstrap/cache
