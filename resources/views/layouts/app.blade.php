@@ -5,12 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Job Portal') }}</title>
+        <meta name="description" content="Job Portal Staging" />
+        <meta name="keywords" content="Onepage, creative, modern, bootstrap 5, multipurpose, clean, Job Listing, Job Board, Job, Job Portal" />
+        <meta name="author" content="batiklegend" />
+        <meta name="version" content="1.0.0" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+        <link href="css/tobii.min.css" rel="stylesheet" type="text/css" />
+        <link href="css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+        <!-- Custom  Css -->
+        <link href="css/style.css" rel="stylesheet" type="text/css" id="theme-opt" />
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
