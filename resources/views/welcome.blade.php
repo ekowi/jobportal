@@ -30,6 +30,7 @@
                         >
                             Dashboard
                         </a>
+                        <a href="{{ route('jobs.index') }}" class="btn btn-primary">View Jobs</a>
                     @else
                         <a
                             href="{{ route('login') }}"
