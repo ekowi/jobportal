@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nama_belakang')->nullable();
             $table->string('nik')->unique();
             $table->string('jabatan');
-            $table->foreignId('atasan_id')->constrained('officers')->onDelete('cascade');
+            $table->foreignId('atasan_id')->nullable()->constrained('officers')->onDelete('cascade');
             $table->date('doh');
             $table->string('lokasi_penugasan');
             $table->string('area');
