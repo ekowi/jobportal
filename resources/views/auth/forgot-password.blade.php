@@ -1,34 +1,30 @@
 <x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
-
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-        </div>
-
+    <x-guest-card>
         @session('status')
             <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
                 {{ $value }}
             </div>
         @endsession
 
-        <x-validation-errors class="mb-4" />
-
+        <x-custom-validation-errors />
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
 
-            <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <a href="index.html"><img src="images/logo-dark.png" class="mb-4 d-block mx-auto" alt=""></a>
+            <h6 class="mb-2 text-uppercase fw-semibold">Reset your password</h6>
+
+            <p class="text-muted">Please enter your email address. You will receive a link to create a new password via email.</p>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">{{ __('Email') }}</label>
+                <input name="email" id="email" type="email" class="form-control" placeholder="example@website.com" required autofocus autocomplete="username">
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Email Password Reset Link') }}
-                </x-button>
-            </div>
+            <button class="btn btn-primary w-100" type="submit">{{ __('Email Password Reset Link') }}</button>
+
+            <div class="col-12 text-center mt-3">
+                <span><span class="text-muted small me-2">{{ __('Remember your password ?') }} </span> <a href="{{ route('login') }}" class="text-dark fw-semibold small">{{ __('Sign in') }}</a></span>
+            </div><!--end col-->
         </form>
-    </x-authentication-card>
+    </x-guest-card>
 </x-guest-layout>
