@@ -106,6 +106,7 @@ class OfficerRepository implements OfficerRepositoryInterface
                 'name' => $officerData['nama_depan'] . ' ' . $officerData['nama_belakang'],
                 'email' => $userData['email'],
                 'password' => Hash::make($userData['password']),
+                'role' => 'officer'
             ]);
 
             // Create the officer with user_id

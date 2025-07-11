@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('maintenance');
 });
 Route::get('/jobs', [App\Http\Controllers\JobController::class, 'index'])->name('jobs.index');
 Route::middleware([
