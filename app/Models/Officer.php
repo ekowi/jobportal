@@ -21,10 +21,12 @@ class Officer extends Model
         'doh',
         'lokasi_penugasan',
         'area',
+        'is_active',
     ];
 
     protected $casts = [
         'doh' => 'date',
+        'is_active' => 'boolean',
     ];
 
     protected $hidden = [

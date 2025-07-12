@@ -16,7 +16,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
         \App\Repositories\Interfaces\OfficerRepositoryInterface::class,
         \App\Repositories\OfficerRepository::class
-    );
+        );
+        $this->app->bind(
+        \App\Repositories\Interfaces\KategoriLowonganRepositoryInterface::class,
+        \App\Repositories\KategoriLowonganRepository::class
+        );
     }
 
     /**

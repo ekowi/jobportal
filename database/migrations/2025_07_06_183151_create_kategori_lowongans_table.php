@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nama_kategori')->unique();
             $table->text('deskripsi')->nullable();
+            $table->string('logo')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->foreignId('user_create')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_update')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();

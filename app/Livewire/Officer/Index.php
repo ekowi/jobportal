@@ -13,6 +13,9 @@ class Index extends Component
     protected $paginationTheme = 'bootstrap';
     protected $officerRepository;
 
+    public $notificationStatus = null;
+    public $notificationMessage = '';
+
     // Search and filter properties
     public $search = '';
     public $jabatanFilter = '';
@@ -23,32 +26,11 @@ class Index extends Component
     public $sortField = 'nama_depan';
     public $sortDirection = 'asc';
 
-
-    // Modal State
-    public $showCreateModal = false;
-    public $officerData = [];
-    public $userData = [];
-    public $selectedLocation = '';
-    public $newLocationName = '';
-    public $supervisors = [];
-
-    // Validation rules
-    protected function rules()
-    {
-        return [
-            'officerData.nama_depan' => 'required|min:2',
-            'officerData.nama_belakang' => 'nullable|min:1',
-            'officerData.nik' => 'required|unique:officers,nik',
-            'officerData.jabatan' => 'required',
-            'officerData.doh' => 'required|date',
-            'officerData.area' => 'required|in:1,2,3',
-            'officerData.atasan_id' => 'nullable|exists:officers,user_id',
-            'selectedLocation' => 'required_unless:newLocationName,null', // Location must be selected unless a new one is being added
-        'newLocationName' => 'required_if:selectedLocation,custom|min:3', // New location name required if custom is selected
-            'userData.email' => 'required|email|unique:users,email',
-            'userData.password' => 'required|min:8',
-        ];
-    }
+    // Listen for the officer created event form modal
+    protected $listeners = [
+        'officerCreated' => '$refresh',
+        'showNotification' => 'handleNotification'
+    ];
 
     public function boot(OfficerRepositoryInterface $officerRepository)
     {
@@ -98,47 +80,24 @@ class Index extends Component
 
     public function openCreateModal()
     {
-        $this->showCreateModal = true;
-        $this->resetInputFields();
-        $this->supervisors = $this->officerRepository->getAllOfficersForSupervisorSelection();
+        $this->dispatch('showModal');
     }
 
-    public function closeModal()
+    public function openEditModal($officerId)
     {
-        $this->showCreateModal = false;
-        $this->resetInputFields();
-        $this->resetValidation();
+        $this->dispatch('editOfficer', $officerId);
     }
 
-    public function resetInputFields()
+    public function openDeleteModal($officerId)
     {
-        $this->officerData = [];
-        $this->userData = [];
-        $this->selectedLocation = '';
-        $this->newLocationName = '';
+        $this->dispatch('deleteOfficer', $officerId);
     }
 
-    public function createOfficer()
+    public function handleNotification($data)
     {
-        $this->validate();
+        $this->notificationStatus = $data['status'];
+        $this->notificationMessage = $data['message'];
 
-        if ($this->selectedLocation === 'custom' && !empty($this->newLocationName)) {
-            $this->officerData['lokasi_penugasan'] = $this->newLocationName;
-        } elseif ($this->selectedLocation !== 'custom') {
-            $this->officerData['lokasi_penugasan'] = $this->selectedLocation;
-        } else {
-            session()->flash('error', __('Please select a valid location.'));
-            return;
-        }
-
-        try {
-            $this->officerRepository->createOfficerWithUser($this->officerData, $this->userData);
-
-            $this->closeModal();
-            session()->flash('success', __('Officer created successfully.'));
-        } catch (\Exception $e) {
-            session()->flash('error', __('Failed to create officer: ') . $e->getMessage());
-        }
     }
 
     public function render()

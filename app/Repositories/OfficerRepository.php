@@ -21,16 +21,16 @@ class OfficerRepository implements OfficerRepositoryInterface
     public function getAllOfficers(array $filters = [], string $sortField = 'nama_depan', string $sortDirection = 'asc', int $perPage = 10)
     {
         $query = $this->model->query();
-
+        $query->where('is_active', true);
         // Apply search filters if provided
         if (isset($filters['search']) && !empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function($q) use ($search) {
                 $q->where('nama_depan', 'like', '%' . $search . '%')
-                  ->orWhere('nama_belakang', 'like', '%' . $search . '%')
-                  ->orWhere('nik', 'like', '%' . $search . '%')
-                  ->orWhere('jabatan', 'like', '%' . $search . '%')
-                  ->orWhere('lokasi_penugasan', 'like', '%' . $search . '%');
+                ->orWhere('nama_belakang', 'like', '%' . $search . '%')
+                ->orWhere('nik', 'like', '%' . $search . '%')
+                ->orWhere('jabatan', 'like', '%' . $search . '%')
+                ->orWhere('lokasi_penugasan', 'like', '%' . $search . '%');
             });
         }
 
@@ -48,7 +48,7 @@ class OfficerRepository implements OfficerRepositoryInterface
         if ($sortField === 'nama_lengkap') {
             // Use nama_depan as the primary sort field when nama_lengkap is requested
             $query->orderBy('nama_depan', $sortDirection)
-                  ->orderBy('nama_belakang', $sortDirection);
+                ->orderBy('nama_belakang', $sortDirection);
         } else {
             // Use the requested sort field
             $query->orderBy($sortField, $sortDirection);

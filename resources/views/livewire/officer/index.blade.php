@@ -1,4 +1,20 @@
 <div>
+    <!-- Notification Area -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px;">
+        @if($notificationStatus === 'success')
+            <div class="alert alert-success alert-dismissible fade show shadow" role="alert">
+                {{ $notificationMessage }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if($notificationStatus === 'error')
+            <div class="alert alert-danger alert-dismissible fade show shadow" role="alert">
+                {{ $notificationMessage }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
     <!-- Hero Start -->
     <section class="bg-half-170 d-table w-100" style="background: url('images/hero/bg.jpg');">
         <div class="bg-overlay bg-gradient-overlay"></div>
@@ -29,7 +45,6 @@
         </div>
     </div>
     <!-- Hero End -->
-
 
     <section class="section">
         <div class="container">
@@ -129,10 +144,10 @@
                                                 <td>{{ $officer->lokasi_penugasan }}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
-                                                        <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                        <a href="#" wire:click.prevent="openEditModal({{ $officer->id }})" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                             <i class="mdi mdi-pencil"></i>
                                                         </a>
-                                                        <a href="#" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                                        <a href="#" wire:click.prevent="openDeleteModal({{ $officer->id }})" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
                                                             <i class="mdi mdi-trash-can"></i>
                                                         </a>
                                                     </div>
@@ -144,7 +159,7 @@
                                                     <div class="py-4">
                                                         <img src="{{ asset('images/empty.svg') }}" alt="No Data" class="img-fluid" style="max-height: 120px;">
                                                         <p class="text-muted my-3">{{ __('No officer records found') }}</p>
-                                                        <a href="#" class="btn btn-sm btn-primary">{{ __('Add Your First Officer') }}</a>
+                                                        <a href="#" wire:click.prevent="openCreateModal" class="btn btn-sm btn-primary">{{ __('Add Your First Officer') }}</a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -160,143 +175,9 @@
                                 </div>
                             </div>
 
-                            <!-- Create Officer Modal -->
-                            <div class="modal fade @if($showCreateModal) show @endif" id="createOfficerModal" tabindex="-1" role="dialog" aria-labelledby="createOfficerModalTitle" @if($showCreateModal) style="display: block; background-color: rgba(0, 0, 0, 0.5);" @else style="display: none;" @endif>
-                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createOfficerModalTitle">
-                                                <i class="mdi mdi-account-plus me-1"></i> {{ __('Add New Officer') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
-                                        </div>
-                                        <!-- Errors Notifications -->
-                                        @if (session()->has('success'))
-                                            <div class="alert alert-success alert-dismissible fade show mx-4 mt-3" role="alert">
-                                                {{ session('success') }}
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                            </div>
-                                        @endif
-
-                                        @if (session()->has('error'))
-                                            <div class="alert alert-danger alert-dismissible fade show mx-4 mt-3" role="alert">
-                                                {{ session('error') }}
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                            </div>
-                                        @endif
-                                        <!-- End Errors Notifications -->
-                                        <form wire:submit.prevent="createOfficer">
-                                            <div class="modal-body">
-                                                <div class="row g-3">
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('First Name') }} <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control @error('officerData.nama_depan') is-invalid @enderror"
-                                                            wire:model.defer="officerData.nama_depan" placeholder="First Name">
-                                                        @error('officerData.nama_depan') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('Last Name') }}</label>
-                                                        <input type="text" class="form-control @error('officerData.nama_belakang') is-invalid @enderror"
-                                                            wire:model.defer="officerData.nama_belakang" placeholder="Last Name">
-                                                        @error('officerData.nama_belakang') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('NIK') }} <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control @error('officerData.nik') is-invalid @enderror"
-                                                            wire:model.defer="officerData.nik" placeholder="NIK">
-                                                        @error('officerData.nik') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('Position') }} <span class="text-danger">*</span></label>
-                                                        <select class="form-select @error('officerData.jabatan') is-invalid @enderror"
-                                                                wire:model.defer="officerData.jabatan">
-                                                            <option value="">{{ __('Select Position') }}</option>
-                                                            @foreach($positions ?? [] as $position)
-                                                                <option value="{{ $position }}">{{ $position }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                        @error('officerData.jabatan') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Date of Hire <span class="text-danger">*</span></label>
-                                                        <input type="date" class="form-control @error('officerData.doh') is-invalid @enderror"
-                                                            wire:model.defer="officerData.doh">
-                                                        @error('officerData.doh') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('Assignment Location') }} <span class="text-danger">*</span></label>
-                                                        <div class="input-group">
-                                                            <select class="form-select @error('selectedLocation') is-invalid @enderror @error('officerData.lokasi_penugasan') is-invalid @enderror"
-                                                                wire:model.defer="selectedLocation">
-                                                                <option value="">{{ __('Select Location') }}</option>
-                                                                @foreach($locations ?? [] as $location)
-                                                                    <option value="{{ $location }}">{{ $location }}</option>
-                                                                @endforeach
-                                                                <option value="custom">{{ __('Add New Location...') }}</option>
-                                                            </select>
-                                                            @error('selectedLocation') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                            @error('officerData.lokasi_penugasan') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Custom Location Input (shows only when "Add New Location" is selected) -->
-                                                    <div class="col-md-6" x-data="{}" x-show="$wire.selectedLocation === 'custom'">
-                                                        <label class="form-label">{{ __('New Location Name') }} <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control @error('newLocationName') is-invalid @enderror"
-                                                            wire:model.defer="newLocationName" placeholder="{{ __('Enter new location name') }}">
-                                                        @error('newLocationName') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('Area') }} <span class="text-danger">*</span></label>
-                                                        <select class="form-select @error('officerData.area') is-invalid @enderror"
-                                                                wire:model.defer="officerData.area">
-                                                            <option value="">{{ __('Select Area') }}</option>
-                                                            <option value="1">1</option>
-                                                            <option value="2">2</option>
-                                                            <option value="3">3</option>
-                                                        </select>
-                                                        @error('officerData.area') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('Supervisor') }}</label>
-                                                        <select class="form-select @error('officerData.atasan_id') is-invalid @enderror"
-                                                                wire:model.defer="officerData.atasan_id">
-                                                            <option value="">{{ __('No Supervisor (Top Level)') }}</option>
-                                                            @foreach($supervisors ?? [] as $supervisor)
-                                                                <option value="{{ $supervisor->user_id }}">{{ $supervisor->nama_depan . ' ' . $supervisor->nama_belakang }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                        @error('officerData.atasan_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-
-                                                    <hr class="my-3">
-                                                    <h6 class="fw-bold">{{ __('User Account Information') }}</h6>
-
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('Email') }} <span class="text-danger">*</span></label>
-                                                        <input type="email" class="form-control @error('userData.email') is-invalid @enderror"
-                                                            wire:model.defer="userData.email" placeholder="{{ __('Email') }}">
-                                                        @error('userData.email') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">{{ __('Password') }} <span class="text-danger">*</span></label>
-                                                        <input type="password" class="form-control @error('userData.password') is-invalid @enderror"
-                                                            wire:model.defer="userData.password" placeholder="{{ __('Password') }}">
-                                                        @error('userData.password') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-secondary" wire:click="closeModal">{{ __('Cancel') }}</button>
-                                                <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
-                                                    <span wire:loading wire:target="createOfficer" class="spinner-border spinner-border-sm me-1"></span>
-                                                    {{ __('Create Officer') }}
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Include the create modal component -->
+                            @livewire('officer.create-modal')
+                            @livewire('officer.action-modal')
                         </div>
                     </div>
                 </div>
@@ -325,7 +206,7 @@
             padding-right: 30px;
         }
 
-                /* Modal backdrop styles */
+        /* Modal backdrop styles */
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.5);
         }

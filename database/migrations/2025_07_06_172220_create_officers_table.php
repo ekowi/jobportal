@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('doh');
             $table->string('lokasi_penugasan');
             $table->string('area');
+            $table->boolean('is_active')->default(true);
             $table->foreignId('user_create')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_update')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();
