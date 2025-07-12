@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\Interfaces\OfficerRepositoryInterface;
-use App\Repositories\OfficerRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -20,6 +18,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
         \App\Repositories\Interfaces\KategoriLowonganRepositoryInterface::class,
         \App\Repositories\KategoriLowonganRepository::class
+        );
+        $this->app->bind(
+            \App\Repositories\Interfaces\LowonganRepositoryInterface::class,
+            \App\Repositories\LowonganRepository::class
         );
     }
 

@@ -16,4 +16,7 @@ Route::middleware([
     })->name('dashboard');
     Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
     Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.index');
+    Route::get('/lowongan', App\Livewire\Lowongan\Index::class)->name('lowongan.index');
+    Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)->name('lowongan.create');
+    Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)->name('lowongan.edit');
 });

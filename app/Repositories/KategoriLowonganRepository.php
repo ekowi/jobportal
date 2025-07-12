@@ -6,19 +6,27 @@ use App\Repositories\Interfaces\KategoriLowonganRepositoryInterface;
 
 class KategoriLowonganRepository implements KategoriLowonganRepositoryInterface
 {
+
+    protected $model;
+
+    public function __construct(KategoriLowongan $model)
+    {
+        $this->model = $model;
+    }
+    
     public function getActive()
     {
-        return KategoriLowongan::where('is_active', true)->get();
+        return $this->model->where('is_active', true)->get();
     }
 
     public function find($id)
     {
-        return KategoriLowongan::findOrFail($id);
+        return $this->model->findOrFail($id);
     }
 
     public function create(array $data)
     {
-        return KategoriLowongan::create($data);
+        return $this->model->create($data);
     }
 
     public function update($id, array $data)

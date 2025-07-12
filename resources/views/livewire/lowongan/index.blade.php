@@ -1,0 +1,178 @@
+<div>
+    <!-- Notification Area -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px;">
+        @if($notificationStatus === 'success')
+            <div class="alert alert-success alert-dismissible fade show shadow" role="alert">
+                {{ $notificationMessage }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if($notificationStatus === 'error')
+            <div class="alert alert-danger alert-dismissible fade show shadow" role="alert">
+                {{ $notificationMessage }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
+    <!-- Hero Start -->
+    <section class="bg-half-170 d-table w-100" style="background: url('images/hero/bg.jpg');">
+        <div class="bg-overlay bg-gradient-overlay"></div>
+        <div class="container">
+            <div class="row mt-5 justify-content-center">
+                <div class="col-12">
+                    <div class="title-heading text-center">
+                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Job Vacancies') }}</h5>
+                    </div>
+                </div><!--end col-->
+            </div><!--end row-->
+
+            <div class="position-middle-bottom">
+                <nav aria-label="breadcrumb" class="d-block">
+                    <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="#">{{ __('Home') }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ __('Job Vacancies') }}</li>
+                    </ul>
+                </nav>
+            </div>
+        </div><!--end container-->
+    </section><!--end section-->
+    <div class="position-relative">
+        <div class="shape overflow-hidden text-white">
+            <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
+            </svg>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Main Section -->
+    <section class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 rounded shadow">
+                        <!-- Filter Form -->
+                        <div class="m-4">
+                            <div class="row g-2">
+                                <div class="col-md-2">
+                                    <select wire:model.live="statusFilter" class="form-control">
+                                        <option value="">All Status</option>
+                                        <option value="posted">Posted</option>
+                                        <option value="archived">Archived</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select wire:model.live="kategoriFilter" class="form-control">
+                                        <option value="">All Category</option>
+                                        @foreach($kategoriLowonganOptions as $kategori)
+                                            <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" wire:model.live="namaPosisiFilter" class="form-control" placeholder="Job Title">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="date" wire:model.live="tanggalMulaiFilter" class="form-control" placeholder="Start Date">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="date" wire:model.live="tanggalAkhirFilter" class="form-control" placeholder="End Date">
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" wire:click="resetFilters" class="btn btn-secondary btn-sm w-100">
+                                        <i class="fas fa-redo"></i> Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Lowongan Pekerjaan</h5>
+                            <a href="{{ route('lowongan.create') }}" class="btn btn-primary btn-sm">Tambah Lowongan</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Status</th>
+                                            <th>Job Title</th>
+                                            <th>Departemen</th>
+                                            <th>Category</th>
+                                            <th>Posting Date</th>
+                                            <th>End Date</th>
+                                            <th class="text-center" style="width: 15%;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($lowongans as $lowongan)
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-{{ $lowongan->status === 'posted' ? 'success' : 'secondary' }}">
+                                                        {{ ucfirst($lowongan->status) }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="#" wire:click.prevent="openView({{ $lowongan->id }})" class="fw-bold text-primary">
+                                                        {{ $lowongan->nama_posisi }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ $lowongan->departemen }}</td>
+                                                <td>{{ optional($lowongan->kategoriLowongan)->nama_kategori }}</td>
+                                                <td>{{ date('d M Y', strtotime($lowongan->tanggal_posting)) }}</td>
+                                                <td>{{ date('d M Y', strtotime($lowongan->tanggal_berakhir)) }}</td>
+                                                <td class="text-center">
+                                                    <div class="btn-group">
+                                                        <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                                        @if($lowongan->status === 'posted')
+                                                            <button class="btn btn-sm btn-outline-danger"
+                                                                wire:click="confirmStatusChange({{ $lowongan->id }}, 'archive')">
+                                                                Archive
+                                                            </button>
+                                                        @else
+                                                            <button class="btn btn-sm btn-outline-success"
+                                                                wire:click="confirmStatusChange({{ $lowongan->id }}, 'post')">
+                                                                Post
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                {{ $lowongans->links() }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Change Confirmation Modal -->
+    @if($showStatusModal)
+    <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);"
+        role="dialog" aria-labelledby="statusChangeModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi</h5>
+                    <button type="button" class="btn-close" wire:click="cancelStatusChange"></button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ $confirmationMessage }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="cancelStatusChange">Batal</button>
+                    <button type="button"
+                        class="btn {{ $statusAction === 'archive' ? 'btn-danger' : 'btn-success' }}"
+                        wire:click="processStatusChange">
+                        {{ $statusAction === 'archive' ? 'Ya, Arsipkan' : 'Ya, Posting' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+</div>

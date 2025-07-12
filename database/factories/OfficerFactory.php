@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Factories;
-
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +21,9 @@ class OfficerFactory extends Factory
         return [
             'user_id' => function () {
                 // First, create a user if needed
-                $user = \App\Models\User::factory()->create();
+                $user = User::factory()->state([
+                    'role' => 'officer'
+                ])->create();
                 return $user->id;
             },
             'nama_depan' => $this->faker->firstName,

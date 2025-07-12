@@ -12,6 +12,8 @@ class Lowongan extends Model
     use HasFactory, UserStampable;
 
     protected $fillable = [
+        'kategori_lowongan_id',
+        'status',
         'nama_posisi',
         'departemen',
         'lokasi_penugasan',

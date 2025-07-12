@@ -80,43 +80,43 @@ class CreateModal extends Component
     }
 
     public function createOfficer()
-{
-    // Set the location before validation
-    if ($this->selectedLocation === 'custom') {
-        $this->officerData['lokasi_penugasan'] = $this->newLocationName;
-    } elseif (!empty($this->selectedLocation)) {
-        $this->officerData['lokasi_penugasan'] = $this->selectedLocation;
+    {
+        // Set the location before validation
+        if ($this->selectedLocation === 'custom') {
+            $this->officerData['lokasi_penugasan'] = $this->newLocationName;
+        } elseif (!empty($this->selectedLocation)) {
+            $this->officerData['lokasi_penugasan'] = $this->selectedLocation;
+        }
+        if (empty($this->officerData['atasan_id'])) {
+            $this->officerData['atasan_id'] = null;
+        }
+
+        $this->validate();
+
+        try {
+            // Use the repository method to create both user and officer
+            $this->officerRepository->createOfficerWithUser($this->officerData, $this->userData);
+
+            // Close modal
+            $this->closeModal();
+
+            // Use dispatch to send notification data to parent
+            $this->dispatch('showNotification', [
+                'status' => 'success',
+                'message' => __('Officer created successfully!')
+            ]);
+
+            // Also emit the officer created event for data refresh
+            $this->dispatch('officerCreated');
+
+        } catch (\Exception $e) {
+            // Dispatch error notification
+            $this->dispatch('showNotification', [
+                'status' => 'error',
+                'message' => __('Error creating officer: ') . $e->getMessage()
+            ]);
+        }
     }
-    if (empty($this->officerData['atasan_id'])) {
-        $this->officerData['atasan_id'] = null;
-    }
-
-    $this->validate();
-
-    try {
-        // Use the repository method to create both user and officer
-        $this->officerRepository->createOfficerWithUser($this->officerData, $this->userData);
-
-        // Close modal
-        $this->closeModal();
-
-        // Use dispatch to send notification data to parent
-        $this->dispatch('showNotification', [
-            'status' => 'success',
-            'message' => __('Officer created successfully!')
-        ]);
-
-        // Also emit the officer created event for data refresh
-        $this->dispatch('officerCreated');
-
-    } catch (\Exception $e) {
-        // Dispatch error notification
-        $this->dispatch('showNotification', [
-            'status' => 'error',
-            'message' => __('Error creating officer: ') . $e->getMessage()
-        ]);
-    }
-}
 
     public function render()
     {
