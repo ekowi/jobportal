@@ -46,4 +46,11 @@ class Lowongan extends Model
     {
         return $this->belongsTo(KategoriLowongan::class, 'kategori_lowongan_id');
     }
+
+    public function kandidats()
+    {
+        return $this->belongsToMany(Kandidat::class, 'lamarlowongan', 'lowongan_id', 'kandidat_id')
+                    ->withPivot('iklan_lowongan') // Menyertakan data pivot
+                    ->withTimestamps(); // Menyertakan timestamps jika diperlukan
+    }
 }

@@ -55,6 +55,13 @@ class Kandidat extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function lowongans()
+    {
+        return $this->belongsToMany(Lowongan::class, 'lamarlowongan', 'kandidat_id', 'lowongan_id')
+                    ->withPivot('iklan_lowongan') // Menyertakan data pivot
+                    ->withTimestamps(); // Menyertakan timestamps jika diperlukan
+    }
+
     /**
      * Mengambil nama lengkap kandidat.
      * Menggabungkan nama depan dan nama belakang menjadi satu string.

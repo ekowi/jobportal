@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('no_npwp')->unique()->nullable();
             $table->string('tempat_lahir')->nullable();
             $table->date('tanggal_lahir')->nullable();
-            $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
-            $table->enum('status_perkawinan', ['belum menikah', 'menikah', 'cerai hidup', 'cerai mati'])->nullable();
+            $table->enum('jenis_kelamin', ['L', 'P']);
+            $table->enum('status_perkawinan', ['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati']);
             $table->string('agama')->nullable();
             $table->string('bmi_score');
             $table->string('blind_score');

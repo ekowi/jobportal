@@ -64,6 +64,11 @@ class Officer extends Model
         return $this->hasMany(Officer::class, 'atasan_id');
     }
 
+    public function progressRekrutmen()
+    {
+        return $this->hasMany(ProgressRekrutmen::class, 'officer_id');
+    }
+
     /**
      * Mengambil nama lengkap officer.
      * Menggabungkan nama depan dan nama belakang menjadi satu string.

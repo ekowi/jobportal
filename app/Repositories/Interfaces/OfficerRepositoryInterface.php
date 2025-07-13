@@ -15,4 +15,5 @@ interface OfficerRepositoryInterface
     public function getUniqueLocations();
     public function createOfficerWithUser(array $officerData, array $userData);
     public function getAllOfficersForSupervisorSelection();
+    public function getOfficerByUserId($userId);
 }

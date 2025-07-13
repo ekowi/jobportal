@@ -124,4 +124,9 @@ class OfficerRepository implements OfficerRepositoryInterface
             ->orderBy('nama_depan')
             ->get();
     }
+
+    public function getOfficerByUserId($userId)
+    {
+        return $this->model->where('user_id', $userId)->first();
+    }
 }

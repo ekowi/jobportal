@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +13,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Register global middleware
+        $middleware->web(append: [
+            // Global web middleware here
+        ]);
+
+        // Register route middleware
+        $middleware->alias([
+            'role' => RoleMiddleware::class,
+            // Other middleware aliases...
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
