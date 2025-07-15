@@ -11,4 +11,7 @@ interface LowonganRepositoryInterface
     public function getActiveLowongan(int $perPage = 10);
     public function getLowonganByKategori($kategoriId, int $perPage = 10);
     public function filterPaginate($perPage, $status, $kategori, $namaPosisi, $tanggalMulai, $tanggalAkhir);
+    public function getAllWithFilters($search, $categoryId, $location, $isRemote, $salaryRange, $perPage = 10);
+    public function getDistinctLocations();
+    public function getSalaryRanges();
 }

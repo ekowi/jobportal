@@ -19,7 +19,7 @@ class Create extends Component
     public $tanggal_posting;
     public $tanggal_berakhir;
     public $foto;
-    public $deskripsi;
+    public $deskripsi = '';
     public $range_gaji;
     public $kemampuan_yang_dibutuhkan;
 

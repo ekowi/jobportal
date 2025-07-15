@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\UserStampable;
 use Illuminate\Database\Eloquent\Model;
-// TODO: MEMBUATKAN CRUD UNTUK OFFICER LALU MEMBUAT CRUD UNTUK LOWONGAN SERTA TAMPILANNYA JANGAN LUPA UNTUK VALIDASI
 class Lowongan extends Model
 {
     /** @use HasFactory<\Database\Factories\LowonganFactory> */
@@ -52,5 +51,17 @@ class Lowongan extends Model
         return $this->belongsToMany(Kandidat::class, 'lamarlowongan', 'lowongan_id', 'kandidat_id')
                     ->withPivot('iklan_lowongan') // Menyertakan data pivot
                     ->withTimestamps(); // Menyertakan timestamps jika diperlukan
+    }
+
+    public function getFormattedGajiAttribute()
+    {
+        if (strpos($this->range_gaji, '-') !== false) {
+            $ranges = explode('-', $this->range_gaji);
+            $minSalary = (int)$ranges[0] * 1000; // Konversi ke ribuan
+            $maxSalary = (int)$ranges[1] * 1000;
+            return 'Rp ' . number_format($minSalary, 0, ',', '.') . ' - Rp ' . number_format($maxSalary, 0, ',', '.');
+        }
+
+        return 'Rp ' . number_format((int)$this->range_gaji * 1000, 0, ',', '.');
     }
 }

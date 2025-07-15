@@ -23,6 +23,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\LowonganRepositoryInterface::class,
             \App\Repositories\LowonganRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Interfaces\ProgressRekrutmenRepositoryInterface::class,
+            \App\Repositories\ProgressRekrutmenRepository::class
+        );
     }
 
     /**

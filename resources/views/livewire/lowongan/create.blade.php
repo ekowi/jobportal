@@ -1,4 +1,5 @@
 <div>
+    @vite('resources/js/app.js')
     <!-- Notification Area -->
     <div style="position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px;">
         @if($notificationStatus === 'success')
@@ -62,12 +63,11 @@
                                         @error('nama_posisi') <div class="text-danger">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Description :</label>
-                                        <textarea wire:model.defer="deskripsi" rows="4" class="form-control" placeholder="Describe the job"></textarea>
-                                        @error('deskripsi') <div class="text-danger">{{ $message }}</div> @enderror
-                                    </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Description :</label>
+                                    <trix-editor input="description-content" wire:model="deskripsi"></trix-editor>
+                                    <input id="description-content" type="hidden" wire:model="deskripsi">
+                                    @error('deskripsi') <div class="text-danger">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -152,4 +152,13 @@
             </div>
         </div>
     </section>
+    @push('scripts')
+    <script>
+        document.addEventListener('trix-change', function(event) {
+            // Ambil value dari input hidden yang terhubung dengan trix-editor
+            let deskripsi = document.getElementById('description-content').value;
+            @this.set('deskripsi', deskripsi);
+        });
+    </script>
+    @endpush
 </div>

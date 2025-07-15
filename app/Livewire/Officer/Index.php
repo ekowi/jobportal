@@ -1,5 +1,4 @@
 <?php
-// TODO: FILTER SEARCH TIDAK BERFUNGSI
 namespace App\Livewire\Officer;
 use Livewire\WithPagination;
 use Livewire\Component;

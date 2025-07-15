@@ -72,4 +72,11 @@ class User extends Authenticatable implements MustVerifyEmail
         // Example implementation - adjust based on your actual role structure
         return $this->role === $role;
     }
+
+    public function hasPosition($position)
+    {
+        return $this->hasRole('officer') &&
+                $this->officer &&
+                $this->officer->jabatan === $position;
+    }
 }

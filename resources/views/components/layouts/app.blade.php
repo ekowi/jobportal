@@ -73,6 +73,7 @@
         <link href="{{ asset('css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
 	    <!-- Custom  Css -->
 	    <link href="{{ asset('css/style.min.css') }}" rel="stylesheet" type="text/css" id="theme-opt" />
+        @stack('styles')
 	</head>
 
 	<body>
@@ -128,7 +129,13 @@
                                 <a href="candidate-profile-setting.html" class="dropdown-item fw-medium fs-6"><i data-feather="settings" class="fea icon-sm me-2 align-middle"></i>Settings</a>
                                 <div class="dropdown-divider border-top"></div>
                                 <a href="lock-screen.html" class="dropdown-item fw-medium fs-6"><i data-feather="lock" class="fea icon-sm me-2 align-middle"></i>Lockscreen</a>
-                                <a href="login.html" class="dropdown-item fw-medium fs-6"><i data-feather="log-out" class="fea icon-sm me-2 align-middle"></i>Logout</a>
+                                <form method="POST" action="{{ route('logout') }}" x-data class="d-inline w-100">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item fw-medium fs-6 border-0 bg-transparent p-0 ps-3 py-2 w-100 text-start"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <i data-feather="log-out" class="fea icon-sm me-2 align-middle"></i>Logout
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </li>
@@ -327,5 +334,6 @@
 	    <!-- Custom -->
 	    <script src="{{ asset('js/plugins.init.js') }}"></script>
 	    <script src="{{ asset('js/app.js') }}"></script>
+        @stack('scripts')
     </body>
 </html>

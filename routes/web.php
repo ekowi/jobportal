@@ -6,20 +6,20 @@ Route::get('/', function () {
     return view('maintenance');
 });
 Route::get('/jobs', [App\Http\Controllers\JobController::class, 'index'])->name('jobs.index');
+Route::get('/kategori', App\Livewire\KategoriLowongan\ListKategori::class)->name('kategori.list');
+Route::get('/list-lowongan', App\Livewire\Lowongan\ListLowongan::class)->name('lowongan.list');
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
     'role:officer', // Ensure the user has the 'officer' role
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
     Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
     Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.index');
     Route::get('/lowongan', App\Livewire\Lowongan\Index::class)->name('lowongan.index');
     Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)->name('lowongan.create');
     Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)->name('lowongan.edit');
+    Route::get('/recruitment-progress', App\Livewire\ProgressRekrutmenTimeline::class)->name('recruitment.progress');
 });
 
 Route::middleware([
@@ -30,5 +30,5 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
-    });
+    })->name('dashboard');
 });

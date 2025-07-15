@@ -23,8 +23,19 @@ class RoleMiddleware
             return redirect('login');
         }
 
-        if (!$request->user()->hasRole($role)) {
-            abort(403, 'Unauthorized action.');
+        $user = $request->user();
+
+        // Jika user tidak memiliki role yang diperlukan
+        if (!$user->hasRole($role)) {
+            // Redirect berdasarkan role yang dimiliki user
+            if ($user->hasRole('officer')) {
+                return redirect()->route('officers.index');
+            } elseif ($user->hasRole('kandidat')) {
+                return redirect()->route('dashboard');
+            } else {
+                // User terautentikasi tapi tidak memiliki role yang valid
+                abort(403, 'Unauthorized action.');
+            }
         }
 
         return $next($request);
