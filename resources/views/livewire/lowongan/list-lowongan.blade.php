@@ -147,7 +147,11 @@
 
                                         <div class="col-md-2">
                                             <div class="mb-md-0 mb-3">
-                                                <a href="#" class="btn btn-sm btn-primary">Apply Now</a>
+                                                {{-- @auth
+                                                    <a href="{{ route('kandidat\complete-apply', ['id' => $job->id]) }}" class="btn btn-sm btn-primary">Apply Now</a>
+                                                @else --}}
+                                                    <a href="{{ route('login', ['redirect' => url()->current(), 'job_id' => $job->id]) }}" class="btn btn-sm btn-primary">Apply Now</a>
+                                                {{-- @endauth --}}
                                                 <p class="text-muted mb-0 mt-2">{{ $job->created_at->diffForHumans() }}</p>
                                             </div>
                                         </div>
