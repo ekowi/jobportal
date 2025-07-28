@@ -15,14 +15,15 @@
             </div>
         @endif
     </div>
+    
     <!-- Hero Start -->
-    <section class="bg-half-170 d-table w-100" style="background: url('images/hero/bg.jpg');">
+    <section class="bg-half-170 d-table w-100" style="background: url('{{ asset('images/hero/bg.jpg') }}');">
         <div class="bg-overlay bg-gradient-overlay"></div>
         <div class="container">
             <div class="row mt-5 justify-content-center">
                 <div class="col-12">
                     <div class="title-heading text-center">
-                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Job Vacancies') }}</h5>
+                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Manajemen Lowongan') }}</h5>
                     </div>
                 </div><!--end col-->
             </div><!--end row-->
@@ -30,8 +31,8 @@
             <div class="position-middle-bottom">
                 <nav aria-label="breadcrumb" class="d-block">
                     <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="#">{{ __('Home') }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ __('Job Vacancies') }}</li>
+                        <li class="breadcrumb-item"><a href="{{ route('officers.index') }}">{{ __('Dashboard') }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ __('Lowongan') }}</li>
                     </ul>
                 </nav>
             </div>
@@ -49,6 +50,16 @@
     <!-- Main Section -->
     <section class="section">
         <div class="container">
+            {{-- PERBAIKAN: Menambahkan blok judul yang terpusat --}}
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="section-title text-center mb-4 pb-2">
+                        <h4 class="title mb-4">Daftar Lowongan Pekerjaan</h4>
+                        <p class="text-muted para-desc mx-auto mb-0">Kelola, filter, dan perbarui status lowongan yang tersedia.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-12">
                     <div class="card border-0 rounded shadow">
@@ -56,14 +67,14 @@
                         <div class="m-4">
                             <div class="row g-2">
                                 <div class="col-md-2">
-                                    <select wire:model.live="statusFilter" class="form-control">
+                                    <select wire:model.live="statusFilter" class="form-select">
                                         <option value="">All Status</option>
                                         <option value="posted">Posted</option>
                                         <option value="archived">Archived</option>
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <select wire:model.live="kategoriFilter" class="form-control">
+                                    <select wire:model.live="kategoriFilter" class="form-select">
                                         <option value="">All Category</option>
                                         @foreach($kategoriLowonganOptions as $kategori)
                                             <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
@@ -80,17 +91,14 @@
                                     <input type="date" wire:model.live="tanggalAkhirFilter" class="form-control" placeholder="End Date">
                                 </div>
                                 <div class="col-md-1">
-                                    <button type="button" wire:click="resetFilters" class="btn btn-secondary btn-sm w-100">
-                                        <i class="fas fa-redo"></i> Reset
+                                    <button type="button" wire:click="resetFilters" class="btn btn-secondary w-100">
+                                        <i class="mdi mdi-refresh"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Lowongan Pekerjaan</h5>
-                            <a href="{{ route('lowongan.create') }}" class="btn btn-primary btn-sm">Tambah Lowongan</a>
-                        </div>
-                        <div class="card-body">
+                        
+                        <div class="card-body pt-0">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover align-middle">
                                     <thead>

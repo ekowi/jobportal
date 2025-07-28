@@ -73,6 +73,8 @@
         <link href="{{ asset('css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
 	    <!-- Custom  Css -->
 	    <link href="{{ asset('css/style.min.css') }}" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.css">
+        @livewireStyles
 	</head>
 
 	<body>
@@ -333,5 +335,8 @@
 	    <!-- Custom -->
 	    <script src="{{ asset('js/plugins.init.js') }}"></script>
 	    <script src="{{ asset('js/app.js') }}"></script>
+        <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
+        @livewireScripts
+        @stack('scripts')
     </body>
 </html>

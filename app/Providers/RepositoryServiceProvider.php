@@ -31,6 +31,7 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\KandidatRepositoryInterface::class,
             \App\Repositories\KandidatRepository::class
         );
+        $this->app->bind(\App\Repositories\Interfaces\BankSoalRepositoryInterface::class, \App\Repositories\BankSoalRepository::class);
     }
 
     /**
