@@ -6,7 +6,7 @@
             <div class="row mt-5 justify-content-center">
                 <div class="col-12">
                     <div class="title-heading text-center">
-                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">Daftar Lamaran</h5>
+                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">Daftar lowongan</h5>
                     </div>
                 </div>
             </div>
@@ -52,13 +52,13 @@
                                 </select>
                             </div>
 
-                            @foreach($lamaranList as $lamaran)
+                            @foreach($lamaranList as $lowongan)
                             <div class="group relative bg-white dark:bg-slate-900 shadow hover:shadow-md dark:shadow-gray-800 dark:hover:shadow-gray-800 overflow-hidden rounded-md transition-all duration-500 ease-in-out mt-4">
                                 <div class="p-6">
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center">
-                                            @if($lamaran->foto)
-                                                <img src="{{ asset('storage/' . $lamaran->foto) }}" class="h-12 w-12 rounded-md p-2 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800" alt="">
+                                            @if($lowongan->foto)
+                                                <img src="{{ asset('storage/' . $lowongan->foto) }}" class="h-12 w-12 rounded-md p-2 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800" alt="">
                                             @else
                                                 <div class="h-12 w-12 rounded-md p-2 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 flex items-center justify-center">
                                                     <i class="mdi mdi-briefcase-outline text-3xl"></i>
@@ -66,13 +66,13 @@
                                             @endif
                                             <div class="ml-3">
                                                 <h5 class="mb-1">
-                                                    <span class="text-lg font-semibold">{{ $lamaran->nama_posisi }}</span>
+                                                    <span class="text-lg font-semibold">{{ $lowongan->nama_posisi }}</span>
                                                 </h5>
-                                                <span class="text-slate-400 font-medium">{{ $lamaran->departemen }}</span>
+                                                <span class="text-slate-400 font-medium">{{ $lowongan->departemen }}</span>
                                             </div>
                                         </div>
-                                        <span class="bg-{{ $lamaran->pivot->status === 'diterima' ? 'emerald' : ($lamaran->pivot->status === 'ditolak' ? 'red' : 'amber') }}-500/20 inline-block text-{{ $lamaran->pivot->status === 'diterima' ? 'emerald' : ($lamaran->pivot->status === 'ditolak' ? 'red' : 'amber') }}-500 px-3 py-1 rounded-full">
-                                            {{ ucfirst($lamaran->pivot->status) }}
+                                        <span class="bg-{{ $lowongan->pivot->status === 'diterima' ? 'emerald' : ($lowongan->pivot->status === 'ditolak' ? 'red' : 'amber') }}-500/20 inline-block text-{{ $lowongan->pivot->status === 'diterima' ? 'emerald' : ($lowongan->pivot->status === 'ditolak' ? 'red' : 'amber') }}-500 px-3 py-1 rounded-full">
+                                            {{ ucfirst($lowongan->pivot->status) }}
                                         </span>
                                     </div>
 
@@ -80,20 +80,20 @@
                                         <div class="flex justify-between items-center">
                                             <span class="text-slate-400 flex items-center">
                                                 <i class="mdi mdi-map-marker-outline text-lg mr-1"></i>
-                                                {{ $lamaran->lokasi_penugasan }}
-                                                @if($lamaran->is_remote)
+                                                {{ $lowongan->lokasi_penugasan }}
+                                                @if($lowongan->is_remote)
                                                     <span class="ml-2">(Remote)</span>
                                                 @endif
                                             </span>
                                             <span class="text-slate-400 flex items-center">
                                                 <i class="mdi mdi-calendar-outline text-lg mr-1"></i>
-                                                Dilamar pada: {{ $lamaran->pivot->created_at->format('d M Y') }}
+                                                Dilamar pada: {{ $lowongan->pivot->created_at->format('d M Y') }}
                                             </span>
                                         </div>
                                         <div class="mt-2">
                                             <span class="text-slate-400 flex items-center">
                                                 <i class="mdi mdi-tag-outline text-lg mr-1"></i>
-                                                {{ $lamaran->kategoriLowongan->nama_kategori }}
+                                                {{ $lowongan->kategoriLowongan->nama_kategori }}
                                             </span>
                                         </div>
                                     </div>

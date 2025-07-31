@@ -261,18 +261,25 @@
                             </ul>
                         </li>
                         <li><a href="contactus.html" class="sub-menu-item">Contact Us</a></li>
+                        @role('kandidat')
+                        <li class="has-submenu parent-menu-item">
+                            <a href="{{ route('cbt.test') }}">Tes CBT</a>
+                        </li>
+                        @endrole
                         @role('officer')
                         <li class="has-submenu parent-menu-item">
                             <a href="javascript:void(0)">Bank Soal</a><span class="menu-arrow"></span>
                             <ul class="submenu">
                                 <li><a href="{{ route('bank-soal.index') }}" class="sub-menu-item">Daftar Soal</a></li>
                                 <li><a href="{{ route('kategori-soal.index') }}" class="sub-menu-item">Kategori Soal</a></li>
+                                <li><a href="{{ route('test-results.index') }}" class="sub-menu-item">Hasil Test CBT</a></li>
                             </ul>
                         </li>
                         <li class="has-submenu parent-menu-item">
                             <a href="{{ route('Lowongan.Index') }}">Daftar Lowongan</a><span class="menu-arrow"></span>
                             <ul class="submenu">
                                 <li><a href="{{ route('Lowongan.Create') }}" class="sub-menu-item">Tambah Lowongan</a></li>
+                                <li><a href="{{ route('kategori-lowongan.Index') }}" class="sub-menu-item">Tambah Kategori Lowongan</a></li>
                             </ul>
                         </li>
                         @endrole

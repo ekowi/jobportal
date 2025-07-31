@@ -6,10 +6,16 @@ use Livewire\Component;
 use App\Models\Soal;
 use App\Models\KategoriSoal;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Type;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 class Index extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
+
+    protected $paginationTheme = 'bootstrap';
 
     public $search = '';
     public $showModal = false;
@@ -23,26 +29,92 @@ class Index extends Component
     public $jawaban;
     public $status = true;
 
-    protected $rules = [
-        'id_kategori_soal' => 'required',
-        'soal' => 'required',
-        'pilihan_1' => 'required',
-        'pilihan_2' => 'required',
-        'pilihan_3' => 'required',
-        'pilihan_4' => 'required',
-        'jawaban' => 'required|in:1,2,3,4',
-    ];
+    public $type_soal_id = 1;
+    public $type_jawaban_id = 1;
+    public $tempImage;
+
+    public $oldSoal, $oldPilihan1, $oldPilihan2, $oldPilihan3, $oldPilihan4;
+
+
+    protected function rules()
+    {
+        $soalRule = $this->type_soal_id == 2 ? 'required|image|max:1024' : 'required|string';
+        $pilihanRule = $this->type_jawaban_id == 2 ? 'required|image|max:1024' : 'required|string';
+        
+        // Jika dalam mode edit dan tidak ada file baru yang diupload, jangan validasi sebagai image
+        if ($this->soalId) {
+            if ($this->type_soal_id == 2 && !is_object($this->soal)) {
+                $soalRule = 'required';
+            }
+            
+            for ($i = 1; $i <= 4; $i++) {
+                $pilihan = "pilihan_$i";
+                if ($this->type_jawaban_id == 2 && !is_object($this->$pilihan)) {
+                    $pilihanRule = 'required';
+                }
+            }
+        }
+        
+        return [
+            'id_kategori_soal' => 'required',
+            'soal' => $soalRule,
+            'pilihan_1' => $pilihanRule,
+            'pilihan_2' => $pilihanRule,
+            'pilihan_3' => $pilihanRule,
+            'pilihan_4' => $pilihanRule,
+            'jawaban' => 'required|in:1,2,3,4',
+            'type_soal_id' => 'required',
+            'type_jawaban_id' => 'required',
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        // Ketika tipe soal berubah, reset field soal
+        if ($propertyName === 'type_soal_id') {
+            $this->soal = '';
+            $this->tempImage = null;
+            // $this->emit('typeChanged');
+        }
+        
+        // Ketika tipe jawaban berubah, reset semua field pilihan
+        if ($propertyName === 'type_jawaban_id') {
+            $this->pilihan_1 = '';
+            $this->pilihan_2 = '';
+            $this->pilihan_3 = '';
+            $this->pilihan_4 = '';
+        }
+        
+        $this->validateOnly($propertyName);
+    }
+
 
     public function render()
     {
+        $query = Soal::with('kategori')
+            ->when($this->search, function ($q) {
+                $q->where(function ($sub) {
+                    // 1) search inside question text
+                    $sub->where('soal', 'like', '%' . $this->search . '%');
+
+                    // 2) search inside choices (text)
+                    $sub->orWhere('pilihan_1', 'like', '%' . $this->search . '%')
+                        ->orWhere('pilihan_2', 'like', '%' . $this->search . '%')
+                        ->orWhere('pilihan_3', 'like', '%' . $this->search . '%')
+                        ->orWhere('pilihan_4', 'like', '%' . $this->search . '%');
+
+                    // 3) search inside category name via relationship
+                    $sub->orWhereHas('kategori', function ($k) {
+                        $k->where('nama_kategori', 'like', '%' . $this->search . '%');
+                    });
+                });
+            })
+            ->latest();
+
         return view('livewire.bank-soal.index', [
-            'soals' => Soal::with('kategori')
-                ->when($this->search, fn($query) => 
-                    $query->where('soal', 'like', '%' . $this->search . '%')
-                )
-                ->latest()
-                ->paginate(10),
-            'kategoriSoals' => KategoriSoal::where('status', true)->get()
+            'soals'        => $query->paginate(10),
+            'kategoriSoals'=> KategoriSoal::where('status', true)->get(),
+            'types'        => Type::all(),
         ]);
     }
 
@@ -57,13 +129,23 @@ class Index extends Component
         $soal = Soal::findOrFail($id);
         $this->soalId = $id;
         $this->id_kategori_soal = $soal->id_kategori_soal;
+
+        $this->oldSoal = $soal->soal;
+        $this->oldPilihan1 = $soal->pilihan_1;
+        $this->oldPilihan2 = $soal->pilihan_2;
+        $this->oldPilihan3 = $soal->pilihan_3;
+        $this->oldPilihan4 = $soal->pilihan_4;
+
         $this->soal = $soal->soal;
         $this->pilihan_1 = $soal->pilihan_1;
         $this->pilihan_2 = $soal->pilihan_2;
         $this->pilihan_3 = $soal->pilihan_3;
         $this->pilihan_4 = $soal->pilihan_4;
+
         $this->jawaban = $soal->jawaban;
         $this->status = $soal->status;
+        $this->type_soal_id = $soal->type_soal_id;
+        $this->type_jawaban_id = $soal->type_jawaban_id;
         
         $this->showModal = true;
     }
@@ -74,14 +156,36 @@ class Index extends Component
 
         $data = [
             'id_kategori_soal' => $this->id_kategori_soal,
-            'soal' => $this->soal,
-            'pilihan_1' => $this->pilihan_1,
-            'pilihan_2' => $this->pilihan_2,
-            'pilihan_3' => $this->pilihan_3,
-            'pilihan_4' => $this->pilihan_4,
+            'type_soal_id' => $this->type_soal_id,
+            'type_jawaban_id' => $this->type_jawaban_id,
             'jawaban' => $this->jawaban,
-            'status' => $this->status
+            'status' => $this->status,
         ];
+
+        // Handle soal data
+        if ($this->type_soal_id == 2) {
+            if (is_object($this->soal) && method_exists($this->soal, 'store')) {
+                $data['soal'] = $this->soal->store('soal-images', 'public');
+            } elseif ($this->soalId) {
+                $data['soal'] = Soal::find($this->soalId)->soal;
+            }
+        } else {
+            $data['soal'] = $this->soal;
+        }
+
+        // Handle pilihan data
+        for ($i = 1; $i <= 4; $i++) {
+            $field = "pilihan_$i";
+            if ($this->type_jawaban_id == 2) {
+                if (is_object($this->$field) && method_exists($this->$field, 'store')) {
+                    $data[$field] = $this->$field->store('jawaban-images', 'public');
+                } elseif ($this->soalId) {
+                    $data[$field] = Soal::find($this->soalId)->$field;
+                }
+            } else {
+                $data[$field] = $this->$field;
+            }
+        }
 
         if ($this->soalId) {
             Soal::find($this->soalId)->update($data);
@@ -97,7 +201,23 @@ class Index extends Component
 
     public function delete($id)
     {
-        Soal::find($id)->delete();
+        $soal = Soal::findOrFail($id);
+
+        // Hapus file dari storage sebelum menghapus record dari database
+        if ($soal->type_soal_id == 2 && $soal->soal && Storage::disk('public')->exists($soal->soal)) {
+            Storage::disk('public')->delete($soal->soal);
+        }
+        
+        if ($soal->type_jawaban_id == 2) {
+            for ($i = 1; $i <= 4; $i++) {
+                $pilihan = "pilihan_$i";
+                if ($soal->$pilihan && Storage::disk('public')->exists($soal->$pilihan)) {
+                    Storage::disk('public')->delete($soal->$pilihan);
+                }
+            }
+        }
+
+        $soal->delete();
         session()->flash('message', 'Soal berhasil dihapus.');
     }
 
@@ -112,10 +232,12 @@ class Index extends Component
         $this->pilihan_4 = '';
         $this->jawaban = '';
         $this->status = true;
-    }
-
-    public function getJawabanBenarText($soal)
-    {
-        return $soal->jawaban_benar_text;
+        $this->type_soal_id = 1;
+        $this->type_jawaban_id = 1;
+        $this->oldSoal = null;
+        $this->oldPilihan1 = null;
+        $this->oldPilihan2 = null;
+        $this->oldPilihan3 = null;
+        $this->oldPilihan4 = null;
     }
 }

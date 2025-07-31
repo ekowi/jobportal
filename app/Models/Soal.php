@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\UserStampable;
 
 class Soal extends Model
 {
@@ -14,14 +15,16 @@ class Soal extends Model
 
     protected $fillable = [
         'id_kategori_soal',
+        'type_soal_id',
+        'type_jawaban_id',
         'soal',
         'pilihan_1',
         'pilihan_2',
         'pilihan_3',
         'pilihan_4',
-        'id_kategori_jawaban',
         'jawaban',
-        'status'
+        'status',
+        'pembuat',
     ];
 
     protected $casts = [
@@ -31,6 +34,21 @@ class Soal extends Model
     public function kategori()
     {
         return $this->belongsTo(KategoriSoal::class, 'id_kategori_soal', 'id_kategori_soal');
+    }
+
+     public function creator()
+    {
+        return $this->belongsTo(User::class, 'user_create', 'id');
+    }
+
+    public function typeSoal()
+    {
+        return $this->belongsTo(Type::class, 'type_soal_id');
+    }
+
+    public function typeJawaban()
+    {
+        return $this->belongsTo(Type::class, 'type_jawaban_id');
     }
 
     public function getJawabanBenarTextAttribute()

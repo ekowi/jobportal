@@ -15,7 +15,7 @@ Route::middleware([
     'role:officer', // Ensure the user has the 'officer' role
 ])->group(function () {
     Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
-    Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.index');
+    Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.Index');
     Route::get('/lowongan', App\Livewire\Lowongan\Index::class)->name('lowongan.index');
     Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)->name('lowongan.create');
     Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)->name('lowongan.edit');
@@ -24,6 +24,7 @@ Route::middleware([
     Route::get('/kategori-soal', App\Livewire\KategoriSoal\Index::class)->name('kategori-soal.index');
     Route::get('/Lowongan/Index', App\Livewire\Lowongan\Index::class)->name('Lowongan.Index');
     Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)->name('Lowongan.Create');
+    Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)->name('test-results.index');
 });
 
 Route::middleware([
@@ -35,4 +36,7 @@ Route::middleware([
     Route::get('/dashboard', App\Livewire\Kandidat\Dashboard::class)->name('dashboard');
     Route::get('/kandidat/complete-apply', App\Livewire\Kandidat\CompleteApply::class)->name('kandidat.settings');
     Route::get('/lowongan-dilamar', App\Livewire\Kandidat\LowonganDilamar\Index::class)->name('kandidat.lowongan-dilamar');
+    Route::get('/kandidat/lowongan-dilamar', App\Livewire\Kandidat\LowonganDilamar\Index::class)
+        ->name('kandidat.lowongan-dilamar');
+    Route::get('/cbt/test', App\Livewire\Cbt\Test::class)->name('cbt.test');
 });

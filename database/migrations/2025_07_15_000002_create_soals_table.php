@@ -16,12 +16,14 @@ return new class extends Migration
             $table->text('pilihan_2');
             $table->text('pilihan_3');
             $table->text('pilihan_4');
-            $table->unsignedBigInteger('id_kategori_jawaban');
+            $table->integer('jawaban');
             $table->boolean('status')->default(true);
+            $table->enum('type_soal', ['text', 'foto'])->default('text');
+            $table->enum('type_jawaban', ['text', 'foto'])->default('text');
             $table->timestamps();
 
             $table->foreign('id_kategori_soal')
-                  ->references('id')
+                  ->references('id_kategori_soal') // Change 'id' to 'id_kategori_soal'
                   ->on('kategori_soals')
                   ->onDelete('cascade');
         });

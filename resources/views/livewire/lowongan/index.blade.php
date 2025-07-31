@@ -105,6 +105,7 @@
                                         <tr>
                                             <th>Status</th>
                                             <th>Job Title</th>
+                                            <th>Deskripsi</th>
                                             <th>Departemen</th>
                                             <th>Category</th>
                                             <th>Posting Date</th>
@@ -125,6 +126,7 @@
                                                         {{ $lowongan->nama_posisi }}
                                                     </a>
                                                 </td>
+                                                <td>{!! Str::limit(strip_tags($lowongan->deskripsi), 50) !!}</td>
                                                 <td>{{ $lowongan->departemen }}</td>
                                                 <td>{{ optional($lowongan->kategoriLowongan)->nama_kategori }}</td>
                                                 <td>{{ date('d M Y', strtotime($lowongan->tanggal_posting)) }}</td>

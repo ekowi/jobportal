@@ -217,48 +217,25 @@
                 .create(document.querySelector('#description-editor'), {
                     toolbar: {
                         items: [
-                            'heading',
-                            '|',
-                            'bold',
-                            'italic',
-                            'link',
-                            'bulletedList',
-                            'numberedList',
-                            '|',
-                            'outdent',
-                            'indent',
-                            '|',
-                            'blockQuote',
-                            'insertTable',
-                            'undo',
-                            'redo'
+                            'heading', '|',
+                            'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                            'outdent', 'indent', '|',
+                            'blockQuote', 'insertTable', 'undo', 'redo'
                         ]
                     },
                     language: 'en',
                     table: {
-                        contentToolbar: [
-                            'tableColumn',
-                            'tableRow',
-                            'mergeTableCells'
-                        ]
+                        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
                     },
                     licenseKey: '',
-                    placeholder: 'Enter the job description...'
                 })
                 .then(editor => {
-                    // Store editor instance
-                    window.editor = editor;
-
-                    // Set initial data if exists
-                    editor.setData(@this.deskripsi || '');
-
-                    // Update Livewire whenever editor content changes
                     editor.model.document.on('change:data', () => {
                         @this.set('deskripsi', editor.getData());
                     });
-
-                    // Update editor when Livewire updates deskripsi
-                    Livewire.on('contentReset', () => {
+                    
+                    // Mendengarkan event Livewire untuk mengupdate editor
+                    window.livewire.on('contentReset', () => {
                         editor.setData('');
                     });
                 })

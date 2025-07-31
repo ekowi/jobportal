@@ -56,10 +56,15 @@ class Create extends Component
             'tanggal_posting' => 'required|date',
             'tanggal_berakhir' => 'nullable|date|after_or_equal:tanggal_posting',
             'foto' => 'nullable|image|max:2048',
-            'deskripsi' => 'required|string',
+            'deskripsi' => 'required|min:10',
             'range_gaji' => 'nullable|string',
             'kemampuan_yang_dibutuhkan' => 'nullable|string',
         ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
     }
 
     public function save()
