@@ -27,7 +27,21 @@
                                            placeholder="Cari berdasarkan nama/email...">
                                 </div>
                             </div>
-
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <label for="sortField" class="form-label me-2 mb-0 text-muted">Urutkan:</label>
+                                        <select wire:model.live="sortField" id="sortField" class="form-select w-auto me-2">
+                                            <option value="created_at">Tanggal Tes</option>
+                                            <option value="score">Skor</option>
+                                            {{-- Opsi untuk mengurutkan berdasarkan nama memerlukan join, jadi kita gunakan kolom yang ada di tabel utama --}}
+                                        </select>
+                                        <select wire:model.live="sortDirection" class="form-select w-auto">
+                                            <option value="desc">Terbaru / Tertinggi</option>
+                                            <option value="asc">Terlama / Terendah</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-center bg-white mb-0">
                                     <thead>

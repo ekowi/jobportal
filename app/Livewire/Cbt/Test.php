@@ -20,24 +20,80 @@ class Test extends Component
     public $testResult;
     public $showConfirmModal = false;
     
-    // public $totalQuestions = 10; 
+    public $maxQuestions = 25; // Maximum number of questions
     public $testDuration = 30; // in minutes
 
     protected $listeners = ['timeUp' => 'completeTest'];
 
-    public function mount()
+    public function restoreState()
     {
-        // Ambil SEMUA soal yang aktif secara acak
+        // Pulihkan soal berdasarkan ID yang tersimpan
+        $questionIds = session('test_question_ids', []);
+        if (empty($questionIds)) {
+            $this->initializeNewTest(); // Fallback jika ID soal tidak ada di sesi
+            return;
+        }
+        $idOrder = implode(',', $questionIds);
+
+        $this->questions = Soal::whereIn('id_soal', $questionIds)
+                                ->orderByRaw("FIELD(id_soal, $idOrder)")
+                                ->get();
+
+        // Pulihkan progres dari sesi
+        $this->userAnswers = session('test_user_answers', array_fill(0, $this->questions->count(), null));
+        $this->markedQuestions = session('test_marked_questions', []);
+        $this->currentQuestion = session('test_current_question', 0);
+
+        // Hitung ulang waktu tersisa
+        $elapsedTime = now()->diffInSeconds($this->testResult->started_at);
+        $this->timeLeft = (int) max(0, ($this->testDuration * 60) - $elapsedTime);
+
+        $this->testStarted = true;
+        $this->testCompleted = false;
+    }
+
+    public function initializeNewTest()
+    {
         $this->questions = Soal::where('status', true)
+            ->with(['typeSoal', 'typeJawaban']) // eager load relationships
             ->inRandomOrder()
-            // Hapus ->take() untuk mengambil semua soal
+            ->take($this->maxQuestions)
             ->get();
-            
-        // Inisialisasi array jawaban berdasarkan jumlah soal yang diambil
-        $this->userAnswers = array_fill(0, $this->questions->count(), null);
         
-        $this->timeLeft = $this->testDuration * 60; // Convert to seconds
+        $this->userAnswers = array_fill(0, $this->questions->count(), null);
         $this->markedQuestions = [];
+        $this->currentQuestion = 0;
+        $this->timeLeft = (int) ($this->testDuration * 60);
+        $this->testStarted = false;
+        $this->testCompleted = false;
+    }
+
+    public function mount()
+    {   
+        
+        $ongoingTestId = session('test_in_progress');
+
+        if ($ongoingTestId && $testResult = TestResult::where('id', $ongoingTestId)->where('user_id', Auth::id())->whereNull('completed_at')->first()) {
+            // Jika ada tes yang sedang berjalan, pulihkan state
+            $this->testResult = $testResult;
+            $this->restoreState();
+        } else {
+            // Jika tidak, siapkan tes baru
+            $this->initializeNewTest();
+            session()->forget('test_in_progress'); // Bersihkan sesi lama jika ada
+        }
+
+        // Get 25 random active questions
+        // $this->questions = Soal::where('status', true)
+        //     ->inRandomOrder()
+        //     ->take($this->maxQuestions)
+        //     ->get();
+            
+        // Initialize answer array based on question count
+        // $this->userAnswers = array_fill(0, $this->questions->count(), null);
+        
+        // $this->timeLeft = $this->testDuration * 60; // Convert to seconds
+        // $this->markedQuestions = [];
     }
 
     public function startTest()
@@ -48,12 +104,21 @@ class Test extends Component
             'total_questions' => $this->questions->count(),
             'started_at' => now(),
         ]);
+
+        session([
+            'test_in_progress' => $this->testResult->id,
+            'test_question_ids' => $this->questions->pluck('id_soal')->toArray(),
+            'test_user_answers' => $this->userAnswers,
+            'test_marked_questions' => $this->markedQuestions,
+            'test_current_question' => $this->currentQuestion,
+        ]);
     }
 
     public function nextQuestion()
     {
         if ($this->currentQuestion < $this->questions->count() - 1) {
             $this->currentQuestion++;
+            session(['test_current_question' => $this->currentQuestion]);
         }
     }
 
@@ -61,6 +126,7 @@ class Test extends Component
     {
         if ($this->currentQuestion > 0) {
             $this->currentQuestion--;
+            session(['test_current_question' => $this->currentQuestion]);
         }
     }
 
@@ -68,6 +134,7 @@ class Test extends Component
     {
         if ($index >= 0 && $index < $this->questions->count()) {
             $this->currentQuestion = $index;
+            session(['test_current_question' => $this->currentQuestion]);
         }
     }
 
@@ -78,6 +145,7 @@ class Test extends Component
         } else {
             $this->markedQuestions[] = $this->currentQuestion;
         }
+        session(['test_marked_questions' => $this->markedQuestions]);
     }
 
     public function isQuestionAnswered($index)
@@ -119,19 +187,14 @@ class Test extends Component
 
     public function completeTest()
     {
-        if (!$this->testResult) {
-            return;
-        }
+        if (!$this->testResult) return;
 
         $correctAnswers = 0;
-        
         foreach ($this->questions as $index => $question) {
             $userAnswer = $this->userAnswers[$index] ?? null;
             $isCorrect = $userAnswer == $question->jawaban;
             
-            if ($isCorrect) {
-                $correctAnswers++;
-            }
+            if ($isCorrect) $correctAnswers++;
 
             TestAnswer::create([
                 'test_result_id' => $this->testResult->id,
@@ -148,9 +211,19 @@ class Test extends Component
             'score' => $score,
             'completed_at' => now()
         ]);
-
+        
+        $this->testResult->load('user'); // Eager load relasi user
         $this->testCompleted = true;
         $this->showConfirmModal = false;
+
+        // !! DIUBAH: Hapus sesi setelah ujian selesai !!
+        session()->forget([
+            'test_in_progress',
+            'test_question_ids',
+            'test_user_answers',
+            'test_marked_questions',
+            'test_current_question',
+        ]);
     }
 
     public function render()
@@ -164,5 +237,7 @@ class Test extends Component
      public function selectAnswer($option)
     {
         $this->userAnswers[$this->currentQuestion] = $option;
+        // Simpan jawaban ke sesi setiap kali user memilih
+        session(['test_user_answers' => $this->userAnswers]);
     }
 }

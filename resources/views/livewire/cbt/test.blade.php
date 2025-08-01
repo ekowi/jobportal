@@ -15,7 +15,9 @@
                                     <h5 class="mb-0">Petunjuk Pengerjaan</h5>
                                 </div>
                                 <ul class="mb-0 ps-3">
-                                    <li class="mb-2">Anda akan mengerjakan <strong>{{ $totalQuestions }} soal</strong> dalam waktu <strong>{{ $testDuration }} menit</strong></li>
+                                    <li class="mb-2">Anda akan mengerjakan <strong>{{ min($totalQuestions, $maxQuestions) }} soal</strong></li>
+                                    <li class="mb-2">Waktu pengerjaan: <strong>{{ $testDuration }} menit</strong></li>
+                                    <li class="mb-2">Soal ditampilkan secara acak</li>
                                     <li class="mb-2">Pastikan koneksi internet Anda stabil selama tes berlangsung</li>
                                     <li class="mb-2">Jangan merefresh atau menutup halaman browser</li>
                                     <li class="mb-2">Gunakan tombol navigasi untuk berpindah antar soal</li>
@@ -24,21 +26,28 @@
                             </div>
                             
                             <div class="row g-4 mb-4">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="text-center p-3 bg-light rounded-3">
                                         <i class="fas fa-clock text-primary fs-2 mb-2"></i>
                                         <h6 class="text-muted mb-0">Waktu</h6>
                                         <div class="fw-bold">{{ $testDuration }} Menit</div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="text-center p-3 bg-light rounded-3">
                                         <i class="fas fa-question-circle text-success fs-2 mb-2"></i>
-                                        <h6 class="text-muted mb-0">Total Soal</h6>
-                                        <div class="fw-bold">{{ $totalQuestions }} Soal</div>
+                                        <h6 class="text-muted mb-0">Jumlah Soal</h6>
+                                        <div class="fw-bold">{{ min($totalQuestions, $maxQuestions) }} Soal</div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <div class="text-center p-3 bg-light rounded-3">
+                                        <i class="fas fa-random text-info fs-2 mb-2"></i>
+                                        <h6 class="text-muted mb-0">Soal Acak</h6>
+                                        <div class="fw-bold">Ya</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
                                     <div class="text-center p-3 bg-light rounded-3">
                                         <i class="fas fa-award text-warning fs-2 mb-2"></i>
                                         <h6 class="text-muted mb-0">Passing Grade</h6>
@@ -65,6 +74,7 @@
                     <div class="card shadow-lg border-0 rounded-3">
                         <div class="card-header bg-success text-white text-center py-4">
                             <h3 class="mb-0"><i class="fas fa-check-circle me-2"></i>Tes Selesai</h3>
+                            <p class="mb-0 mt-2 fs-5"><strong>{{ $testResult->user->name }}</strong></p>
                         </div>
                         <div class="card-body p-5">
                             <div class="row g-4 mb-5">
@@ -85,14 +95,14 @@
                                 <div class="col-md-3">
                                     <div class="text-center p-4 bg-danger text-white rounded-3">
                                         <i class="fas fa-times fs-1 mb-3"></i>
-                                        <h4 class="mb-0">{{ $testResult->total_questions - $testResult->correct_answers }}</h4>
+                                        <h4 class="mb-0">{{ min($totalQuestions, $maxQuestions) - $testResult->correct_answers }}</h4>
                                         <small>Jawaban Salah</small>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="text-center p-4 bg-info text-white rounded-3">
-                                        <i class="fas fa-list fs-1 mb-3"></i>
-                                        <h4 class="mb-0">{{ $testResult->total_questions }}</h4>
+                                        <i class="fas fa-random fs-1 mb-3"></i>
+                                        <h4 class="mb-0">{{ min($totalQuestions, $maxQuestions) }}</h4>
                                         <small>Total Soal</small>
                                     </div>
                                 </div>
@@ -142,9 +152,10 @@
                                                 <div class="accordion-body">
                                                     <div class="mb-4">
                                                         <h6 class="text-muted mb-2">Pertanyaan:</h6>
-                                                        @if($question->type_soal === 'foto')
+                                                        @if($question->type_soal_id == 2)
                                                             <img src="{{ Storage::url($question->soal) }}" 
-                                                                 class="img-fluid rounded shadow-sm" 
+                                                                 class="img-fluid rounded shadow-sm question-image" 
+                                                                 alt="Question Image"
                                                                  style="max-height: 200px">
                                                         @else
                                                             <p class="fs-6">{{ $question->soal }}</p>
@@ -154,9 +165,10 @@
                                                     <div class="mb-3">
                                                         <h6 class="text-muted mb-2">Jawaban Anda:</h6>
                                                         @if($userAnswer)
-                                                            @if($question->type_jawaban === 'foto')
+                                                            @if($question->type_jawaban_id == 2)
                                                                 <img src="{{ Storage::url($question->{'pilihan_' . $userAnswer}) }}" 
-                                                                     class="img-fluid rounded shadow-sm mb-2" 
+                                                                     class="img-fluid rounded shadow-sm answer-image mb-2" 
+                                                                     alt="Your Answer"
                                                                      style="max-height: 100px">
                                                             @else
                                                                 <div class="p-3 rounded {{ $isCorrect ? 'bg-success-subtle border-success' : 'bg-danger-subtle border-danger' }} border">
@@ -306,10 +318,11 @@
                         
                         <div class="card-body p-4">
                             <div class="question-container mb-4">
-                                @if($questions[$currentQuestion]->type_soal === 'foto')
+                                @if($questions[$currentQuestion]->type_soal_id == 2)
                                     <div class="text-center mb-4">
                                         <img src="{{ Storage::url($questions[$currentQuestion]->soal) }}" 
-                                             class="img-fluid rounded shadow-sm" 
+                                             class="img-fluid rounded shadow-sm question-image" 
+                                             alt="Question Image"
                                              style="max-height: 400px">
                                     </div>
                                 @else
@@ -324,12 +337,9 @@
                                     @php
                                         $optionValue = $index + 1;
                                     @endphp
-                                    {{-- Menambahkan wire:click pada div pembungkus --}}
-                                    <div 
-                                        class="answer-option mb-3 {{ ($userAnswers[$currentQuestion] ?? null) == $optionValue ? 'selected' : '' }}"
-                                        wire:click="selectAnswer({{ $optionValue }})">
-
-                                        {{-- Input radio tetap sama, tapi wire:model saja sudah cukup --}}
+                                    <div class="answer-option mb-3 {{ ($userAnswers[$currentQuestion] ?? null) == $optionValue ? 'selected' : '' }}"
+                                         wire:click="selectAnswer({{ $optionValue }})">
+                                        
                                         <input type="radio" 
                                             id="q{{ $currentQuestion }}_opt{{ $optionValue }}"
                                             name="answer_for_q_{{ $currentQuestion }}" 
@@ -338,14 +348,15 @@
                                             class="form-check-input d-none">
 
                                         <label class="answer-label w-100 p-3 rounded-3 border cursor-pointer d-flex align-items-center" 
-                                            for="answer{{ $optionValue }}">
+                                            for="q{{ $currentQuestion }}_opt{{ $optionValue }}">
                                             <div class="answer-indicator me-3">
                                                 <span class="option-letter">{{ chr(65 + $index) }}</span>
                                             </div>
                                             <div class="answer-content flex-grow-1">
-                                                @if($questions[$currentQuestion]->type_jawaban === 'foto')
+                                                @if($questions[$currentQuestion]->type_jawaban_id == 2)
                                                     <img src="{{ Storage::url($questions[$currentQuestion]->$pilihan) }}" 
-                                                        class="img-fluid rounded" 
+                                                        class="img-fluid rounded answer-image" 
+                                                        alt="Answer Option {{ $optionValue }}"
                                                         style="max-height: 120px">
                                                 @else
                                                     <span class="fs-6">{{ $questions[$currentQuestion]->$pilihan }}</span>
@@ -647,5 +658,25 @@
                 },
             }
         }
+
+        // Add image zoom functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.question-image, .answer-image');
+            images.forEach(img => {
+                img.classList.add('image-zoom');
+                img.addEventListener('click', function() {
+                    const lightbox = document.createElement('div');
+                    lightbox.className = 'lightbox';
+                    const clone = this.cloneNode();
+                    lightbox.appendChild(clone);
+                    document.body.appendChild(lightbox);
+                    lightbox.style.display = 'block';
+                    
+                    lightbox.addEventListener('click', function() {
+                        this.remove();
+                    });
+                });
+            });
+        });
     </script>
 </div>

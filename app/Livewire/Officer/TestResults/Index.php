@@ -22,7 +22,7 @@ class Index extends Component
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
             $this->sortField = $field;
-            $this->sortDirection = 'asc';
+            $this->sortDirection = 'desc';
         }
     }
 
