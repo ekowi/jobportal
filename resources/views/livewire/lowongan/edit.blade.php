@@ -1,21 +1,4 @@
 <div>
-    <!-- Notification Area -->
-    <div style="position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px;">
-        @if($notificationStatus === 'success')
-            <div class="alert alert-success alert-dismissible fade show shadow" role="alert">
-                {{ $notificationMessage }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if($notificationStatus === 'error')
-            <div class="alert alert-danger alert-dismissible fade show shadow" role="alert">
-                {{ $notificationMessage }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-    </div>
-    <!-- Hero Start TODO: UPDATE BG HERO -->
     <section class="bg-half-170 d-table w-100" style="background: url('{{ asset('images/hero/bg.jpg') }}');">
         <div class="bg-overlay bg-gradient-overlay"></div>
         <div class="container">
@@ -24,19 +7,19 @@
                     <div class="title-heading text-center">
                         <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Edit Job Vacancy') }}</h5>
                     </div>
-                </div><!--end col-->
-            </div><!--end row-->
-
+                </div>
+            </div>
             <div class="position-middle-bottom">
                 <nav aria-label="breadcrumb" class="d-block">
                     <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="#">{{ __('Home') }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ __('Edit Job Vacancy') }}</li>
+                        <li class="breadcrumb-item"><a href="{{ route('lowongan.index') }}">{{ __('Lowongan') }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ __('Edit') }}</li>
                     </ul>
                 </nav>
             </div>
-        </div><!--end container-->
-    </section><!--end section-->
+        </div>
+    </section>
+
     <div class="position-relative">
         <div class="shape overflow-hidden text-white">
             <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,31 +27,32 @@
             </svg>
         </div>
     </div>
-    <!-- Hero End -->
-
-    <!-- Job apply form Start -->
     <section class="section bg-light">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-xl-7 col-lg-8">
                     <div class="card border-0">
+                        {{-- Form diubah untuk memanggil metode 'update' --}}
                         <form wire:submit.prevent="update" class="rounded shadow p-4" enctype="multipart/form-data">
                             <div class="row">
                                 <h5 class="mb-3">Edit Job Details:</h5>
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold">Job Title :</label>
-                                        <input wire:model.defer="nama_posisi" class="form-control" placeholder="Title :">
+                                        <input wire:model.defer="nama_posisi" class="form-control" placeholder="Title">
                                         @error('nama_posisi') <div class="text-danger">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Description :</label>
-                                        <textarea wire:model.defer="deskripsi" rows="4" class="form-control" placeholder="Describe the job :"></textarea>
-                                        @error('deskripsi') <div class="text-danger">{{ $message }}</div> @enderror
+
+                                {{-- Input Deskripsi dengan CKEditor --}}
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Description :</label>
+                                    <div wire:ignore>
+                                        <textarea id="description-editor" class="form-control"></textarea>
                                     </div>
+                                    @error('deskripsi') <div class="text-danger">{{ $message }}</div> @enderror
                                 </div>
+
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold">Department:</label>
@@ -119,13 +103,23 @@
                                         @error('tanggal_berakhir') <div class="text-danger">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
+
+                                {{-- Input Gaji dengan Cleave.js --}}
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold">Salary Range:</label>
-                                        <input wire:model.defer="range_gaji" class="form-control" placeholder="e.g. 5-10jt">
+                                        <div class="input-group" wire:ignore>
+                                            <input type="text" 
+                                                id="salary-range" 
+                                                class="form-control" 
+                                                placeholder="e.g. 5000000"
+                                                value="{{ $range_gaji }}"> {{-- Menampilkan data awal --}}
+                                            <span class="input-group-text">IDR</span>
+                                        </div>
                                         @error('range_gaji') <div class="text-danger">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
+
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold">Required Skills:</label>
@@ -133,14 +127,16 @@
                                         @error('kemampuan_yang_dibutuhkan') <div class="text-danger">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
+
+                                {{-- Input Foto dengan Tampilan Gambar Saat Ini --}}
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold">Photo:</label>
                                         <input type="file" wire:model="foto" class="form-control" accept="image/*">
                                         @if($oldFoto)
                                             <div class="mt-2">
-                                                <img src="{{ asset('storage/image/lowongan/' . $oldFoto) }}" alt="Current Photo" style="max-width:80px;max-height:80px;">
-                                                <small class="text-muted">Current Photo</small>
+                                                <img src="{{ asset('storage/image/lowongan/' . $oldFoto) }}" alt="Current Photo" style="max-width:80px;max-height:80px; border-radius: 5px;">
+                                                <small class="text-muted d-block">Current Photo</small>
                                             </div>
                                         @endif
                                         @error('foto') <div class="text-danger">{{ $message }}</div> @enderror
@@ -149,6 +145,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
+                                    {{-- Tombol diubah menjadi 'Update Job' --}}
                                     <input type="submit" class="submitBnt btn btn-primary" value="Update Job">
                                 </div>
                             </div>
@@ -159,3 +156,53 @@
         </div>
     </section>
 </div>
+
+@push('scripts')
+    {{-- CDN untuk CKEditor dan Cleave.js --}}
+    <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
+    {{-- Inisialisasi CKEditor untuk form edit --}}
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#description-editor'), {
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                        'outdent', 'indent', '|',
+                        'blockQuote', 'insertTable', 'undo', 'redo'
+                    ]
+                }
+            })
+            .then(editor => {
+                // Mengatur data awal dari properti Livewire saat editor dimuat
+                editor.setData(@this.get('deskripsi') || '');
+
+                // Sinkronisasi data saat pengguna selesai mengedit (event 'blur')
+                editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
+                    if (!isFocused) {
+                        @this.set('deskripsi', editor.getData());
+                    }
+                });
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+    
+    {{-- Inisialisasi Cleave.js untuk format gaji --}}
+    <script>
+        document.addEventListener('livewire:initialized', function () {
+            var cleave = new Cleave('#salary-range', {
+                numericOnly: true,
+                blocks: [10],
+            });
+
+            // Kirim data ke Livewire saat input berubah
+            document.querySelector('#salary-range').addEventListener('input', function(e) {
+                @this.set('range_gaji', e.target.value);
+            });
+        });
+    </script>
+@endpush
