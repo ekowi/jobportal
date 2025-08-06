@@ -6,6 +6,10 @@ use App\Livewire\Forms\CustomInputErrors;
 use App\Livewire\Forms\CustomValidationErrors;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use App\Repositories\Interfaces\KategoriSoalRepositoryInterface;
+use App\Repositories\EloquentKategoriSoalRepository;
+use App\Repositories\Interfaces\BankSoalRepositoryInterface;
+use App\Repositories\BankSoalRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +18,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register any application services here
+        $this->app->bind(
+            KategoriSoalRepositoryInterface::class,
+            EloquentKategoriSoalRepository::class
+        );
+
+        $this->app->bind(
+            BankSoalRepositoryInterface::class,
+            BankSoalRepository::class
+        );
     }
 
     /**

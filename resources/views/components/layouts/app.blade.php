@@ -260,13 +260,15 @@
                                 </li>
                             </ul>
                         </li>
-                        <li><a href="contactus.html" class="sub-menu-item">Contact Us</a></li>
                         @role('kandidat')
                         <li class="has-submenu parent-menu-item">
                             <a href="{{ route('cbt.test') }}">Tes CBT</a>
                         </li>
                         @endrole
                         @role('officer')
+                        <li class="has-submenu parent-menu-item">
+                            <a href="{{ route('kandidat.index') }}">Kandidat</a>
+                        </li>
                         <li class="has-submenu parent-menu-item">
                             <a href="javascript:void(0)">Bank Soal</a><span class="menu-arrow"></span>
                             <ul class="submenu">

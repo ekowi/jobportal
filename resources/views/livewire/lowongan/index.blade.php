@@ -104,6 +104,7 @@
                                     <thead>
                                         <tr>
                                             <th>Status</th>
+                                            <th>Foto</th>
                                             <th>Job Title</th>
                                             <th>Deskripsi</th>
                                             <th>Departemen</th>
@@ -120,6 +121,13 @@
                                                     <span class="badge bg-{{ $lowongan->status === 'posted' ? 'success' : 'secondary' }}">
                                                         {{ ucfirst($lowongan->status) }}
                                                     </span>
+                                                </td>
+                                                <td>
+                                                    @if($lowongan->foto)
+                                                        <img src="{{ asset('storage/image/lowongan/' . $lowongan->foto) }}" alt="Foto Lowongan" class="img-fluid rounded" style="max-width: 50px;">
+                                                    @else
+                                                        <span class="text-muted">No Image</span>
+                                                    @endif
                                                 </td>
                                                 <td>
                                                     <a href="#" wire:click.prevent="openView({{ $lowongan->id }})" class="fw-bold text-primary">

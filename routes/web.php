@@ -25,6 +25,7 @@ Route::middleware([
     Route::get('/Lowongan/Index', App\Livewire\Lowongan\Index::class)->name('Lowongan.Index');
     Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)->name('Lowongan.Create');
     Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)->name('test-results.index');
+    Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)->name('kandidat.index');
 });
 
 Route::middleware([

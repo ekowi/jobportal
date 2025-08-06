@@ -3,8 +3,8 @@
 namespace App\Livewire\KategoriSoal;
 
 use Livewire\Component;
-use App\Models\KategoriSoal;
 use Livewire\WithPagination;
+use App\Repositories\Interfaces\KategoriSoalRepositoryInterface;
 
 class Index extends Component
 {
@@ -16,18 +16,26 @@ class Index extends Component
     public $nama_kategori;
     public $deskripsi;
     public $status = true;
+    
+    // Repository akan di-inject secara otomatis oleh Laravel
+    private KategoriSoalRepositoryInterface $kategoriRepo;
 
     protected $rules = [
         'nama_kategori' => 'required|min:3',
         'deskripsi' => 'nullable'
     ];
+    
+    // Gunakan constructor untuk dependency injection
+    public function __construct()
+    {
+        // Resolve repository dari service container Laravel
+        $this->kategoriRepo = resolve(KategoriSoalRepositoryInterface::class);
+    }
 
     public function render()
     {
         return view('livewire.kategorisoal.index', [
-            'kategoris' => KategoriSoal::where('nama_kategori', 'like', '%'.$this->search.'%')
-                ->latest()
-                ->paginate(10)
+            'kategoris' => $this->kategoriRepo->getPaginated($this->search, 10)
         ]);
     }
 
@@ -39,30 +47,25 @@ class Index extends Component
 
     public function edit($id)
     {
-        $kategori = KategoriSoal::findOrFail($id);
+        $kategori = $this->kategoriRepo->find($id);
         $this->kategoriId = $id;
         $this->nama_kategori = $kategori->nama_kategori;
         $this->deskripsi = $kategori->deskripsi;
-        $this->status = $kategori->status;
+        $this->status = (bool) $kategori->status;
         
         $this->showModal = true;
     }
 
     public function save()
     {
-        $this->validate();
-
-        $data = [
-            'nama_kategori' => $this->nama_kategori,
-            'deskripsi' => $this->deskripsi,
-            'status' => $this->status
-        ];
+        $data = $this->validate();
+        $data['status'] = $this->status;
 
         if ($this->kategoriId) {
-            KategoriSoal::find($this->kategoriId)->update($data);
+            $this->kategoriRepo->update($this->kategoriId, $data);
             session()->flash('message', 'Kategori berhasil diperbarui.');
         } else {
-            KategoriSoal::create($data);
+            $this->kategoriRepo->create($data);
             session()->flash('message', 'Kategori berhasil ditambahkan.');
         }
 
@@ -72,7 +75,7 @@ class Index extends Component
 
     public function delete($id)
     {
-        KategoriSoal::find($id)->delete();
+        $this->kategoriRepo->delete($id);
         session()->flash('message', 'Kategori berhasil dihapus.');
     }
 
@@ -82,5 +85,6 @@ class Index extends Component
         $this->nama_kategori = '';
         $this->deskripsi = '';
         $this->status = true;
+        $this->resetErrorBag();
     }
 }

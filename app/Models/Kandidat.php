@@ -32,8 +32,8 @@ class Kandidat extends Model
         'jenis_kelamin',
         'status_perkawinan',
         'agama',
-        'bmi_score',
-        'blind_score',
+        // 'bmi_score',
+        // 'blind_score',
         'no_telpon_alternatif',
         'pengalaman_kerja',
         'pendidikan',
@@ -57,7 +57,7 @@ class Kandidat extends Model
 
     public function lowongans()
     {
-        return $this->belongsToMany(Lowongan::class, 'lamarlowongan', 'kandidat_id', 'lowongan_id')
+        return $this->belongsToMany(Lowongan::class, 'lamar_lowongans', 'kandidat_id', 'lowongan_id')
                     ->withPivot('iklan_lowongan') // Menyertakan data pivot
                     ->withTimestamps(); // Menyertakan timestamps jika diperlukan
     }
@@ -83,4 +83,72 @@ class Kandidat extends Model
         return trim("{$this->alamat}, {$this->kode_pos}, {$this->negara}");
     }
 
+    /**
+     * Relasi dengan hasil BMI Test
+     * Satu kandidat memiliki satu hasil BMI Test
+     */
+    public function bmiTest()
+    {
+        return $this->hasOne(BmiTest::class);
+    }
+
+    /**
+     * Relasi dengan hasil Blind Test
+     * Satu kandidat memiliki satu hasil Blind Test
+     */
+    public function blindTest()
+    {
+        return $this->hasOne(BlindTest::class);
+    }
+
+    /**
+     * Check apakah kandidat sudah menyelesaikan semua tes yang diperlukan
+     * @return bool
+     */
+    public function hasCompletedAllTests()
+    {
+        return $this->bmiTest()->exists() && $this->blindTest()->exists();
+    }
+
+    /**
+     * Check apakah kandidat sudah menyelesaikan BMI test
+     * @return bool
+     */
+    public function hasCompletedBmiTest()
+    {
+        return $this->bmiTest()->exists();
+    }
+
+    /**
+     * Check apakah kandidat sudah menyelesaikan Blind test
+     * @return bool
+     */
+    public function hasCompletedBlindTest()
+    {
+        return $this->blindTest()->exists();
+    }
+
+    /**
+     * Get BMI category dalam bahasa Indonesia
+     * @return string|null
+     */
+    public function getBmiCategoryAttribute()
+    {
+        if (!$this->bmiTest) {
+            return null;
+        }
+        return $this->bmiTest->kategori;
+    }
+
+    /**
+     * Get Blind test percentage
+     * @return int|null
+     */
+    public function getBlindTestPercentageAttribute()
+    {
+        if (!$this->blindTest) {
+            return null;
+        }
+        return $this->blindTest->score;
+    }
 }

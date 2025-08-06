@@ -53,57 +53,137 @@
                             </div>
 
                             @foreach($lamaranList as $lowongan)
-                            <div class="group relative bg-white dark:bg-slate-900 shadow hover:shadow-md dark:shadow-gray-800 dark:hover:shadow-gray-800 overflow-hidden rounded-md transition-all duration-500 ease-in-out mt-4">
-                                <div class="p-6">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            @if($lowongan->foto)
-                                                <img src="{{ asset('storage/' . $lowongan->foto) }}" class="h-12 w-12 rounded-md p-2 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800" alt="">
-                                            @else
-                                                <div class="h-12 w-12 rounded-md p-2 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 flex items-center justify-center">
-                                                    <i class="mdi mdi-briefcase-outline text-3xl"></i>
+                            <div class="card job-box rounded shadow border-0 mb-4 h-100">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-start justify-content-between mb-3">
+                                        <div class="d-flex align-items-center flex-grow-1">
+                                            <!-- Logo/Image Container -->
+                                            <div class="flex-shrink-0 me-3">
+                                                @if($lowongan->foto)
+                                                    <div class="rounded shadow" style="width: 60px; height: 60px; overflow: hidden;">
+                                                        <img src="{{ asset('storage/image/lowongan/' . $lowongan->foto) }}" 
+                                                             alt="Foto Lowongan" 
+                                                             class="img-fluid" 
+                                                             style="width: 100%; height: 100%; object-fit: contain; background: white; padding: 8px;">
+                                                    </div>
+                                                @else
+                                                    <div class="d-flex align-items-center justify-content-center bg-light rounded shadow" 
+                                                         style="width: 60px; height: 60px;">
+                                                        <i class="mdi mdi-briefcase-outline text-muted" style="font-size: 24px;"></i>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            
+                                            <!-- Job Info -->
+                                            <div class="flex-grow-1">
+                                                <h5 class="mb-1 fw-bold">{{ $lowongan->nama_posisi }}</h5>
+                                                <p class="text-muted mb-2 d-flex align-items-center">
+                                                    <i class="mdi mdi-office-building-outline me-1"></i>
+                                                    {{ $lowongan->departemen }}
+                                                </p>
+                                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                    <span class="text-muted small d-flex align-items-center">
+                                                        <i class="mdi mdi-map-marker-outline me-1"></i>
+                                                        {{ $lowongan->lokasi_penugasan }}
+                                                        @if($lowongan->is_remote)
+                                                            <span class="badge bg-soft-success ms-1">Remote</span>
+                                                        @else
+                                                            <span class="badge bg-soft-secondary ms-1">Onsite</span>
+                                                        @endif
+                                                    </span>
                                                 </div>
-                                            @endif
-                                            <div class="ml-3">
-                                                <h5 class="mb-1">
-                                                    <span class="text-lg font-semibold">{{ $lowongan->nama_posisi }}</span>
-                                                </h5>
-                                                <span class="text-slate-400 font-medium">{{ $lowongan->departemen }}</span>
                                             </div>
                                         </div>
-                                        <span class="bg-{{ $lowongan->pivot->status === 'diterima' ? 'emerald' : ($lowongan->pivot->status === 'ditolak' ? 'red' : 'amber') }}-500/20 inline-block text-{{ $lowongan->pivot->status === 'diterima' ? 'emerald' : ($lowongan->pivot->status === 'ditolak' ? 'red' : 'amber') }}-500 px-3 py-1 rounded-full">
-                                            {{ ucfirst($lowongan->pivot->status) }}
-                                        </span>
-                                    </div>
-
-                                    <div class="mt-4">
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-slate-400 flex items-center">
-                                                <i class="mdi mdi-map-marker-outline text-lg mr-1"></i>
-                                                {{ $lowongan->lokasi_penugasan }}
-                                                @if($lowongan->is_remote)
-                                                    <span class="ml-2">(Remote)</span>
-                                                @endif
-                                            </span>
-                                            <span class="text-slate-400 flex items-center">
-                                                <i class="mdi mdi-calendar-outline text-lg mr-1"></i>
-                                                Dilamar pada: {{ $lowongan->pivot->created_at->format('d M Y') }}
+                                        
+                                        <!-- Status Badge -->
+                                        <div class="flex-shrink-0">
+                                            <span class="badge {{ $lowongan->pivot->status === 'diterima' ? 'bg-success' : ($lowongan->pivot->status === 'ditolak' ? 'bg-danger' : 'bg-warning') }}">
+                                                {{ ucfirst($lowongan->pivot->status) }}
                                             </span>
                                         </div>
-                                        <div class="mt-2">
-                                            <span class="text-slate-400 flex items-center">
-                                                <i class="mdi mdi-tag-outline text-lg mr-1"></i>
+                                    </div>
+
+                                    <!-- Additional Info -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-6">
+                                            <small class="text-muted d-flex align-items-center">
+                                                <i class="mdi mdi-tag-outline me-1"></i>
                                                 {{ $lowongan->kategoriLowongan->nama_kategori }}
-                                            </span>
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small class="text-muted d-flex align-items-center">
+                                                <i class="mdi mdi-calendar-outline me-1"></i>
+                                                Dilamar: {{ $lowongan->pivot->created_at->format('d M Y') }}
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Salary Range (if available) -->
+                                    @if(isset($lowongan->range_gaji))
+                                    <div class="mb-2">
+                                        <small class="text-muted d-flex align-items-center">
+                                            <i class="mdi mdi-cash-multiple me-1"></i>
+                                            {{ $lowongan->range_gaji }} Juta
+                                        </small>
+                                    </div>
+                                    @endif
+
+                                    <!-- Action Buttons -->
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <div class="d-flex gap-2">
+                                            @if($lowongan->pivot->status === 'pending')
+                                                <span class="badge bg-soft-warning">
+                                                    <i class="mdi mdi-clock-outline me-1"></i>
+                                                    Menunggu Review
+                                                </span>
+                                            @elseif($lowongan->pivot->status === 'interview')
+                                                <span class="badge bg-soft-info">
+                                                    <i class="mdi mdi-account-voice me-1"></i>
+                                                    Tahap Interview
+                                                </span>
+                                            @elseif($lowongan->pivot->status === 'diterima')
+                                                <span class="badge bg-soft-success">
+                                                    <i class="mdi mdi-check-circle-outline me-1"></i>
+                                                    Diterima
+                                                </span>
+                                            @else
+                                                <span class="badge bg-soft-danger">
+                                                    <i class="mdi mdi-close-circle-outline me-1"></i>
+                                                    Ditolak
+                                                </span>
+                                            @endif
+                                        </div>
+                                        
+                                        <div>
+                                            <button class="btn btn-sm btn-soft-primary" onclick="viewDetails({{ $lowongan->id }})">
+                                                <i class="mdi mdi-eye me-1"></i>Detail
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             @endforeach
 
-                            <div class="mt-4">
+                            @if($lamaranList->isEmpty())
+                            <div class="text-center py-5">
+                                <div class="mb-3">
+                                    <i class="mdi mdi-file-document-outline" style="font-size: 64px; color: #ddd;"></i>
+                                </div>
+                                <h5 class="text-muted">Belum Ada Lamaran</h5>
+                                <p class="text-muted">Anda belum melamar pekerjaan apapun. Mulai jelajahi lowongan yang tersedia!</p>
+                                <a href="{{ route('jobs.index') }}" class="btn btn-primary">
+                                    <i class="mdi mdi-magnify me-1"></i>Cari Lowongan
+                                </a>
+                            </div>
+                            @endif
+
+                            <!-- Pagination -->
+                            @if($lamaranList->hasPages())
+                            <div class="mt-4 d-flex justify-content-center">
                                 {{ $lamaranList->links() }}
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -111,4 +191,12 @@
         </div>
     </section>
     <!-- End -->
+
+    <script>
+        function viewDetails(lowonganId) {
+            // Add your logic to view job details
+            // This could open a modal or redirect to a detail page
+            console.log('View details for job ID:', lowonganId);
+        }
+    </script>
 </div>
