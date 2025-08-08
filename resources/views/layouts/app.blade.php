@@ -339,6 +339,14 @@
         <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
         @livewireScripts
+        <script>
+            document.addEventListener('livewire:initialized', () => {
+                Livewire.on('redirect-to-login', (event) => {
+                    // Arahkan ke halaman login Anda
+                    window.location.href = '/login'; 
+                });
+            });
+        </script>
         @stack('scripts')
     </body>
 </html>

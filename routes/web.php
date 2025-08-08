@@ -2,9 +2,7 @@
 // TODO: Add role-based redirection middleware, Add role for each role type in officer
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('auth.login');
-});
+Route::get('/', App\Livewire\Kandidat\Dashboard::class)->name('dashboard');
 Route::get('/jobs', [App\Http\Controllers\JobController::class, 'index'])->name('jobs.index');
 Route::get('/kategori', App\Livewire\KategoriLowongan\ListKategori::class)->name('kategori.list');
 Route::get('/list-lowongan', App\Livewire\Lowongan\ListLowongan::class)->name('lowongan.list');
@@ -34,7 +32,6 @@ Route::middleware([
     'verified',
     'role:kandidat',
 ])->group(function () {
-    Route::get('/dashboard', App\Livewire\Kandidat\Dashboard::class)->name('dashboard');
     Route::get('/kandidat/complete-apply', App\Livewire\Kandidat\CompleteApply::class)->name('kandidat.settings');
     Route::get('/lowongan-dilamar', App\Livewire\Kandidat\LowonganDilamar\Index::class)->name('kandidat.lowongan-dilamar');
     Route::get('/kandidat/lowongan-dilamar', App\Livewire\Kandidat\LowonganDilamar\Index::class)

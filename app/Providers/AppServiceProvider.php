@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\KategoriSoalRepositoryInterface;
 use App\Repositories\EloquentKategoriSoalRepository;
 use App\Repositories\Interfaces\BankSoalRepositoryInterface;
 use App\Repositories\BankSoalRepository;
+use App\Providers\EventServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

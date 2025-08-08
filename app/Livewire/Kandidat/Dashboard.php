@@ -125,70 +125,51 @@ class Dashboard extends Component
         //     'kemampuan_bahasa' => 'nullable|string',
         //     'kemampuan' => 'nullable|string',
         // ];
+        
+        // Cek dan impor data tes dari local storage jika user baru login
+        if (Auth::check() && !session()->has('imported_test_data')) {
+            $this->dispatch('get-test-data');
+            session(['imported_test_data' => true]);
+        }
     }
 
     public function showJob($lowonganId)
     {
         $this->selectedLowongan = Lowongan::find($lowonganId);
-        $user = Auth::user();
 
-        // Alur pengecekan sekarang menggunakan relasi
-        if (!$user->kandidat) {
-            $this->showBmiTestModal = true;
-            return;
+        if (Auth::check()) {
+            // Alur untuk pengguna yang sudah login (tetap sama)
+            $user = Auth::user();
+            if (!$user->kandidat) $this->showProfileModal = true;
+            elseif (!$user->kandidat->bmiTest) $this->showBmiTestModal = true;
+            elseif (!$user->kandidat->blindTest) $this->showBlindTestModal = true;
+            else $this->showJobModal = true;
+        } else {
+            // Alur untuk pengguna tamu: langsung mulai tes
+            $this->startGuestTestFlow(['jobId' => $lowonganId]);
         }
-
-        $kandidat = $user->kandidat;
-        if (!$kandidat->bmiTest) $this->showBmiTestModal = true;
-        elseif (!$kandidat->blindTest) $this->showBlindTestModal = true;
-        else $this->showJobModal = true;
     }
+
 
     public function calculateBmi()
     {
-        $this->validate($this->bmiRules);
-        
-        $tinggiMeter = $this->tinggi_badan / 100;
-        $score = round($this->berat_badan / ($tinggiMeter * $tinggiMeter), 1);
-        
-        if ($score < 18.5) $kategori = 'Kurus';
-        elseif ($score <= 24.9) $kategori = 'Normal';
-        else $kategori = 'Gemuk';
-        
-        $user = Auth::user();
-        $kandidat = $user->kandidat;
+        $validatedData = $this->validate($this->bmiRules);
 
-        if (!$kandidat) {
-            // Buat kandidat baru jika belum ada
-            $kandidat = Kandidat::create([
-                'user_id' => $user->id,
-                'nama_depan' => $user->name, // Gunakan nama user sebagai default
-                'nama_belakang' => '',
-                'no_telpon' => '',
-                'no_telpon_alternatif' => '',
-                'alamat' => '',
-                'kode_pos' => '',
-                'negara' => '',
-                'no_ktp' => '',
-                'tempat_lahir' => '',
-                'tanggal_lahir' => now(),
-                'jenis_kelamin' => 'L',
-                'status_perkawinan' => 'Belum Menikah',
-                'agama' => '',
-                'pendidikan' => ''
-            ]);
-            $user->refresh();
+        $tinggiMeter = $validatedData['tinggi_badan'] / 100;
+        $score = round($validatedData['berat_badan'] / ($tinggiMeter * $tinggiMeter), 1);
+        $kategori = ($score < 18.5) ? 'Kurus' : (($score <= 24.9) ? 'Normal' : 'Gemuk');
+
+        if (Auth::check()) {
+            $kandidat = Auth::user()->kandidat ?? Kandidat::create(['user_id' => Auth::id()]);
+            BmiTest::updateOrCreate(
+                ['kandidat_id' => $kandidat->id],
+                array_merge($validatedData, ['score' => $score, 'kategori' => $kategori])
+            );
+        } else {
+            // Simpan data BMI ke sesi server untuk tamu
+            $bmiData = array_merge($validatedData, ['score' => $score, 'kategori' => $kategori]);
+            session(['guest_test_data.bmi' => $bmiData]);
         }
-        
-        BmiTest::updateOrCreate(
-            ['kandidat_id' => $kandidat->id],
-            [
-                'tinggi_badan' => $this->tinggi_badan,
-                'berat_badan' => $this->berat_badan,
-                'score' => $score,
-                'kategori' => $kategori,
-            ]
-        );
         
         $this->showBmiTestModal = false;
         $this->showBlindTestModal = true;
@@ -205,50 +186,29 @@ class Dashboard extends Component
         } else {
             $correctCount = 0;
             foreach ($this->blind_test_answers as $number => $answer) {
-                if (isset($this->correct_blind_test_answers[$number]) && $this->correct_blind_test_answers[$number] == $answer) {
+                if (($this->correct_blind_test_answers[$number] ?? null) == $answer) {
                     $correctCount++;
                 }
             }
             $score = round(($correctCount / $this->total_blind_tests) * 100, 0);
 
-            $user = Auth::user();
-            $kandidat = $user->kandidat;
+            if (Auth::check()) {
+                $kandidat = Auth::user()->kandidat ?? Kandidat::create(['user_id' => Auth::id()]);
+                BlindTest::updateOrCreate(
+                    ['kandidat_id' => $kandidat->id],
+                    ['total_questions' => $this->total_blind_tests, 'correct_answers' => $correctCount, 'score' => $score, 'details' => $this->blind_test_answers]
+                );
+                $this->showBlindTestModal = false;
+                $this->showProfileModal = true;
+            } else {
+                // Simpan data Blind Test ke sesi server
+                $blindTestData = ['total_questions' => $this->total_blind_tests, 'correct_answers' => $correctCount, 'score' => $score, 'details' => $this->blind_test_answers];
+                session(['guest_test_data.blind_test' => $blindTestData]);
 
-            if (!$kandidat) {
-                // Buat kandidat baru jika belum ada
-                $kandidat = Kandidat::create([
-                    'user_id' => $user->id,
-                    'nama_depan' => $user->name, // Gunakan nama user sebagai default
-                    'nama_belakang' => '',
-                    'no_telpon' => '',
-                    'no_telpon_alternatif' => '',
-                    'alamat' => '',
-                    'kode_pos' => '',
-                    'negara' => '',
-                    'no_ktp' => '',
-                    'tempat_lahir' => '',
-                    'tanggal_lahir' => now(),
-                    'jenis_kelamin' => 'L',
-                    'status_perkawinan' => 'Belum Menikah',
-                    'agama' => '',
-                    'pendidikan' => ''
-                ]);
-                $user->refresh();
+                $this->showBlindTestModal = false;
+                // Kirim sinyal ke frontend bahwa tes sudah selesai
+                $this->dispatch('prompt-auth-after-test');
             }
-
-            // Simpan hasil ke tabel blind_tests
-            BlindTest::updateOrCreate(
-                ['kandidat_id' => $kandidat->id],
-                [
-                    'total_questions' => $this->total_blind_tests,
-                    'correct_answers' => $correctCount,
-                    'score' => $score,
-                    'details' => $this->blind_test_answers,
-                ]
-            );
-
-            $this->showBlindTestModal = false;
-            $this->showProfileModal = true; // Tampilkan form profil setelah selesai tes
         }
     }
 
@@ -377,5 +337,44 @@ class Dashboard extends Component
                 ->latest('tanggal_posting')
                 ->paginate(6)
         ]);
+    }
+
+    protected $listeners = ['start-guest-test-flow' => 'startGuestTestFlow'];
+
+    public function startGuestTestFlow($data = [])
+    {
+        if (isset($data['jobId'])) {
+            $this->selectedLowongan = Lowongan::find($data['jobId']);
+            // Simpan ID lowongan di sesi untuk tamu
+            session(['guest_application_job_id' => $data['jobId']]);
+        }
+        $this->showBmiTestModal = true;
+    }
+
+    public function importTestData($data)
+    {
+        if (!Auth::check() || !isset($data['bmi']) || !isset($data['blind'])) return;
+        
+        $user = Auth::user();
+        $kandidat = $user->kandidat ?? Kandidat::create(['user_id' => $user->id]);
+        
+        // Import BMI test data
+        if (!$kandidat->bmiTest && $data['bmi']) {
+            BmiTest::create(array_merge(
+                ['kandidat_id' => $kandidat->id],
+                $data['bmi']
+            ));
+        }
+        
+        // Import Blind test data
+        if (!$kandidat->blindTest && $data['blind']) {
+            BlindTest::create(array_merge(
+                ['kandidat_id' => $kandidat->id],
+                $data['blind']
+            ));
+        }
+        
+        // Clear local storage after import
+        $this->dispatch('clear-test-data');
     }
 }

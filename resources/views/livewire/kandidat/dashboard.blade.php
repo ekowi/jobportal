@@ -7,7 +7,6 @@
                 <div class="col-12">
                     <div class="title-heading text-center">
                         <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">Dashboard Kandidat</h5>
-                        <p class="text-white-50 para-desc mx-auto mb-0">Selamat datang kembali, {{ Auth::user()->name }}!</p>
                     </div>
                 </div>
             </div>
@@ -33,38 +32,50 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-4 pb-2">
-                    <div class="card border-0 text-center features feature-primary feature-clean rounded p-4 shadow">
+                    <div class="card border-0 text-center features feature-primary feature-clean rounded p-4 shadow h-100">
                         <div class="icons text-center mx-auto">
                             <i class="mdi mdi-briefcase-check-outline d-block rounded h3 mb-0"></i>
                         </div>
                         <div class="content mt-4">
                             <h5 class="fw-bold">Lowongan Dilamar</h5>
                             <p class="text-muted">Lihat status semua lamaran pekerjaan yang telah Anda kirim.</p>
-                            <a href="{{ route('kandidat.lowongan-dilamar') }}" class="read-more">Lihat Detail <i class="mdi mdi-arrow-right"></i></a>
+                            @auth
+                                <a href="{{ route('kandidat.lowongan-dilamar') }}" class="read-more">Lihat Detail <i class="mdi mdi-arrow-right"></i></a>
+                            @else
+                                <a href="javascript:void(0)" onclick="promptAuth()" class="read-more">Lihat Detail <i class="mdi mdi-arrow-right"></i></a>
+                            @endauth
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 mb-4 pb-2">
-                    <div class="card border-0 text-center features feature-primary feature-clean rounded p-4 shadow">
+                    <div class="card border-0 text-center features feature-primary feature-clean rounded p-4 shadow h-100">
                         <div class="icons text-center mx-auto">
                             <i class="mdi mdi-file-document-edit-outline d-block rounded h3 mb-0"></i>
                         </div>
                         <div class="content mt-4">
                             <h5 class="fw-bold">Tes Seleksi</h5>
                             <p class="text-muted">Kerjakan tes seleksi yang tersedia untuk melanjutkan proses rekrutmen.</p>
-                            <a href="#" class="read-more">Mulai Tes <i class="mdi mdi-arrow-right"></i></a>
+                            @auth
+                                <a href="#" class="read-more">Mulai Tes <i class="mdi mdi-arrow-right"></i></a>
+                            @else
+                                <a href="javascript:void(0)" onclick="promptAuth()" class="read-more">Mulai Tes <i class="mdi mdi-arrow-right"></i></a>
+                            @endauth
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 mb-4 pb-2">
-                    <div class="card border-0 text-center features feature-primary feature-clean rounded p-4 shadow">
+                    <div class="card border-0 text-center features feature-primary feature-clean rounded p-4 shadow h-100">
                         <div class="icons text-center mx-auto">
                             <i class="mdi mdi-account-cog-outline d-block rounded h3 mb-0"></i>
                         </div>
                         <div class="content mt-4">
                             <h5 class="fw-bold">Profil & Dokumen</h5>
                             <p class="text-muted">Pastikan profil dan dokumen Anda selalu lengkap dan terbaru.</p>
-                            <a href="{{ route('profile.show') }}" class="read-more">Update Profil <i class="mdi mdi-arrow-right"></i></a>
+                            @auth
+                                <a href="{{ route('profile.show') }}" class="read-more">Update Profil <i class="mdi mdi-arrow-right"></i></a>
+                            @else
+                                <a href="javascript:void(0)" onclick="promptAuth()" class="read-more">Update Profil <i class="mdi mdi-arrow-right"></i></a>
+                            @endauth
                         </div>
                     </div>
                 </div>
@@ -533,22 +544,34 @@
     @push('scripts')
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Fungsi untuk menampilkan pop-up pilihan otentikasi
+        function showAuthPrompt() {
+            Swal.fire({
+                title: 'Tes Selesai!',
+                text: "Silakan login untuk melanjutkan atau daftar untuk menyimpan progres Anda.",
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: '<i class="mdi mdi-account-plus-outline me-1"></i> Daftar Akun Baru',
+                cancelButtonText: '<i class="mdi mdi-login me-1"></i> Login',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#3085d6',
+                reverseButtons: true,
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Arahkan ke halaman register
+                    window.location.href = "{{ route('register') }}";
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Arahkan ke halaman login
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        }
+
         document.addEventListener('livewire:initialized', () => {
-            @this.on('show-profile-warning', (event) => {
-                Swal.fire({
-                    title: 'Profil Belum Lengkap!',
-                    text: 'Anda harus melengkapi profil Anda terlebih dahulu untuk melamar.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Lengkapi Sekarang',
-                    cancelButtonText: 'Nanti Saja',
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        @this.showProfileForm(); 
-                    }
-                });
+            // Menunggu sinyal 'prompt-auth-after-test' dari backend
+            @this.on('prompt-auth-after-test', () => {
+                showAuthPrompt(); // Tampilkan pop-up
             });
         });
     </script>
