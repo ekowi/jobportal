@@ -330,15 +330,26 @@
                     @if(isset($testResults['blind']))
                         <p class="mb-0">Skor Tes Buta Warna: {{ $testResults['blind']['score'] }}%</p>
                     @endif
-                    @if(isset($testResults['bmi']) && $testResults['bmi']['kategori'] !== 'Normal')
+                    @php
+                        $bmiInvalid = isset($testResults['bmi']) && $testResults['bmi']['kategori'] !== 'Normal';
+                        $blindInvalid = isset($testResults['blind']) && $testResults['blind']['score'] < 60;
+                    @endphp
+                    @if($bmiInvalid)
                         <div class="alert alert-danger mt-3">Hasil BMI Anda tidak memenuhi syarat pendaftaran.</div>
                     @endif
-                    @if(isset($testResults['blind']) && $testResults['blind']['score'] < 60)
+                    @if($blindInvalid)
                         <div class="alert alert-danger">Hasil tes buta warna Anda tidak memenuhi syarat pendaftaran.</div>
+                    @endif
+                    @if($bmiInvalid || $blindInvalid)
+                        <div class="alert alert-warning mt-3">Anda tidak dapat melanjutkan tahap registrasi.</div>
                     @endif
                 </div>
                 <div class="modal-footer p-3 bg-light">
-                    <button type="button" class="btn btn-primary" wire:click="closeResultModal">Lanjutkan</button>
+                    @if(!$bmiInvalid && !$blindInvalid)
+                        <button type="button" class="btn btn-primary" wire:click="closeResultModal">Lanjutkan</button>
+                    @else
+                        <button type="button" class="btn btn-secondary" wire:click="closeResultModal">Tutup</button>
+                    @endif
                 </div>
             </div>
         </div>

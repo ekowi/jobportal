@@ -246,7 +246,15 @@ class Dashboard extends Component
     public function closeResultModal()
     {
         $this->showResultModal = false;
-        $this->dispatch('prompt-auth-after-test');
+
+        $meetsBmi = isset($this->testResults['bmi']) &&
+            ($this->testResults['bmi']['kategori'] === 'Normal');
+        $meetsBlind = isset($this->testResults['blind']) &&
+            ($this->testResults['blind']['score'] >= 60);
+
+        if ($meetsBmi && $meetsBlind) {
+            $this->dispatch('prompt-auth-after-test');
+        }
     }
 
     private function resetBlindTest()
