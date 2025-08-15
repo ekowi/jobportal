@@ -611,11 +611,44 @@
             });
         }
 
+        function promptAuth() {
+            const cached = localStorage.getItem('guestTestResults');
+            if (cached) {
+                const data = JSON.parse(cached);
+                const bmiInvalid = data.bmi && data.bmi.kategori !== 'Normal';
+                const blindInvalid = data.blind && data.blind.score < 60;
+
+                if (bmiInvalid || blindInvalid) {
+                    Swal.fire({
+                        title: 'Tidak memenuhi syarat',
+                        text: 'Anda tidak dapat melanjutkan registrasi.',
+                        icon: 'error'
+                    });
+                    return;
+                }
+            }
+
+            showAuthPrompt();
+        }
+
         document.addEventListener('livewire:initialized', () => {
             // Menunggu sinyal 'prompt-auth-after-test' dari backend
             @this.on('prompt-auth-after-test', () => {
                 showAuthPrompt(); // Tampilkan pop-up
             });
+
+            @this.on('store-test-results', (data) => {
+                localStorage.setItem('guestTestResults', JSON.stringify(data));
+            });
+
+            @this.on('clear-test-data', () => {
+                localStorage.removeItem('guestTestResults');
+            });
+
+            const cached = localStorage.getItem('guestTestResults');
+            if (cached) {
+                Livewire.dispatch('show-cached-results', JSON.parse(cached));
+            }
         });
     </script>
     @endpush

@@ -196,14 +196,24 @@ class Dashboard extends Component
             $this->showProfileModal = true;
         } else {
             // Simpan data Blind Test ke sesi server
-            $blindTestData = ['total_questions' => $this->total_blind_tests, 'correct_answers' => $correctCount, 'score' => $score, 'details' => $this->blind_test_answers];
-            session(['guest_test_data.blind_test' => $blindTestData]);
-            $this->testResults = [
+            $blindTestData = [
+                'total_questions' => $this->total_blind_tests,
+                'correct_answers' => $correctCount,
+                'score' => $score,
+                'details' => $this->blind_test_answers,
+            ];
+
+            $results = [
                 'bmi' => session('guest_test_data.bmi'),
                 'blind' => $blindTestData,
             ];
+
+            session(['guest_test_data' => $results]);
+            $this->testResults = $results;
             $this->showBlindTestModal = false;
             $this->showResultModal = true;
+
+            $this->dispatch('store-test-results', $results);
         }
     }
     }
@@ -349,16 +359,33 @@ class Dashboard extends Component
         ]);
     }
 
-    protected $listeners = ['start-guest-test-flow' => 'startGuestTestFlow'];
+    protected $listeners = [
+        'start-guest-test-flow' => 'startGuestTestFlow',
+        'show-cached-results' => 'showCachedResults',
+    ];
 
     public function startGuestTestFlow($data = [])
     {
+        if (session()->has('guest_test_data')) {
+            $this->testResults = session('guest_test_data');
+            $this->showResultModal = true;
+            return;
+        }
+
         if (isset($data['jobId'])) {
             $this->selectedLowongan = Lowongan::find($data['jobId']);
             // Simpan ID lowongan di sesi untuk tamu
             session(['guest_application_job_id' => $data['jobId']]);
         }
         $this->showBmiTestModal = true;
+    }
+
+    public function showCachedResults($data)
+    {
+        if (!$data) return;
+
+        $this->testResults = $data;
+        $this->showResultModal = true;
     }
 
     public function importTestData($data)
