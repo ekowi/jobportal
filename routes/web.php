@@ -24,6 +24,9 @@ Route::middleware([
     Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)->name('Lowongan.Create');
     Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)->name('test-results.index');
     Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)->name('kandidat.index');
+    Route::get('/lamaran-lowongan', App\Livewire\Officer\LamaranLowongan\Index::class)
+    ->name('lamaran-lowongan.index');
+
 });
 
 Route::middleware([
@@ -37,4 +40,6 @@ Route::middleware([
     Route::get('/kandidat/lowongan-dilamar', App\Livewire\Kandidat\LowonganDilamar\Index::class)
         ->name('kandidat.lowongan-dilamar');
     Route::get('/cbt/test', App\Livewire\Cbt\Test::class)->name('cbt.test');
+    Route::get('/profile', App\Livewire\Profile\ShowProfile::class)->name('profile.show');
+    Route::get('/profile/edit', App\Livewire\Profile\UpdateKandidatProfileForm::class)->name('profile.edit');
 });

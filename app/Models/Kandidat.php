@@ -17,6 +17,7 @@ class Kandidat extends Model
     /** @use HasFactory<\Database\Factories\KandidatFactory> */
     use HasFactory, UserStampable;
 
+    protected $table = 'kandidats';
     protected $fillable = [
         'user_id',
         'nama_depan',
@@ -42,7 +43,7 @@ class Kandidat extends Model
     ];
 
     protected $casts = [
-        'tanggal_lahir' => 'date'
+        'tanggal_lahir' => 'date:Y-m-d'
     ];
 
     /**
@@ -150,5 +151,9 @@ class Kandidat extends Model
             return null;
         }
         return $this->blindTest->score;
+    }
+    public function lamarLowongans()
+    {
+        return $this->hasMany(LamarLowongan::class, 'kandidat_id');
     }
 }

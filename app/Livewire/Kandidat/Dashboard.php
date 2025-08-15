@@ -279,7 +279,7 @@ class Dashboard extends Component
     {
         $validatedData = $this->validate($this->rules());
         $user = Auth::user();
-
+    
         $kandidat = Kandidat::updateOrCreate(['user_id' => $user->id], $validatedData);
         
         if($kandidat) {

@@ -10,6 +10,8 @@ class ProgressRekrutmen extends Model
     /** @use HasFactory<\Database\Factories\ProgressRekrutmenFactory> */
     use HasFactory;
 
+    protected $table = 'progress_rekrutmen';
+
     protected $fillable = [
         'lamar_lowongan_id',
         'officer_id',
@@ -21,6 +23,7 @@ class ProgressRekrutmen extends Model
         'is_psikotes',
         'waktu_pelaksanaan',
         'user_create',
+        'link_zoom', // Tambahkan ini
     ];
 
     protected $casts = [
@@ -29,15 +32,22 @@ class ProgressRekrutmen extends Model
         'is_psikotes' => 'boolean',
     ];
 
+    // Daftar status yang diizinkan
+    public static $allowedStatuses = [
+        'diterima',
+        'interview',
+        'psikotes',
+        'ditolak'
+    ];
+
     public function lamarlowongan()
     {
-        return $this->belongsTo(Lamarlowongan::class, 'lamar_lowongan_id');
+        return $this->belongsTo(LamarLowongan::class, 'lamar_lowongan_id');
     }
 
-    // Relasi dengan User (Officer)
     public function officer()
     {
-        return $this->belongsTo(Officer::class, 'officer_id');
+        return $this->belongsTo(User::class, 'officer_id');
     }
 
     public function interview()

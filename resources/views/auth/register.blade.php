@@ -1,7 +1,5 @@
 <x-guest-layout>
     <x-guest-card>
-        {{-- TODO: CREATE CRUD OFFICER --}}
-
         <x-custom-validation-errors/>
 
         <form method="POST" action="{{ route('register') }}">
@@ -51,7 +49,7 @@
 
             <div class="col-12 text-center mt-3">
                 <span><span class="text-muted small me-2">Already have an account ? </span> <a href="{{ route('login') }}" class="text-dark fw-semibold small">Sign in</a></span>
-            </div><!--end col-12-->
+            </div>
         </form>
     </x-guest-card>
 </x-guest-layout>

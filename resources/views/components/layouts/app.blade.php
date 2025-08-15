@@ -201,15 +201,6 @@
                             </ul>
                         </li>
 
-                        <li class="has-submenu parent-menu-item">
-                            <a href="javascript:void(0)">Candidates</a><span class="menu-arrow"></span>
-                            <ul class="submenu">
-                                <li><a href="candidates.html" class="sub-menu-item">Candidates</a></li>
-                                <li><a href="candidate-profile.html" class="sub-menu-item">Candidate Profile</a></li>
-                                <li><a href="candidate-profile-setting.html" class="sub-menu-item">Profile Setting</a></li>
-                            </ul>
-                        </li>
-
                         <li class="has-submenu parent-parent-menu-item">
                             <a href="javascript:void(0)">Pages</a><span class="menu-arrow"></span>
                             <ul class="submenu">
@@ -268,6 +259,11 @@
                         @role('officer')
                         <li class="has-submenu parent-menu-item">
                             <a href="{{ route('kandidat.index') }}">Kandidat</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('lamaran-lowongan.index') }}" class="nav-link">
+                                Kelola Lamaran
+                            </a>
                         </li>
                         <li class="has-submenu parent-menu-item">
                             <a href="javascript:void(0)">Bank Soal</a><span class="menu-arrow"></span>

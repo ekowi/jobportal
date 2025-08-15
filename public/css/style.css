@@ -4227,4 +4227,63 @@ footer .footer-bar {
             color: white;
         }
 
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border: 1px solid #e3ebf0;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3c65f5;
+            box-shadow: 0 0 0 0.2rem rgba(60, 101, 245, 0.1);
+        }
+        
+        .btn-soft-secondary {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+        
+        .btn-soft-secondary:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            color: #495057;
+        }
+        
+        .alert {
+            border-radius: 0.5rem;
+        }
+        
+        .card {
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        
+        .card-header.bg-primary {
+            background: linear-gradient(135deg, #3c65f5 0%, #4f76ff 100%) !important;
+        }
+        
+        .border-bottom {
+            border-bottom: 2px solid #e3ebf0 !important;
+        }
+        
+        .text-primary {
+            color: #3c65f5 !important;
+        }
+        
+        small.text-muted {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        
+
 /*# sourceMappingURL=style.css.map */

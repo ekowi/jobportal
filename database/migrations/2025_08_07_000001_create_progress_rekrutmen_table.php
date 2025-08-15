@@ -6,26 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
-        Schema::create('progress_rekrutmens', function (Blueprint $table) {
+        Schema::create('progress_rekrutmen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lamar_lowongan_id')->constrained()->onDelete('cascade');
-            $table->foreignId('officer_id')->nullable()->constrained('users')->onDelete('cascade');
-            $table->string('nama_progress');
+            $table->foreignId('lamar_lowongan_id')->constrained('lamar_lowongans')->onDelete('cascade');
+            $table->foreignId('officer_id')->nullable()->constrained('users');
+            $table->string('nama_progress')->nullable();
             $table->enum('status', ['diterima', 'interview', 'psikotes', 'ditolak'])->default('interview');
             $table->text('catatan')->nullable();
             $table->string('dokumen_pendukung')->nullable();
             $table->boolean('is_interview')->default(false);
             $table->boolean('is_psikotes')->default(false);
-            $table->dateTime('waktu_pelaksanaan')->nullable();
+            $table->timestamp('waktu_pelaksanaan')->nullable();
             $table->string('user_create')->nullable();
             $table->timestamps();
         });
     }
 
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('progress_rekrutmens');
+        Schema::dropIfExists('progress_rekrutmen');
     }
 };

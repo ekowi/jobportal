@@ -6,7 +6,7 @@
             <div class="row mt-5 justify-content-center">
                 <div class="col-12">
                     <div class="title-heading text-center">
-                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">Daftar lowongan</h5>
+                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">Lacak Lamaran</h5>
                     </div>
                 </div>
             </div>
@@ -14,12 +14,14 @@
             <div class="position-middle-bottom">
                 <nav aria-label="breadcrumb" class="d-block">
                     <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
-                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Lowongan Dilamar</li>
                     </ul>
                 </nav>
             </div>
         </div>
     </section>
+
     <div class="position-relative">
         <div class="shape overflow-hidden text-white">
             <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,174 +31,185 @@
     </div>
     <!-- Hero End -->
 
-    <!-- Start -->
     <section class="section">
         <div class="container">
-            <div class="grid md:grid-cols-12 grid-cols-1 gap-[30px]">
-                <div class="lg:col-span-12 md:col-span-12">
-                    <div class="grid grid-cols-1 gap-[30px]">
-                        <div class="p-6 rounded-md shadow dark:shadow-gray-800">
-                            <div class="mb-4">
-                                <input type="text" wire:model.debounce.300ms="search" 
-                                    class="form-input w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-200 focus:border-indigo-600 dark:border-gray-800 dark:focus:border-indigo-600 focus:ring-0" 
-                                    placeholder="Cari berdasarkan nama posisi...">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card border-0 shadow rounded-3">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                                <div>
+                                    <h6 class="mb-1">Lowongan yang Kamu Lamar</h6>
+                                    <p class="text-muted mb-0">Pantau progres setiap lamaranmu di sini.</p>
+                                </div>
+                                <div class="w-100 w-md-50" style="max-width: 360px;">
+                                    <div class="position-relative">
+                                        <i class="mdi mdi-magnify position-absolute top-50 translate-middle-y ms-3"></i>
+                                        <input type="text"
+                                               wire:model.debounce.300ms="search"
+                                               class="form-control ps-5"
+                                               placeholder="Cari posisi atau perusahaan...">
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="mb-4">
-                                <select wire:model="status" class="form-select w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-200 focus:border-indigo-600 dark:border-gray-800 dark:focus:border-indigo-600 focus:ring-0">
-                                    <option value="">Semua Status</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="interview">Interview</option>
-                                    <option value="diterima">Diterima</option>
-                                    <option value="ditolak">Ditolak</option>
-                                </select>
-                            </div>
+                            <!-- Applications List -->
+                            @forelse ($lamaranList as $index => $lamaran)
+                                @php
+                                    $doneStatuses = collect($lamaran->progressRekrutmen ?? [])->pluck('status')->unique();
+                                    $isAccepted = $doneStatuses->contains('diterima');
+                                    $isRejected = $doneStatuses->contains('ditolak');
+                                    $hasDecision = $isAccepted || $isRejected;
 
-                            @foreach($lamaranList as $lowongan)
-                            <div class="card job-box rounded shadow border-0 mb-4 h-100">
-                                <div class="card-body p-4">
-                                    <div class="d-flex align-items-start justify-content-between mb-3">
-                                        <div class="d-flex align-items-center flex-grow-1">
-                                            <!-- Logo/Image Container -->
-                                            <div class="flex-shrink-0 me-3">
-                                                @if($lowongan->foto)
-                                                    <div class="rounded shadow" style="width: 60px; height: 60px; overflow: hidden;">
-                                                        <img src="{{ asset('storage/image/lowongan/' . $lowongan->foto) }}" 
-                                                             alt="Foto Lowongan" 
-                                                             class="img-fluid" 
-                                                             style="width: 100%; height: 100%; object-fit: contain; background: white; padding: 8px;">
+                                    $doneMelamar = true;
+                                    $doneInterview = $doneStatuses->contains('interview') || $hasDecision;
+                                    $donePsikotes = $doneStatuses->contains('psikotes') || $hasDecision;
+
+                                    $activeStep = null;
+                                    if (!$hasDecision) {
+                                        if ($doneMelamar && !$doneStatuses->contains('interview')) {
+                                            $activeStep = 'interview';
+                                        } elseif ($doneInterview && !$doneStatuses->contains('psikotes')) {
+                                            $activeStep = 'psikotes';
+                                        }
+                                    }
+
+                                    $latestInterview = optional($lamaran->progressRekrutmen)
+                                        ->where('status', 'interview')
+                                        ->sortByDesc('created_at')
+                                        ->first();
+                                        
+                                    $lastUpdate = optional(optional($lamaran->progressRekrutmen)->last())->created_at;
+                                @endphp
+
+                                <div class="card border mb-3">
+                                    <div class="card-body p-4">
+                                        <div class="row">
+                                            <!-- Job Info -->
+                                            <div class="col-md-4">
+                                                <h6 class="fw-semibold mb-1">{{ optional($lamaran->lowongan)->nama_posisi ?? '-' }}</h6>
+                                                <p class="text-muted mb-1 small">{{ optional($lamaran->lowongan)->departemen ?? '-' }}</p>
+                                                <p class="text-muted mb-1 small">{{ optional($lamaran->lowongan)->lokasi_penugasan ?? '-' }}</p>
+                                                <small class="text-muted">Dilamar: {{ optional($lamaran->created_at)->format('d M Y') }}</small>
+                                                @if(!empty($lamaran->iklan_lowongan))
+                                                    <div class="mt-1"><small class="badge bg-light text-dark">{{ $lamaran->iklan_lowongan }}</small></div>
+                                                @endif
+                                            </div>
+
+                                            <!-- Progress Flow -->
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <!-- Step 1: Melamar -->
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                            <i class="mdi mdi-check" style="font-size: 12px;"></i>
+                                                        </div>
+                                                        <span class="ms-1 small fw-medium text-success">Melamar</span>
                                                     </div>
-                                                @else
-                                                    <div class="d-flex align-items-center justify-content-center bg-light rounded shadow" 
-                                                         style="width: 60px; height: 60px;">
-                                                        <i class="mdi mdi-briefcase-outline text-muted" style="font-size: 24px;"></i>
+
+                                                    <!-- Arrow -->
+                                                    <i class="mdi mdi-arrow-right text-muted"></i>
+
+                                                    <!-- Step 2: Interview -->
+                                                    <div class="d-flex align-items-center">
+                                                        @if($doneInterview)
+                                                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-check" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small fw-medium text-success">Interview</span>
+                                                        @elseif($activeStep === 'interview')
+                                                            <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-clock" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small fw-medium text-warning">Interview</span>
+                                                        @else
+                                                            <div class="bg-light text-muted rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-circle-outline" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small text-muted">Interview</span>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Arrow -->
+                                                    <i class="mdi mdi-arrow-right text-muted"></i>
+
+                                                    <!-- Step 3: Psikotes -->
+                                                    <div class="d-flex align-items-center">
+                                                        @if($donePsikotes)
+                                                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-check" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small fw-medium text-success">Psikotes</span>
+                                                        @elseif($activeStep === 'psikotes')
+                                                            <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-clock" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small fw-medium text-warning">Psikotes</span>
+                                                        @else
+                                                            <div class="bg-light text-muted rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-circle-outline" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small text-muted">Psikotes</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <!-- Final Result -->
+                                                @if($hasDecision)
+                                                    <div class="mt-2">
+                                                        @if ($isAccepted)
+                                                            <span class="badge bg-success px-2 py-1">
+                                                                <i class="mdi mdi-check-circle me-1"></i>Diterima
+                                                            </span>
+                                                        @elseif ($isRejected)
+                                                            <span class="badge bg-danger px-2 py-1">
+                                                                <i class="mdi mdi-close-circle me-1"></i>Ditolak
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                @endif
+
+                                                <!-- Zoom Meeting Button -->
+                                                @if($doneInterview && ($latestInterview && !empty($latestInterview->link_zoom)))
+                                                    <div class="mt-2">
+                                                        <a href="{{ $latestInterview->link_zoom }}" target="_blank" rel="noopener"
+                                                           class="btn btn-sm btn-primary">
+                                                            <i class="mdi mdi-video me-1"></i>Join Zoom
+                                                        </a>
                                                     </div>
                                                 @endif
                                             </div>
-                                            
-                                            <!-- Job Info -->
-                                            <div class="flex-grow-1">
-                                                <h5 class="mb-1 fw-bold">{{ $lowongan->nama_posisi }}</h5>
-                                                <p class="text-muted mb-2 d-flex align-items-center">
-                                                    <i class="mdi mdi-office-building-outline me-1"></i>
-                                                    {{ $lowongan->departemen }}
-                                                </p>
-                                                <div class="d-flex flex-wrap gap-2 align-items-center">
-                                                    <span class="text-muted small d-flex align-items-center">
-                                                        <i class="mdi mdi-map-marker-outline me-1"></i>
-                                                        {{ $lowongan->lokasi_penugasan }}
-                                                        @if($lowongan->is_remote)
-                                                            <span class="badge bg-soft-success ms-1">Remote</span>
-                                                        @else
-                                                            <span class="badge bg-soft-secondary ms-1">Onsite</span>
-                                                        @endif
-                                                    </span>
-                                                </div>
+
+                                            <!-- Last Update -->
+                                            <div class="col-md-2 text-md-end">
+                                                @if ($lastUpdate)
+                                                    <small class="text-muted">
+                                                        Update: {{ $lastUpdate->format('d M Y') }}
+                                                    </small>
+                                                @endif
                                             </div>
                                         </div>
-                                        
-                                        <!-- Status Badge -->
-                                        <div class="flex-shrink-0">
-                                            <span class="badge {{ $lowongan->pivot->status === 'diterima' ? 'bg-success' : ($lowongan->pivot->status === 'ditolak' ? 'bg-danger' : 'bg-warning') }}">
-                                                {{ ucfirst($lowongan->pivot->status) }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Additional Info -->
-                                    <div class="row g-2 mb-3">
-                                        <div class="col-md-6">
-                                            <small class="text-muted d-flex align-items-center">
-                                                <i class="mdi mdi-tag-outline me-1"></i>
-                                                {{ $lowongan->kategoriLowongan->nama_kategori }}
-                                            </small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <small class="text-muted d-flex align-items-center">
-                                                <i class="mdi mdi-calendar-outline me-1"></i>
-                                                Dilamar: {{ $lowongan->pivot->created_at->format('d M Y') }}
-                                            </small>
-                                        </div>
-                                    </div>
-
-                                    <!-- Salary Range (if available) -->
-                                    @if(isset($lowongan->range_gaji))
-                                    <div class="mb-2">
-                                        <small class="text-muted d-flex align-items-center">
-                                            <i class="mdi mdi-cash-multiple me-1"></i>
-                                            {{ $lowongan->range_gaji }} Juta
-                                        </small>
-                                    </div>
-                                    @endif
-
-                                    <!-- Action Buttons -->
-                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                        <div class="d-flex gap-2">
-                                            @if($lowongan->pivot->status === 'pending')
-                                                <span class="badge bg-soft-warning">
-                                                    <i class="mdi mdi-clock-outline me-1"></i>
-                                                    Menunggu Review
-                                                </span>
-                                            @elseif($lowongan->pivot->status === 'interview')
-                                                <span class="badge bg-soft-info">
-                                                    <i class="mdi mdi-account-voice me-1"></i>
-                                                    Tahap Interview
-                                                </span>
-                                            @elseif($lowongan->pivot->status === 'diterima')
-                                                <span class="badge bg-soft-success">
-                                                    <i class="mdi mdi-check-circle-outline me-1"></i>
-                                                    Diterima
-                                                </span>
-                                            @else
-                                                <span class="badge bg-soft-danger">
-                                                    <i class="mdi mdi-close-circle-outline me-1"></i>
-                                                    Ditolak
-                                                </span>
-                                            @endif
-                                        </div>
-                                        
-                                        <div>
-                                            <button class="btn btn-sm btn-soft-primary" onclick="viewDetails({{ $lowongan->id }})">
-                                                <i class="mdi mdi-eye me-1"></i>Detail
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            @endforeach
-
-                            @if($lamaranList->isEmpty())
-                            <div class="text-center py-5">
-                                <div class="mb-3">
-                                    <i class="mdi mdi-file-document-outline" style="font-size: 64px; color: #ddd;"></i>
+                            @empty
+                                <div class="text-center py-5">
+                                    <img src="{{ asset('images/illustrations/empty.svg') }}" alt="" class="mb-3" style="height: 80px;">
+                                    <h6 class="mb-1">Belum Ada Lamaran</h6>
+                                    <p class="text-muted mb-0">Kamu belum melamar pekerjaan apapun. Mulai jelajahi lowongan yang tersedia!</p>
+                                    <a href="{{ route('jobs.index') }}" class="btn btn-primary mt-3">
+                                        <i class="mdi mdi-magnify me-1"></i> Cari Lowongan
+                                    </a>
                                 </div>
-                                <h5 class="text-muted">Belum Ada Lamaran</h5>
-                                <p class="text-muted">Anda belum melamar pekerjaan apapun. Mulai jelajahi lowongan yang tersedia!</p>
-                                <a href="{{ route('jobs.index') }}" class="btn btn-primary">
-                                    <i class="mdi mdi-magnify me-1"></i>Cari Lowongan
-                                </a>
-                            </div>
-                            @endif
+                            @endforelse
 
                             <!-- Pagination -->
-                            @if($lamaranList->hasPages())
-                            <div class="mt-4 d-flex justify-content-center">
+                            <div class="mt-3">
                                 {{ $lamaranList->links() }}
                             </div>
-                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <!-- End -->
-
-    <script>
-        function viewDetails(lowonganId) {
-            // Add your logic to view job details
-            // This could open a modal or redirect to a detail page
-            console.log('View details for job ID:', lowonganId);
-        }
-    </script>
 </div>
