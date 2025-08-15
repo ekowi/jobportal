@@ -9,16 +9,17 @@
                     </div>
                 </div>
             </div>
+
+            <div class="position-middle-bottom">
+                <nav aria-label="breadcrumb" class="d-block">
+                    <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Manajemen Kandidat</li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </section>
-
-    <div class="position-relative">
-        <div class="shape overflow-hidden text-white">
-            <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
-            </svg>
-        </div>
-    </div>
 
     <section class="section">
         <div class="container">
@@ -154,27 +155,26 @@
         </div>
     </section>
 </div>
-
 @push('scripts')
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener('livewire:initialized', () => {
-        @this.on('confirm-delete', (event) => {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: 'Data kandidat akan dihapus permanen!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    @this.deleteKandidat();
-                }
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            @this.on('confirm-delete', (event) => {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: 'Data kandidat akan dihapus permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        @this.deleteKandidat();
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 @endpush
