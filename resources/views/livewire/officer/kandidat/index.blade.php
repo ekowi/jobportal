@@ -59,13 +59,15 @@
                                         <span class="badge bg-soft-success">Aktif</span>
                                     </td>
                                     <td class="p-3">
-                                        <button class="btn btn-sm btn-soft-primary me-1" wire:click="showDetail({{ $kandidat->id }})">
+                                        <button class="btn btn-sm btn-soft-primary me-1"
+                                            wire:click="showDetail({{ $kandidat->id }})">
                                             <i class="mdi mdi-eye"></i>
                                         </button>
                                         <button class="btn btn-sm btn-soft-warning me-1" wire:click="edit({{ $kandidat->id }})">
                                             <i class="mdi mdi-pencil"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-soft-danger" wire:click="confirmDelete({{ $kandidat->id }})">
+                                        <button class="btn btn-sm btn-soft-danger"
+                                            wire:click="confirmDelete({{ $kandidat->id }})">
                                             <i class="mdi mdi-trash-can"></i>
                                         </button>
                                     </td>
@@ -79,7 +81,7 @@
                         </table>
                     </div>
                     <div class="mt-4">
-                        {{ $kandidats->links() }}
+                        {{ $kandidats->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>
@@ -97,56 +99,100 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Nama Lengkap</label>
-                                    <p>{{ $selectedKandidat->getFullNameAttribute() }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->getFullNameAttribute() }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Email</label>
-                                    <p>{{ $selectedKandidat->user->email }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->user->email }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">No. Telepon</label>
-                                    <p>{{ $selectedKandidat->no_telpon }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->no_telpon }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">No. KTP</label>
-                                    <p>{{ $selectedKandidat->no_ktp }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->no_ktp }}</p>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Alamat</label>
-                                    <p>{{ $selectedKandidat->getFormattedAddressAttribute() }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->getFormattedAddressAttribute() }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Tempat, Tanggal Lahir</label>
-                                    <p>{{ $selectedKandidat->tempat_lahir }}, {{ $selectedKandidat->tanggal_lahir->format('d F Y') }}</p>
+                                    <p class="mb-0 fw-semibold">
+                                        {{ $selectedKandidat->tempat_lahir }},
+                                        {{ $selectedKandidat->tanggal_lahir?->translatedFormat('d F Y') }}
+                                    </p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Jenis Kelamin</label>
-                                    <p>{{ $selectedKandidat->jenis_kelamin }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->jenis_kelamin }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Status Perkawinan</label>
-                                    <p>{{ $selectedKandidat->status_perkawinan }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->status_perkawinan }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Agama</label>
-                                    <p>{{ $selectedKandidat->agama }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->agama }}</p>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Pendidikan</label>
-                                    <p>{{ $selectedKandidat->pendidikan }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->pendidikan }}</p>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Pengalaman Kerja</label>
-                                    <p>{{ $selectedKandidat->pengalaman_kerja }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->pengalaman_kerja }}</p>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Kemampuan</label>
-                                    <p>{{ $selectedKandidat->kemampuan }}</p>
+                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->kemampuan }}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" wire:click="closeModal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- Modal Edit Kandidat -->
+            @if($showEditModal)
+            <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Kandidat</h5>
+                            <button type="button" class="btn-close" wire:click="closeEditModal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Nama Depan</label>
+                                <input type="text" class="form-control" wire:model.defer="editingKandidat.nama_depan">
+                                  @error('editingKandidat.nama_depan')
+                                      <small class="text-danger">{{ $message }}</small>
+                                  @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Belakang</label>
+                                <input type="text" class="form-control" wire:model.defer="editingKandidat.nama_belakang">
+                                @error('editingKandidat.nama_belakang')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">No. Telepon</label>
+                                <input type="text" class="form-control" wire:model.defer="editingKandidat.no_telpon">
+                                @error('editingKandidat.no_telpon')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" wire:click="closeEditModal">Batal</button>
+                            <button type="button" class="btn btn-primary" wire:click="updateKandidat">Simpan</button>
                         </div>
                     </div>
                 </div>
@@ -178,3 +224,4 @@
         });
     </script>
 @endpush
+
