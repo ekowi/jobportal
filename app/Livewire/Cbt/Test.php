@@ -5,7 +5,6 @@ namespace App\Livewire\Cbt;
 use Livewire\Component;
 use App\Models\Soal;
 use App\Models\TestResult;
-use App\Models\TestAnswer;
 use Illuminate\Support\Facades\Auth;
 
 class Test extends Component
@@ -190,26 +189,31 @@ class Test extends Component
         if (!$this->testResult) return;
 
         $correctAnswers = 0;
+        $answersData = [];
         foreach ($this->questions as $index => $question) {
             $userAnswer = $this->userAnswers[$index] ?? null;
             $isCorrect = $userAnswer == $question->jawaban;
-            
-            if ($isCorrect) $correctAnswers++;
 
-            TestAnswer::create([
-                'test_result_id' => $this->testResult->id,
+            if ($isCorrect) {
+                $correctAnswers++;
+            }
+
+            $answersData[] = [
                 'soal_id' => $question->id_soal,
-                'user_answer' => (string)$userAnswer,
-                'is_correct' => $isCorrect
-            ]);
+                'user_answer' => $userAnswer,
+                'is_correct' => $isCorrect,
+            ];
         }
 
-        $score = ($this->questions->count() > 0) ? ($correctAnswers / $this->questions->count()) * 100 : 0;
+        $score = ($this->questions->count() > 0)
+            ? ($correctAnswers / $this->questions->count()) * 100
+            : 0;
 
         $this->testResult->update([
             'correct_answers' => $correctAnswers,
             'score' => $score,
-            'completed_at' => now()
+            'completed_at' => now(),
+            'answers_data' => $answersData,
         ]);
         
         $this->testResult->load('user'); // Eager load relasi user
