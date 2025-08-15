@@ -634,11 +634,15 @@
         document.addEventListener('livewire:initialized', () => {
             // Menunggu sinyal 'prompt-auth-after-test' dari backend
             @this.on('prompt-auth-after-test', () => {
-                showAuthPrompt(); // Tampilkan pop-up
+                @guest
+                    showAuthPrompt(); // Tampilkan pop-up
+                @endguest
             });
 
             @this.on('store-test-results', (data) => {
-                localStorage.setItem('guestTestResults', JSON.stringify(data));
+                @guest
+                    localStorage.setItem('guestTestResults', JSON.stringify(data));
+                @endguest
             });
 
             @this.on('clear-test-data', () => {
@@ -646,9 +650,15 @@
             });
 
             const cached = localStorage.getItem('guestTestResults');
-            if (cached) {
-                Livewire.dispatch('show-cached-results', JSON.parse(cached));
-            }
+            @guest
+                if (cached) {
+                    Livewire.dispatch('show-cached-results', JSON.parse(cached));
+                }
+            @else
+                if (cached) {
+                    localStorage.removeItem('guestTestResults');
+                }
+            @endguest
         });
     </script>
     @endpush

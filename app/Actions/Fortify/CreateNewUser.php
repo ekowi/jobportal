@@ -22,13 +22,13 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input): User
     {
         $testData = Session::get('guest_test_data');
-        if (!$testData || !isset($testData['bmi'], $testData['blind_test'])) {
+        if (!$testData || !isset($testData['bmi'], $testData['blind'])) {
             throw ValidationException::withMessages([
                 'email' => 'Silakan lakukan tes BMI dan tes buta warna terlebih dahulu.',
             ]);
         }
 
-        if (($testData['bmi']['kategori'] ?? '') !== 'Normal' || ($testData['blind_test']['score'] ?? 0) < 60) {
+        if (($testData['bmi']['kategori'] ?? '') !== 'Normal' || ($testData['blind']['score'] ?? 0) < 60) {
             throw ValidationException::withMessages([
                 'email' => 'Hasil tes BMI atau tes buta warna tidak memenuhi syarat.',
             ]);

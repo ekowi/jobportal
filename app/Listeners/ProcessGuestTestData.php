@@ -35,8 +35,8 @@ class ProcessGuestTestData
             }
 
             // Simpan data Blind Test jika ada di sesi dan belum ada di DB
-            if (isset($testData['blind_test']) && !$kandidat->blind_score) {
-                $kandidat->blind_score = $testData['blind_test']['score'];
+            if (isset($testData['blind']) && !$kandidat->blind_score) {
+                $kandidat->blind_score = $testData['blind']['score'];
             }
 
             $kandidat->save();
