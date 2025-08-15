@@ -585,6 +585,7 @@
     @endif
 
     @push('scripts')
+    @guest
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Fungsi untuk menampilkan pop-up pilihan otentikasi
@@ -634,15 +635,11 @@
         document.addEventListener('livewire:initialized', () => {
             // Menunggu sinyal 'prompt-auth-after-test' dari backend
             @this.on('prompt-auth-after-test', () => {
-                @guest
-                    showAuthPrompt(); // Tampilkan pop-up
-                @endguest
+                showAuthPrompt(); // Tampilkan pop-up
             });
 
             @this.on('store-test-results', (data) => {
-                @guest
-                    localStorage.setItem('guestTestResults', JSON.stringify(data));
-                @endguest
+                localStorage.setItem('guestTestResults', JSON.stringify(data));
             });
 
             @this.on('clear-test-data', () => {
@@ -650,16 +647,17 @@
             });
 
             const cached = localStorage.getItem('guestTestResults');
-            @guest
-                if (cached) {
-                    Livewire.dispatch('show-cached-results', JSON.parse(cached));
-                }
-            @else
-                if (cached) {
-                    localStorage.removeItem('guestTestResults');
-                }
-            @endguest
+            if (cached) {
+                Livewire.dispatch('show-cached-results', JSON.parse(cached));
+            }
         });
     </script>
+    @else
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            localStorage.removeItem('guestTestResults');
+        });
+    </script>
+    @endguest
     @endpush
 </div>
