@@ -14,6 +14,13 @@ class Index extends Component
     public $showDetailModal = false;
     public $selectedKandidat = null;
     public $kandidatIdToDelete = null;
+    public $showEditModal = false;
+    public $editingKandidatId = null;
+    public $editingKandidat = [
+        'nama_depan' => '',
+        'nama_belakang' => '',
+        'no_telpon' => '',
+    ];
 
     public function render()
     {
@@ -45,6 +52,36 @@ class Index extends Component
     {
         $this->showDetailModal = false;
         $this->selectedKandidat = null;
+    }
+
+    public function edit($id)
+    {
+        $kandidat = Kandidat::findOrFail($id);
+        $this->editingKandidatId = $id;
+        $this->editingKandidat = $kandidat->only(['nama_depan','nama_belakang','no_telpon']);
+        $this->showEditModal = true;
+    }
+
+    public function closeEditModal()
+    {
+        $this->showEditModal = false;
+        $this->editingKandidatId = null;
+    }
+
+    public function updateKandidat()
+    {
+        $this->validate([
+            'editingKandidat.nama_depan' => ['required','string','max:255'],
+            'editingKandidat.nama_belakang' => ['nullable','string','max:255'],
+            'editingKandidat.no_telpon' => ['required','string','max:20'],
+        ]);
+
+        if ($this->editingKandidatId) {
+            Kandidat::find($this->editingKandidatId)->update($this->editingKandidat);
+            session()->flash('success', 'Data kandidat berhasil diperbarui.');
+        }
+
+        $this->closeEditModal();
     }
 
     public function confirmDelete($id)
