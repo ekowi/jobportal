@@ -11,13 +11,15 @@ class TestResult extends Model
         'total_questions',
         'correct_answers',
         'score',
+        'answers_data',
         'started_at',
         'completed_at'
     ];
 
     protected $casts = [
         'started_at' => 'datetime',
-        'completed_at' => 'datetime'
+        'completed_at' => 'datetime',
+        'answers_data' => 'array'
     ];
 
     public function user()
@@ -25,8 +27,4 @@ class TestResult extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function answers()
-    {
-        return $this->hasMany(TestAnswer::class);
-    }
 }
