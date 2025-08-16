@@ -4,20 +4,41 @@ namespace App\Livewire\Officer\LamaranLowongan;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use App\Models\LamarLowongan;
+use App\Models\ProgressRekrutmen;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 class Index extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
 
     protected $listeners = ['refreshLamaran' => '$refresh'];
 
+    public $officerList = [];
+
+    public $interviewModal = false;
+    public $interviewLamaranId;
+    public $interviewLink;
+    public $interviewWaktu;
+    public $interviewOfficer;
+
+    public $resultModal = false;
+    public $resultProgressId;
+    public $resultCatatan;
+    public $resultDokumen;
+
+    public function mount()
+    {
+        $this->officerList = User::where('role', 'officer')->get();
+    }
+
     public function render()
     {
-        $lamaran = LamarLowongan::with(['kandidat.user', 'lowongan', 'progressRekrutmen'])
+        $lamaran = LamarLowongan::with(['kandidat.user', 'lowongan', 'progressRekrutmen.officer'])
             ->when($this->search, function ($q) {
                 $q->whereHas('lowongan', function ($qq) {
                     $qq->where('nama_posisi', 'like', '%' . $this->search . '%');
@@ -41,7 +62,7 @@ class Index extends Component
 
     public function setStatus($id, $status)
     {
-        $allowed = ['diterima', 'interview', 'psikotes', 'ditolak'];
+        $allowed = ['diterima', 'psikotes', 'ditolak'];
         if (!in_array($status, $allowed, true)) {
             session()->flash('error', 'Status tidak valid.');
             return;
@@ -55,7 +76,7 @@ class Index extends Component
                 'status' => $status,
                 'officer_id' => auth()->id(), // Tambahkan ID officer yang mengubah status
                 'nama_progress' => ucfirst($status), // Tambahkan nama progress
-                'is_interview' => $status === 'interview',
+                'is_interview' => false,
                 'is_psikotes' => $status === 'psikotes',
                 'user_create' => auth()->user()->name
             ]);
@@ -74,82 +95,73 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public $linkZoom = []; // array keyed by lamaran_id
-
-    public $editingZoom = [];
-
-    public function startEditZoom($lamaranId)
+    public function prepareInterview($lamaranId)
     {
-        // Temukan progress interview terakhir untuk mendapatkan link saat ini
-        $latestInterview = \App\Models\ProgressRekrutmen::where('lamar_lowongan_id', $lamaranId)
-            ->where('is_interview', true)
-            ->latest('created_at')
-            ->first();
-            
-        // Atur state untuk menampilkan form edit di view
-        $this->editingZoom[$lamaranId] = true;
-        // Isi form dengan data yang sudah ada
-        $this->linkZoom[$lamaranId] = $latestInterview->link_zoom ?? '';
+        $this->interviewLamaranId = $lamaranId;
+        $this->interviewLink = '';
+        $this->interviewWaktu = '';
+        $this->interviewOfficer = '';
+        $this->interviewModal = true;
     }
 
-    public function cancelEditZoom($lamaranId)
-    {
-        // Hapus state edit untuk menyembunyikan form
-        unset($this->editingZoom[$lamaranId]);
-        unset($this->linkZoom[$lamaranId]);
-    }
-
-    public function updateLinkZoom($lamaranId)
+    public function saveInterview()
     {
         $this->validate([
-            'linkZoom.'.$lamaranId => 'required|url',
+            'interviewLink' => 'required|url',
+            'interviewWaktu' => 'required|date',
+            'interviewOfficer' => 'required|exists:users,id',
         ], [
-            'linkZoom.'.$lamaranId.'.required' => 'Link Zoom wajib diisi.',
-            'linkZoom.'.$lamaranId.'.url'      => 'Format Link Zoom tidak valid.',
+            'interviewLink.required' => 'Link Zoom wajib diisi.',
+            'interviewLink.url' => 'Format Link Zoom tidak valid.',
+            'interviewWaktu.required' => 'Waktu pelaksanaan wajib diisi.',
+            'interviewOfficer.required' => 'Interviewer wajib dipilih.',
         ]);
 
-        $latestInterview = \App\Models\ProgressRekrutmen::where('lamar_lowongan_id', $lamaranId)
-            ->where('is_interview', true)
-            ->latest('created_at')
-            ->first();
-
-        if ($latestInterview) {
-            $latestInterview->update([
-                'link_zoom' => $this->linkZoom[$lamaranId]
+        $lamaran = LamarLowongan::findOrFail($this->interviewLamaranId);
+        try {
+            $lamaran->progressRekrutmen()->create([
+                'status' => 'interview',
+                'officer_id' => $this->interviewOfficer,
+                'nama_progress' => 'Interview',
+                'is_interview' => true,
+                'waktu_pelaksanaan' => $this->interviewWaktu,
+                'link_zoom' => $this->interviewLink,
+                'user_create' => auth()->user()->name,
             ]);
-            session()->flash('success', 'Link Zoom berhasil diperbarui.');
-        } else {
-            session()->flash('error', 'Gagal menemukan data interview.');
+            session()->flash('success', 'Interview dijadwalkan.');
+            $this->interviewModal = false;
+            $this->dispatch('refreshLamaran');
+        } catch (\Throwable $e) {
+            Log::error('Gagal menyimpan interview: '.$e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan saat menyimpan data.');
         }
-
-        // Tutup mode edit setelah berhasil menyimpan
-        $this->cancelEditZoom($lamaranId);
-        $this->dispatch('refreshLamaran');
     }
 
-    public function setLinkZoom($lamaranId)
+    public function openResultModal($progressId)
+    {
+        $this->resultProgressId = $progressId;
+        $this->resultCatatan = '';
+        $this->resultDokumen = null;
+        $this->resultModal = true;
+    }
+
+    public function saveResult()
     {
         $this->validate([
-            'linkZoom.'.$lamaranId => 'required|url',
-        ], [
-            'linkZoom.'.$lamaranId.'.required' => 'Link Zoom wajib diisi.',
-            'linkZoom.'.$lamaranId.'.url' => 'Format Link Zoom tidak valid.',
+            'resultCatatan' => 'nullable|string',
+            'resultDokumen' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx',
         ]);
 
-        $lamaran = \App\Models\LamarLowongan::with('progressRekrutmen')->findOrFail($lamaranId);
-        $latest = $lamaran->progressRekrutmen()->latest()->first();
+        $progress = ProgressRekrutmen::findOrFail($this->resultProgressId);
 
-        if (!$latest || $latest->status !== 'interview') {
-            session()->flash('error', 'Tahap terakhir bukan Interview.');
-            return;
+        $data = ['catatan' => $this->resultCatatan];
+        if ($this->resultDokumen) {
+            $data['dokumen_pendukung'] = $this->resultDokumen->store('dokumen-pendukung', 'public');
         }
 
-        $latest->update([
-            'link_zoom' => $this->linkZoom[$lamaranId],
-            'is_interview' => true,
-        ]);
-
-        session()->flash('success', 'Link Zoom tersimpan.');
+        $progress->update($data);
+        $this->resultModal = false;
+        session()->flash('success', 'Hasil interview tersimpan.');
         $this->dispatch('refreshLamaran');
     }
 }

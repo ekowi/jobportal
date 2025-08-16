@@ -19,7 +19,7 @@ class Index extends Component
         // Pastikan relasi kandidat->lamarLowongans ada
         $query = $user->kandidat
             ->lamarLowongans()
-            ->with(['lowongan', 'progressRekrutmen'])
+            ->with(['lowongan', 'progressRekrutmen.officer'])
             ->when($this->search, function ($q) {
                 $q->whereHas('lowongan', function ($qq) {
                     $qq->where('nama_posisi', 'like', '%' . $this->search . '%');
