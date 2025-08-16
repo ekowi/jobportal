@@ -68,8 +68,23 @@ class Test extends Component
     }
 
     public function mount()
-    {   
-        
+    {
+        $user = Auth::user();
+        $kandidat = $user->kandidat;
+
+        $hasPsikotes = false;
+        if ($kandidat) {
+            $hasPsikotes = $kandidat->lamarLowongans()
+                ->whereHas('progressRekrutmen', function ($q) {
+                    $q->where('status', 'psikotes');
+                })
+                ->exists();
+        }
+
+        if (!$hasPsikotes) {
+            abort(403, 'Anda belum memiliki akses ke tes ini.');
+        }
+
         $ongoingTestId = session('test_in_progress');
 
         if ($ongoingTestId && $testResult = TestResult::where('id', $ongoingTestId)->where('user_id', Auth::id())->whereNull('completed_at')->first()) {
