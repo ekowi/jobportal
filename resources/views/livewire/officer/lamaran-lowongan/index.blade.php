@@ -123,72 +123,19 @@
                                                         </div>
                                                     @endif
 
-                                                    {{-- Zoom Link Management untuk tahap interview --}}
+                                                    {{-- Detail Interview --}}
                                                     @if($latest && $latest->is_interview)
                                                         <div class="mb-2">
+                                                            <div class="small text-muted">Waktu: {{ optional($latest->waktu_pelaksanaan)->format('d M Y H:i') }}</div>
+                                                            <div class="small text-muted">Interviewer: {{ optional($latest->officer)->name }}</div>
                                                             @if($latest->link_zoom)
-                                                                {{-- Mode Read-Only: Tampilkan link yang sudah ada --}}
-                                                                @if(!isset($editingZoom[$lamaran->id]) || !$editingZoom[$lamaran->id])
-                                                                    <div class="d-flex align-items-center gap-2">
-                                                                        <div class="flex-grow-1">
-                                                                            <div class="small text-muted">Link Interview:</div>
-                                                                            <a href="{{ $latest->link_zoom }}" target="_blank" 
-                                                                               class="text-primary text-decoration-none d-inline-block text-truncate" 
-                                                                               style="max-width: 200px;" title="{{ $latest->link_zoom }}">
-                                                                                <i class="mdi mdi-video me-1"></i>
-                                                                                {{ Str::limit($latest->link_zoom, 30) }}
-                                                                            </a>
-                                                                        </div>
-                                                                        <button class="btn btn-outline-secondary btn-sm" 
-                                                                                type="button"
-                                                                                wire:click="startEditZoom({{ $lamaran->id }})"
-                                                                                title="Edit Link Zoom">
-                                                                            <i class="mdi mdi-pencil"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                @else
-                                                                    {{-- Mode Edit: Form untuk mengubah link --}}
-                                                                    <form wire:submit.prevent="updateLinkZoom({{ $lamaran->id }})">
-                                                                        <div class="small text-muted mb-1">Edit Link Interview:</div>
-                                                                        <div class="input-group input-group-sm">
-                                                                            <input type="url"
-                                                                                   class="form-control"
-                                                                                   placeholder="Masukkan link Zoom"
-                                                                                   wire:model.defer="linkZoom.{{ $lamaran->id }}"
-                                                                                   value="{{ $latest->link_zoom }}"
-                                                                                   required>
-                                                                            <button class="btn btn-success" type="submit" title="Simpan">
-                                                                                <i class="mdi mdi-content-save"></i>
-                                                                            </button>
-                                                                            <button class="btn btn-secondary" type="button"
-                                                                                    wire:click="cancelEditZoom({{ $lamaran->id }})" title="Batal">
-                                                                                <i class="mdi mdi-close"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                        @error('linkZoom.'.$lamaran->id)
-                                                                            <div class="small text-danger mt-1">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </form>
-                                                                @endif
-                                                            @else
-                                                                {{-- Mode Input: Form untuk input link pertama kali --}}
-                                                                <form wire:submit.prevent="setLinkZoom({{ $lamaran->id }})">
-                                                                    <div class="small text-muted mb-1">Link Interview:</div>
-                                                                    <div class="input-group input-group-sm">
-                                                                        <input type="url"
-                                                                               class="form-control"
-                                                                               placeholder="Masukkan link Zoom"
-                                                                               wire:model.defer="linkZoom.{{ $lamaran->id }}"
-                                                                               required>
-                                                                        <button class="btn btn-primary" type="submit" title="Simpan">
-                                                                            <i class="mdi mdi-content-save"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                    @error('linkZoom.'.$lamaran->id)
-                                                                        <div class="small text-danger mt-1">{{ $message }}</div>
-                                                                    @enderror
-                                                                </form>
+                                                                <a href="{{ $latest->link_zoom }}" target="_blank" class="d-block small text-primary">
+                                                                    <i class="mdi mdi-video me-1"></i> Link Zoom
+                                                                </a>
                                                             @endif
+                                                            <button class="btn btn-outline-primary btn-sm mt-1" wire:click="openResultModal({{ $latest->id }})">
+                                                                <i class="mdi mdi-upload"></i> Hasil Interview
+                                                            </button>
                                                         </div>
                                                     @endif
 
@@ -207,7 +154,7 @@
                                                             </li>
                                                             <li>
                                                                 <a href="#" class="dropdown-item"
-                                                                   wire:click.prevent="setStatus({{ $lamaran->id }}, 'interview')">
+                                                                   wire:click.prevent="prepareInterview({{ $lamaran->id }})">
                                                                     <i class="mdi mdi-calendar-clock me-1"></i> Interview
                                                                 </a>
                                                             </li>
@@ -253,4 +200,73 @@
             </div>
         </div>
     </section>
+
+    <!-- Modal Jadwalkan Interview -->
+    <div class="modal fade @if($interviewModal) show @endif" tabindex="-1" style="@if($interviewModal) display:block; @endif">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form wire:submit.prevent="saveInterview">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Jadwalkan Interview</h5>
+                        <button type="button" class="btn-close" wire:click="$set('interviewModal', false)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Link Zoom</label>
+                            <input type="url" class="form-control" wire:model.defer="interviewLink" required>
+                            @error('interviewLink') <div class="small text-danger">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Waktu Pelaksanaan</label>
+                            <input type="datetime-local" class="form-control" wire:model.defer="interviewWaktu" required>
+                            @error('interviewWaktu') <div class="small text-danger">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Interviewer</label>
+                            <select class="form-select" wire:model.defer="interviewOfficer" required>
+                                <option value="">Pilih Officer</option>
+                                @foreach($officerList as $officer)
+                                    <option value="{{ $officer->id }}">{{ $officer->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('interviewOfficer') <div class="small text-danger">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" wire:click="$set('interviewModal', false)">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Hasil Interview -->
+    <div class="modal fade @if($resultModal) show @endif" tabindex="-1" style="@if($resultModal) display:block; @endif">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form wire:submit.prevent="saveResult" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Hasil Interview</h5>
+                        <button type="button" class="btn-close" wire:click="$set('resultModal', false)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Catatan</label>
+                            <textarea class="form-control" wire:model.defer="resultCatatan"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dokumen Pendukung</label>
+                            <input type="file" class="form-control" wire:model="resultDokumen">
+                            @error('resultDokumen') <div class="small text-danger">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" wire:click="$set('resultModal', false)">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

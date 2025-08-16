@@ -1,4 +1,5 @@
 <div>
+    @php use Illuminate\Support\Facades\Storage; @endphp
     <!-- Hero Start -->
     <section class="bg-half-170 d-table w-100" style="background: url('{{ asset('images/hero/bg.jpg') }}');">
         <div class="bg-overlay bg-gradient-overlay"></div>
@@ -169,13 +170,29 @@
                                                     </div>
                                                 @endif
 
-                                                <!-- Zoom Meeting Button -->
-                                                @if($doneInterview && ($latestInterview && !empty($latestInterview->link_zoom)))
+                                                <!-- Info Interview -->
+                                                @if($doneInterview && $latestInterview)
                                                     <div class="mt-2">
-                                                        <a href="{{ $latestInterview->link_zoom }}" target="_blank" rel="noopener"
-                                                           class="btn btn-sm btn-primary">
-                                                            <i class="mdi mdi-video me-1"></i>Join Zoom
-                                                        </a>
+                                                        @if($latestInterview->waktu_pelaksanaan)
+                                                            <div class="small text-muted">Waktu: {{ $latestInterview->waktu_pelaksanaan->format('d M Y H:i') }}</div>
+                                                        @endif
+                                                        @if($latestInterview->officer)
+                                                            <div class="small text-muted">Interviewer: {{ $latestInterview->officer->name }}</div>
+                                                        @endif
+                                                        @if($latestInterview->link_zoom)
+                                                            <a href="{{ $latestInterview->link_zoom }}" target="_blank" rel="noopener"
+                                                               class="btn btn-sm btn-primary mt-1">
+                                                                <i class="mdi mdi-video me-1"></i>Join Zoom
+                                                            </a>
+                                                        @endif
+                                                        @if($latestInterview->catatan)
+                                                            <div class="mt-2"><strong>Catatan:</strong> {{ $latestInterview->catatan }}</div>
+                                                        @endif
+                                                        @if($latestInterview->dokumen_pendukung)
+                                                            <div class="mt-1">
+                                                                <a href="{{ Storage::url($latestInterview->dokumen_pendukung) }}" target="_blank">Dokumen Pendukung</a>
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 @endif
                                             </div>
