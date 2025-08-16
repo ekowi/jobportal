@@ -79,8 +79,10 @@
                                         ->where('status', 'interview')
                                         ->sortByDesc('created_at')
                                         ->first();
-                                        
+
                                     $lastUpdate = optional(optional($lamaran->progressRekrutmen)->last())->created_at;
+
+                                    $showCbtLink = $doneStatuses->contains('psikotes') && !$hasDecision;
                                 @endphp
 
                                 <div class="card border mb-3">
@@ -185,20 +187,27 @@
                                                                 <i class="mdi mdi-video me-1"></i>Join Zoom
                                                             </a>
                                                         @endif
-                                                        @if($latestInterview->catatan)
-                                                            <div class="mt-2"><strong>Catatan:</strong> {{ $latestInterview->catatan }}</div>
-                                                        @endif
-                                                        @if($latestInterview->dokumen_pendukung)
-                                                            <div class="mt-1">
-                                                                <a href="{{ Storage::url($latestInterview->dokumen_pendukung) }}" target="_blank">Dokumen Pendukung</a>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                @endif
-                                            </div>
+                                                    @if($latestInterview->catatan)
+                                                        <div class="mt-2"><strong>Catatan:</strong> {{ $latestInterview->catatan }}</div>
+                                                    @endif
+                                                    @if($latestInterview->dokumen_pendukung)
+                                                        <div class="mt-1">
+                                                            <a href="{{ Storage::url($latestInterview->dokumen_pendukung) }}" target="_blank">Dokumen Pendukung</a>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                            @if($showCbtLink)
+                                                <div class="mt-2">
+                                                    <a href="{{ route('cbt.test') }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        <i class="mdi mdi-pencil me-1"></i>Mulai Psikotes
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
 
-                                            <!-- Last Update -->
-                                            <div class="col-md-2 text-md-end">
+                                        <!-- Last Update -->
+                                        <div class="col-md-2 text-md-end">
                                                 @if ($lastUpdate)
                                                     <small class="text-muted">
                                                         Update: {{ $lastUpdate->format('d M Y') }}
