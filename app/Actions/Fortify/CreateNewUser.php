@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Models\Kandidat;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
@@ -35,16 +36,27 @@ class CreateNewUser implements CreatesNewUsers
         }
 
         Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
+            'nama_depan' => ['required', 'string', 'max:255'],
+            'nama_belakang' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
 
-        return User::create([
-            'name' => $input['name'],
+        $user = User::create([
+            'name' => trim($input['nama_depan'].' '.($input['nama_belakang'] ?? '')),
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
         ]);
+
+        Kandidat::create([
+            'user_id' => $user->id,
+            'nama_depan' => $input['nama_depan'],
+            'nama_belakang' => $input['nama_belakang'] ?? null,
+            'bmi_score' => $testData['bmi']['score'],
+            'blind_score' => $testData['blind']['score'],
+        ]);
+
+        return $user;
     }
 }

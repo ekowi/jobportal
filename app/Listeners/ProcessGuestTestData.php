@@ -25,9 +25,15 @@ class ProcessGuestTestData
     {
         if (Session::has('guest_test_data')) {
             $user = $event->user;
-            $kandidat = Kandidat::firstOrCreate(['user_id' => $user->id]);
-
             $testData = Session::get('guest_test_data');
+            $kandidat = Kandidat::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'nama_depan' => $user->name,
+                    'bmi_score' => $testData['bmi']['score'] ?? null,
+                    'blind_score' => $testData['blind']['score'] ?? null,
+                ]
+            );
 
             // Simpan data BMI jika ada di sesi dan belum ada di DB
             if (isset($testData['bmi']) && !$kandidat->bmi_score) {

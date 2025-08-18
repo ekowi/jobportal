@@ -9,9 +9,15 @@
             <h6 class="mb-3 text-uppercase fw-semibold">{{ __('Register your account') }}</h6>
 
             <div class="mb-3">
-                <x-label for="name" value="{{ __('Your Name') }}" />
-                <x-input name="name" id="name" type="text" class="form-control" placeholder="Calvin Carlo" :value="old('name')" required autofocus autocomplete="name" />
-                <x-custom-input-error for="name" />
+                <x-label for="nama_depan" value="{{ __('Nama Depan') }}" />
+                <x-input name="nama_depan" id="nama_depan" type="text" class="form-control" placeholder="Budi" :value="old('nama_depan')" required autofocus autocomplete="given-name" />
+                <x-custom-input-error for="nama_depan" />
+            </div>
+
+            <div class="mb-3">
+                <x-label for="nama_belakang" value="{{ __('Nama Belakang') }}" />
+                <x-input name="nama_belakang" id="nama_belakang" type="text" class="form-control" placeholder="Santoso" :value="old('nama_belakang')" autocomplete="family-name" />
+                <x-custom-input-error for="nama_belakang" />
             </div>
 
             <div class="mb-3">
