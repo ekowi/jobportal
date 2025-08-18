@@ -3,58 +3,93 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RolePermissionSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
+        // Create permissions
         $permissions = [
-            'create lowongan',
-            'update lowongan',
-            'delete lowongan',
-            'view applicant',
-            'download applicant',
-            'view test result',
-            'update progress rekrutmen',
-            'review progress rekrutmen',
-            'share progress rekrutmen',
-            'review lowongan',
-            'share lowongan',
+            // Admin permissions
+            'manage roles',
+            'manage permissions',
+            
+            // Officer permissions
+            'post jobs',
+            'update jobs',
+            'delete jobs',
+            'view jobs',
+            'share jobs',
+            'view candidates',
+            'download candidate data',
+            'view psychotest results',
+            'update recruitment progress',
+            'view recruitment progress',
+            'share recruitment progress',
+            
+            // Kandidat permissions
+            'apply jobs',
+            'view applied jobs',
+            'take tests',
+            'update profile',
+            'complete application',
+            'view job listings'
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::create(['name' => $permission]);
         }
 
-        $recruiter = Role::firstOrCreate(['name' => 'Recruiter']);
-        $recruiter->givePermissionTo([
-            'create lowongan',
-            'update lowongan',
-            'delete lowongan',
-            'view applicant',
-            'download applicant',
-            'view test result',
-        ]);
+        // Create admin role with all permissions
+        $admin = Role::create(['name' => 'admin']);
+        $admin->givePermissionTo(Permission::all());
 
-        $hrga = Role::firstOrCreate(['name' => 'HRGA Coordinator Area']);
-        $hrga->givePermissionTo([
-            'create lowongan',
-            'update lowongan',
-            'delete lowongan',
-            'view applicant',
-            'download applicant',
-            'view test result',
-            'update progress rekrutmen',
-        ]);
-
-        $manager = Role::firstOrCreate(['name' => 'Manager']);
+        // Create manager role
+        $manager = Role::create(['name' => 'manager']);
         $manager->givePermissionTo([
-            'review progress rekrutmen',
-            'share progress rekrutmen',
-            'review lowongan',
-            'share lowongan',
+            'view recruitment progress',
+            'share recruitment progress',
+            'view jobs',
+            'share jobs'
+        ]);
+
+        // Create hrga coordinator role
+        $hrgaCoordinator = Role::create(['name' => 'hrga coordinator']);
+        $hrgaCoordinator->givePermissionTo([
+            'post jobs',
+            'update jobs',
+            'delete jobs',
+            'view jobs',
+            'view candidates',
+            'download candidate data',
+            'view psychotest results',
+            'update recruitment progress',
+            'view recruitment progress'
+        ]);
+
+        // Create recruiter role
+        $recruiter = Role::create(['name' => 'recruiter']);
+        $recruiter->givePermissionTo([
+            'post jobs',
+            'update jobs',
+            'delete jobs',
+            'view jobs',
+            'view candidates',
+            'download candidate data',
+            'view psychotest results'
+        ]);
+
+        // Create kandidat role
+        $kandidat = Role::create(['name' => 'kandidat']);
+        $kandidat->givePermissionTo([
+            'apply jobs',
+            'view applied jobs',
+            'take tests',
+            'update profile',
+            'complete application',
+            'view job listings'
         ]);
     }
 }

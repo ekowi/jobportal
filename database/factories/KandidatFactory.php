@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User; // Impor model User
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Kandidat>
@@ -17,21 +18,20 @@ class KandidatFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => function () {
-                // First, create a user if needed
-                $user = \App\Models\User::factory()->state([
-                    'role' => 'kandidat'
-                ])->create();
-                return $user->id;
-            },
+            // Cara yang lebih ringkas untuk membuat User dan mengambil ID-nya
+            'user_id' => User::factory(['role' => 'kandidat']),
+
             'nama_depan' => $this->faker->firstName(),
             'nama_belakang' => $this->faker->lastName(),
             'no_telpon' => $this->faker->phoneNumber(),
             'alamat' => $this->faker->address(),
             'kode_pos' => $this->faker->postcode(),
             'negara' => $this->faker->country(),
-            'no_ktp' => $this->faker->randomNumber(),
-            'no_npwp' => $this->faker->randomNumber(),
+
+            // PERBAIKAN: Menggunakan unique() dan numerify() untuk nomor unik 16 digit
+            'no_ktp' => $this->faker->unique()->numerify('################'),
+            'no_npwp' => $this->faker->unique()->numerify('################'),
+
             'tempat_lahir' => $this->faker->city(),
             'tanggal_lahir' => $this->faker->date(),
             'jenis_kelamin' => $this->faker->randomElement(['L', 'P']),
@@ -44,10 +44,13 @@ class KandidatFactory extends Factory
             'pendidikan' => $this->faker->randomElement(['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2']),
             'kemampuan_bahasa' => $this->faker->text(),
             'kemampuan' => $this->faker->text(),
-            'user_create' => 1, // Assuming user with ID 1 is the creator
-            'user_update' => 1, // Assuming user with ID 1 is the updater
-            'created_at' => now(),
-            'updated_at' => now(),
+
+            // Kolom user_create & user_update biasanya diisi otomatis oleh Trait UserStampable
+            // jadi bisa dikosongkan jika trait sudah bekerja. Jika belum, biarkan seperti ini.
+            'user_create' => 1,
+            'user_update' => 1,
+
+            // created_at dan updated_at tidak perlu didefinisikan, karena diisi otomatis oleh Eloquent.
         ];
     }
 }

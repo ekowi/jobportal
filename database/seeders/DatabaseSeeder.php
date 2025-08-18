@@ -15,7 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        $this->call([RolePermissionSeeder::class]);
+        $this->call([
+            RolePermissionSeeder::class,
+            UserSeeder::class,
+            OfficerSeeder::class,
+        ]);
 
         User::factory()->create([
             'name' => 'Test User',
@@ -25,7 +29,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            OfficerSeeder::class,
             KandidatSeeder::class,
         ]);
     }
