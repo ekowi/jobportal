@@ -76,7 +76,8 @@ class Test extends Component
         if ($kandidat) {
             $hasPsikotes = $kandidat->lamarLowongans()
                 ->whereHas('progressRekrutmen', function ($q) {
-                    $q->where('status', 'psikotes');
+                    $q->where('status', 'psikotes')
+                        ->where('is_psikotes', true);
                 })
                 ->exists();
         }

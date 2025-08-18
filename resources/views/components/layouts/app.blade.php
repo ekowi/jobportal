@@ -251,11 +251,6 @@
                                 </li>
                             </ul>
                         </li>
-                        @role('kandidat')
-                        <li class="has-submenu parent-menu-item">
-                            <a href="{{ route('cbt.test') }}">Tes CBT</a>
-                        </li>
-                        @endrole
                         @role('officer')
                         <li class="has-submenu parent-menu-item">
                             <a href="{{ route('kandidat.index') }}">Kandidat</a>
