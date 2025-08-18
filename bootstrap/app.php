@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\PositionMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register route middleware
         $middleware->alias([
             'role' => RoleMiddleware::class,
+            'position' => PositionMiddleware::class,
             // Other middleware aliases...
         ]);
     })
