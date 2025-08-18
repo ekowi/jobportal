@@ -251,36 +251,57 @@
                                 </li>
                             </ul>
                         </li>
-                        @role('officer')
-                        <li class="has-submenu parent-menu-item">
-                            <a href="{{ route('kandidat.index') }}">Kandidat</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('lamaran-lowongan.index') }}" class="nav-link">
-                                Kelola Lamaran
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('jadwal-interview.index') }}" class="nav-link">
-                                Jadwal Interview
-                            </a>
-                        </li>
-                        <li class="has-submenu parent-menu-item">
-                            <a href="javascript:void(0)">Bank Soal</a><span class="menu-arrow"></span>
-                            <ul class="submenu">
-                                <li><a href="{{ route('bank-soal.index') }}" class="sub-menu-item">Daftar Soal</a></li>
-                                <li><a href="{{ route('kategori-soal.index') }}" class="sub-menu-item">Kategori Soal</a></li>
-                                <li><a href="{{ route('test-results.index') }}" class="sub-menu-item">Hasil Test CBT</a></li>
-                            </ul>
-                        </li>
-                        <li class="has-submenu parent-menu-item">
-                            <a href="{{ route('Lowongan.Index') }}">Daftar Lowongan</a><span class="menu-arrow"></span>
-                            <ul class="submenu">
-                                <li><a href="{{ route('Lowongan.Create') }}" class="sub-menu-item">Tambah Lowongan</a></li>
-                                <li><a href="{{ route('kategori-lowongan.Index') }}" class="sub-menu-item">Tambah Kategori Lowongan</a></li>
-                            </ul>
-                        </li>
-                        @endrole
+                        @php
+                            $user = Auth::user();
+                            $isTest = $user && $user->email === 'test@example.com';
+                            $isRecruiter = $user?->hasRole('recruiter');
+                            $isHrga = $user?->hasRole('hrga coordinator');
+                            $isManager = $user?->hasRole('manager');
+                        @endphp
+                        @if(($user && $user->hasSystemRole('officer')) || $isTest)
+                            @if($isTest || $isRecruiter || $isHrga)
+                                <li class="has-submenu parent-menu-item">
+                                    <a href="{{ route('kandidat.index') }}">Kandidat</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('lamaran-lowongan.index') }}" class="nav-link">
+                                        Kelola Lamaran
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('jadwal-interview.index') }}" class="nav-link">
+                                        Jadwal Interview
+                                    </a>
+                                </li>
+                                <li class="has-submenu parent-menu-item">
+                                    <a href="javascript:void(0)">Bank Soal</a><span class="menu-arrow"></span>
+                                    <ul class="submenu">
+                                        <li><a href="{{ route('bank-soal.index') }}" class="sub-menu-item">Daftar Soal</a></li>
+                                        <li><a href="{{ route('kategori-soal.index') }}" class="sub-menu-item">Kategori Soal</a></li>
+                                        <li><a href="{{ route('test-results.index') }}" class="sub-menu-item">Hasil Test CBT</a></li>
+                                    </ul>
+                                </li>
+                            @endif
+                            @if($isTest || $isHrga || $isManager)
+                                <li class="nav-item">
+                                    <a href="{{ route('recruitment.progress') }}" class="nav-link">
+                                        Progress Rekrutmen
+                                    </a>
+                                </li>
+                            @endif
+                            @if($isTest || $isRecruiter || $isHrga || $isManager)
+                                <li class="has-submenu parent-menu-item">
+                                    <a href="{{ route('Lowongan.Index') }}">Daftar Lowongan</a>
+                                    @if($isTest || $isRecruiter || $isHrga)
+                                        <span class="menu-arrow"></span>
+                                        <ul class="submenu">
+                                            <li><a href="{{ route('Lowongan.Create') }}" class="sub-menu-item">Tambah Lowongan</a></li>
+                                            <li><a href="{{ route('kategori-lowongan.Index') }}" class="sub-menu-item">Tambah Kategori Lowongan</a></li>
+                                        </ul>
+                                    @endif
+                                </li>
+                            @endif
+                        @endif
                     </ul><!--end navigation menu-->
                 </div><!--end navigation-->
             </div>
