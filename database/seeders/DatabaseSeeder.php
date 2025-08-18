@@ -15,12 +15,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        $this->call([RolePermissionSeeder::class]);
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
-            'role' => 'officer', // Assuming the role is set to 'officer'
+            'role' => 'officer',
         ]);
+
         $this->call([
             OfficerSeeder::class,
             KandidatSeeder::class,
