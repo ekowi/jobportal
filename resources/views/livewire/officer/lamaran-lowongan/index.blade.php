@@ -133,9 +133,6 @@
                                                                     <i class="mdi mdi-video me-1"></i> Link Zoom
                                                                 </a>
                                                             @endif
-                                                            <button class="btn btn-outline-primary btn-sm mt-1" wire:click="openResultModal({{ $latest->id }})">
-                                                                <i class="mdi mdi-upload"></i> Hasil Interview
-                                                            </button>
                                                         </div>
                                                     @endif
 
@@ -234,35 +231,6 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" wire:click="$set('interviewModal', false)">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Hasil Interview -->
-    <div class="modal fade @if($resultModal) show @endif" tabindex="-1" style="@if($resultModal) display:block; @endif">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form wire:submit.prevent="saveResult" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Hasil Interview</h5>
-                        <button type="button" class="btn-close" wire:click="$set('resultModal', false)"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Catatan</label>
-                            <textarea class="form-control" wire:model.defer="resultCatatan"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Dokumen Pendukung</label>
-                            <input type="file" class="form-control" wire:model="resultDokumen">
-                            @error('resultDokumen') <div class="small text-danger">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" wire:click="$set('resultModal', false)">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
