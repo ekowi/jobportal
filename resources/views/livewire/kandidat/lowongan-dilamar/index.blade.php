@@ -82,7 +82,7 @@
 
                                     $lastUpdate = optional(optional($lamaran->progressRekrutmen)->last())->created_at;
 
-                                    $showCbtLink = ($activeStep === 'psikotes' || $doneStatuses->contains('psikotes')) && !$hasDecision;
+                                    $showCbtLink = $doneStatuses->contains('psikotes') && !$hasDecision;
                                 @endphp
 
                                 <div class="card border mb-3">
@@ -181,7 +181,7 @@
                                                         @if($latestInterview->officer)
                                                             <div class="small text-muted">Interviewer: {{ $latestInterview->officer->name }}</div>
                                                         @endif
-                                                        @if($latestInterview->link_zoom && $activeStep !== 'psikotes' && !$doneStatuses->contains('psikotes'))
+                                                        @if($latestInterview->link_zoom && !$doneStatuses->contains('psikotes'))
                                                             <a href="{{ $latestInterview->link_zoom }}" target="_blank" rel="noopener"
                                                                class="btn btn-sm btn-primary mt-1">
                                                                 <i class="mdi mdi-video me-1"></i>Join Zoom
