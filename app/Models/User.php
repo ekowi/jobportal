@@ -12,6 +12,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Kandidat;
 use App\Models\Officer;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -22,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -69,15 +71,17 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function hasRole($role)
+    /**
+     * Check application-level role stored in the `role` column.
+     */
+    public function hasSystemRole($role)
     {
-        // Example implementation - adjust based on your actual role structure
         return $this->role === $role;
     }
 
     public function hasPosition($position)
     {
-        return $this->hasRole('officer') &&
+        return $this->hasSystemRole('officer') &&
                 $this->officer &&
                 strcasecmp($this->officer->jabatan, $position) === 0;
     }

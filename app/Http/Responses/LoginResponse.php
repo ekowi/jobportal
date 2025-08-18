@@ -19,8 +19,7 @@ class LoginResponse implements LoginResponseContract
         $user = Auth::user();
 
         // Cek jika pengguna memiliki peran 'officer'
-        // Method hasRole() biasanya dari paket Spatie/laravel-permission
-        if ($user->hasRole('officer')) {
+        if ($user->hasSystemRole('officer')) {
             return redirect()->route('officers.index');
         }
 

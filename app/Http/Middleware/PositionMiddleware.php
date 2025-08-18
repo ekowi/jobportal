@@ -24,7 +24,7 @@ class PositionMiddleware
 
         $user = $request->user();
 
-        if (!$user->hasRole('officer') || !$user->officer) {
+        if (!$user->hasSystemRole('officer') || !$user->officer) {
             return redirect()->route('dashboard');
         }
 

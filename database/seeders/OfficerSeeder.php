@@ -6,6 +6,7 @@ use App\Models\Officer;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+
 class OfficerSeeder extends Seeder
 {
     /**
@@ -13,8 +14,19 @@ class OfficerSeeder extends Seeder
      */
     public function run(): void
     {
-        Officer::factory()->count(5)->create([
-            'atasan_id' => null, // Set to null for top-level officers
-        ]);
+        $roles = [
+            'Recruiter' => 'Recruiter',
+            'HRGA Coordinator Area' => 'HRGA Coordinator Area',
+            'Manager' => 'Manager',
+        ];
+
+        foreach ($roles as $roleName => $jabatan) {
+            $officer = Officer::factory()->create([
+                'atasan_id' => null,
+                'jabatan' => $jabatan,
+            ]);
+
+            $officer->user->assignRole($roleName);
+        }
     }
 }
