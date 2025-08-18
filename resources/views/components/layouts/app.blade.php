@@ -260,6 +260,11 @@
                                 Kelola Lamaran
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('jadwal-interview.index') }}" class="nav-link">
+                                Jadwal Interview
+                            </a>
+                        </li>
                         <li class="has-submenu parent-menu-item">
                             <a href="javascript:void(0)">Bank Soal</a><span class="menu-arrow"></span>
                             <ul class="submenu">

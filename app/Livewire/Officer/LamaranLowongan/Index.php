@@ -4,15 +4,13 @@ namespace App\Livewire\Officer\LamaranLowongan;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 use App\Models\LamarLowongan;
-use App\Models\ProgressRekrutmen;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 class Index extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithPagination;
 
     public $search = '';
 
@@ -26,10 +24,6 @@ class Index extends Component
     public $interviewWaktu;
     public $interviewOfficer;
 
-    public $resultModal = false;
-    public $resultProgressId;
-    public $resultCatatan;
-    public $resultDokumen;
 
     public function mount()
     {
@@ -137,31 +131,4 @@ class Index extends Component
         }
     }
 
-    public function openResultModal($progressId)
-    {
-        $this->resultProgressId = $progressId;
-        $this->resultCatatan = '';
-        $this->resultDokumen = null;
-        $this->resultModal = true;
-    }
-
-    public function saveResult()
-    {
-        $this->validate([
-            'resultCatatan' => 'nullable|string',
-            'resultDokumen' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx',
-        ]);
-
-        $progress = ProgressRekrutmen::findOrFail($this->resultProgressId);
-
-        $data = ['catatan' => $this->resultCatatan];
-        if ($this->resultDokumen) {
-            $data['dokumen_pendukung'] = $this->resultDokumen->store('dokumen-pendukung', 'public');
-        }
-
-        $progress->update($data);
-        $this->resultModal = false;
-        session()->flash('success', 'Hasil interview tersimpan.');
-        $this->dispatch('refreshLamaran');
-    }
 }
