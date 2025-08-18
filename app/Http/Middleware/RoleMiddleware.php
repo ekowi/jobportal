@@ -26,11 +26,11 @@ class RoleMiddleware
         $user = $request->user();
 
         // Jika user tidak memiliki role yang diperlukan
-        if (!$user->hasSystemRole($role)) {
+        if (!$user->hasRole($role)) {
             // Redirect berdasarkan role yang dimiliki user
-            if ($user->hasSystemRole('officer')) {
+            if ($user->hasRole('officer')) {
                 return redirect()->route('officers.index');
-            } elseif ($user->hasSystemRole('kandidat')) {
+            } elseif ($user->hasRole('kandidat')) {
                 return redirect()->route('dashboard');
             } else {
                 // User terautentikasi tapi tidak memiliki role yang valid

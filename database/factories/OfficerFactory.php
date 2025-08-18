@@ -17,7 +17,7 @@ class OfficerFactory extends Factory
     public function definition(): array
     {
         $locations = ['Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Yogyakarta', 'Bali'];
-        $positions = ['Manager', 'HRGA Coordinator Area', 'Recruiter'];
+        $positions = ['Manager', 'Coordinator', 'Recruiter'];
         return [
             'user_id' => function () {
                 // First, create a user if needed

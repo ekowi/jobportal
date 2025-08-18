@@ -12,61 +12,22 @@ Route::middleware([
     'verified',
     'role:officer', // Ensure the user has the 'officer' role
 ])->group(function () {
-    Route::get('/officers', App\Livewire\Officer\Index::class)
-        ->middleware('position:HRGA Coordinator Area')
-        ->name('officers.index');
-
-    Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('kategori-lowongan.Index');
-
-    Route::get('/lowongan', App\Livewire\Lowongan\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area,Manager')
-        ->name('lowongan.index');
-
-    Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('lowongan.create');
-
-    Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('lowongan.edit');
-
-    Route::get('/recruitment-progress', App\Livewire\ProgressRekrutmenTimeline::class)
-        ->middleware('position:HRGA Coordinator Area,Manager')
-        ->name('recruitment.progress');
-
-    Route::get('/bank-soal', App\Livewire\BankSoal\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('bank-soal.index');
-
-    Route::get('/kategori-soal', App\Livewire\KategoriSoal\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('kategori-soal.index');
-
-    Route::get('/Lowongan/Index', App\Livewire\Lowongan\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area,Manager')
-        ->name('Lowongan.Index');
-
-    Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('Lowongan.Create');
-
-    Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('test-results.index');
-
-    Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('kandidat.index');
-
+    Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
+    Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.Index');
+    Route::get('/lowongan', App\Livewire\Lowongan\Index::class)->name('lowongan.index');
+    Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)->name('lowongan.create');
+    Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)->name('lowongan.edit');
+    Route::get('/recruitment-progress', App\Livewire\ProgressRekrutmenTimeline::class)->name('recruitment.progress');
+    Route::get('/bank-soal', App\Livewire\BankSoal\Index::class)->name('bank-soal.index');
+    Route::get('/kategori-soal', App\Livewire\KategoriSoal\Index::class)->name('kategori-soal.index');
+    Route::get('/Lowongan/Index', App\Livewire\Lowongan\Index::class)->name('Lowongan.Index');
+    Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)->name('Lowongan.Create');
+    Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)->name('test-results.index');
+    Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)->name('kandidat.index');
     Route::get('/lamaran-lowongan', App\Livewire\Officer\LamaranLowongan\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('lamaran-lowongan.index');
-
+    ->name('lamaran-lowongan.index');
     Route::get('/jadwal-interview', App\Livewire\Officer\InterviewSchedule\Index::class)
-        ->middleware('position:Recruiter,HRGA Coordinator Area')
-        ->name('jadwal-interview.index');
+    ->name('jadwal-interview.index');
 
 });
 
