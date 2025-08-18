@@ -57,21 +57,29 @@
                             <!-- Applications List -->
                             @forelse ($lamaranList as $index => $lamaran)
                                 @php
-                                    $doneStatuses = collect($lamaran->progressRekrutmen ?? [])->pluck('status')->unique();
+                                    $progress = collect($lamaran->progressRekrutmen ?? []);
+                                    $doneStatuses = $progress->pluck('status');
                                     $isAccepted = $doneStatuses->contains('diterima');
                                     $isRejected = $doneStatuses->contains('ditolak');
                                     $hasDecision = $isAccepted || $isRejected;
 
-                                    $doneMelamar = true;
-                                    $doneInterview = $doneStatuses->contains('interview') || $hasDecision;
-                                    $donePsikotes = $doneStatuses->contains('psikotes') || $hasDecision;
+                                    $latestStatus = optional($progress->last())->status;
+
+                                    $hasInterview = $doneStatuses->contains('interview');
+                                    $hasPsikotes = $doneStatuses->contains('psikotes');
+
+                                    $doneMelamar = in_array($latestStatus, ['interview', 'psikotes', 'diterima', 'ditolak']);
+                                    $doneInterview = in_array($latestStatus, ['psikotes', 'diterima', 'ditolak']);
+                                    $donePsikotes = in_array($latestStatus, ['diterima', 'ditolak']);
 
                                     $activeStep = null;
                                     if (!$hasDecision) {
-                                        if ($doneMelamar && !$doneStatuses->contains('interview')) {
-                                            $activeStep = 'interview';
-                                        } elseif ($doneInterview && !$doneStatuses->contains('psikotes')) {
+                                        if ($latestStatus === 'psikotes') {
                                             $activeStep = 'psikotes';
+                                        } elseif ($latestStatus === 'interview') {
+                                            $activeStep = 'interview';
+                                        } else {
+                                            $activeStep = 'melamar';
                                         }
                                     }
 
@@ -80,9 +88,9 @@
                                         ->sortByDesc('created_at')
                                         ->first();
 
-                                    $lastUpdate = optional(optional($lamaran->progressRekrutmen)->last())->created_at;
+                                    $lastUpdate = optional($progress->last())->created_at;
 
-                                    $showCbtLink = $doneStatuses->contains('psikotes') && !$hasDecision;
+                                    $showCbtLink = $hasPsikotes && !$hasDecision;
                                 @endphp
 
                                 <div class="card border mb-3">
@@ -104,10 +112,22 @@
                                                 <div class="d-flex align-items-center gap-2 mb-2">
                                                     <!-- Step 1: Melamar -->
                                                     <div class="d-flex align-items-center">
-                                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
-                                                            <i class="mdi mdi-check" style="font-size: 12px;"></i>
-                                                        </div>
-                                                        <span class="ms-1 small fw-medium text-success">Melamar</span>
+                                                        @if($doneMelamar)
+                                                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-check" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small fw-medium text-success">Melamar</span>
+                                                        @elseif($activeStep === 'melamar')
+                                                            <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-clock" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small fw-medium text-warning">Melamar</span>
+                                                        @else
+                                                            <div class="bg-light text-muted rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                                                <i class="mdi mdi-circle-outline" style="font-size: 12px;"></i>
+                                                            </div>
+                                                            <span class="ms-1 small text-muted">Melamar</span>
+                                                        @endif
                                                     </div>
 
                                                     <!-- Arrow -->
@@ -173,7 +193,7 @@
                                                 @endif
 
                                                 <!-- Info Interview -->
-                                                @if($doneInterview && $latestInterview)
+                                                @if($hasInterview && $latestInterview)
                                                     <div class="mt-2">
                                                         @if($latestInterview->waktu_pelaksanaan)
                                                             <div class="small text-muted">Waktu: {{ $latestInterview->waktu_pelaksanaan->format('d M Y H:i') }}</div>
