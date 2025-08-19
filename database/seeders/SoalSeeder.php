@@ -412,8 +412,8 @@ class SoalSeeder extends Seeder
                 'jawaban' => $soal['jawaban'],
                 'status' => true,
                 'pembuat' => $pembuat,
-                'type_soal_id' => 1,
-                'type_jawaban_id' => 1,
+                'type_soal' => 'text',
+                'type_jawaban' => 'text',
             ]);
         }
     }

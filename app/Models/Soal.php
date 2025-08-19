@@ -15,8 +15,8 @@ class Soal extends Model
 
     protected $fillable = [
         'id_kategori_soal',
-        'type_soal_id',
-        'type_jawaban_id',
+        'type_soal',
+        'type_jawaban',
         'soal',
         'pilihan_1',
         'pilihan_2',
@@ -39,16 +39,6 @@ class Soal extends Model
      public function creator()
     {
         return $this->belongsTo(User::class, 'user_create', 'id');
-    }
-
-    public function typeSoal()
-    {
-        return $this->belongsTo(Type::class, 'type_soal_id');
-    }
-
-    public function typeJawaban()
-    {
-        return $this->belongsTo(Type::class, 'type_jawaban_id');
     }
 
     public function getJawabanBenarTextAttribute()

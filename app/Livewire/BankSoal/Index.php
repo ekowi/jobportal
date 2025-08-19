@@ -6,8 +6,6 @@ use Livewire\Component;
 use App\Models\Soal;
 use App\Models\KategoriSoal;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Type;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,27 +27,32 @@ class Index extends Component
     public $jawaban;
     public $status = true;
 
-    public $type_soal_id = 1;
-    public $type_jawaban_id = 1;
+    public $type_soal = 'text';
+    public $type_jawaban = 'text';
     public $tempImage;
+
+    public $types = [
+        'text' => 'Text',
+        'foto' => 'Gambar',
+    ];
 
     public $oldSoal, $oldPilihan1, $oldPilihan2, $oldPilihan3, $oldPilihan4;
 
 
     protected function rules()
     {
-        $soalRule = $this->type_soal_id == 2 ? 'required|image|max:1024' : 'required|string';
-        $pilihanRule = $this->type_jawaban_id == 2 ? 'required|image|max:1024' : 'required|string';
+        $soalRule = $this->type_soal === 'foto' ? 'required|image|max:1024' : 'required|string';
+        $pilihanRule = $this->type_jawaban === 'foto' ? 'required|image|max:1024' : 'required|string';
         
         // Jika dalam mode edit dan tidak ada file baru yang diupload, jangan validasi sebagai image
         if ($this->soalId) {
-            if ($this->type_soal_id == 2 && !is_object($this->soal)) {
+            if ($this->type_soal === 'foto' && !is_object($this->soal)) {
                 $soalRule = 'required';
             }
-            
+
             for ($i = 1; $i <= 4; $i++) {
                 $pilihan = "pilihan_$i";
-                if ($this->type_jawaban_id == 2 && !is_object($this->$pilihan)) {
+                if ($this->type_jawaban === 'foto' && !is_object($this->$pilihan)) {
                     $pilihanRule = 'required';
                 }
             }
@@ -63,22 +66,22 @@ class Index extends Component
             'pilihan_3' => $pilihanRule,
             'pilihan_4' => $pilihanRule,
             'jawaban' => 'required|in:1,2,3,4',
-            'type_soal_id' => 'required',
-            'type_jawaban_id' => 'required',
+            'type_soal' => 'required',
+            'type_jawaban' => 'required',
         ];
     }
 
     public function updated($propertyName)
     {
         // Ketika tipe soal berubah, reset field soal
-        if ($propertyName === 'type_soal_id') {
+        if ($propertyName === 'type_soal') {
             $this->soal = '';
             $this->tempImage = null;
             // $this->emit('typeChanged');
         }
-        
+
         // Ketika tipe jawaban berubah, reset semua field pilihan
-        if ($propertyName === 'type_jawaban_id') {
+        if ($propertyName === 'type_jawaban') {
             $this->pilihan_1 = '';
             $this->pilihan_2 = '';
             $this->pilihan_3 = '';
@@ -114,7 +117,7 @@ class Index extends Component
         return view('livewire.bank-soal.index', [
             'soals'        => $query->paginate(10),
             'kategoriSoals'=> KategoriSoal::where('status', true)->get(),
-            'types'        => Type::all(),
+            'types'        => $this->types,
         ]);
     }
 
@@ -144,8 +147,8 @@ class Index extends Component
 
         $this->jawaban = $soal->jawaban;
         $this->status = $soal->status;
-        $this->type_soal_id = $soal->type_soal_id;
-        $this->type_jawaban_id = $soal->type_jawaban_id;
+        $this->type_soal = $soal->type_soal;
+        $this->type_jawaban = $soal->type_jawaban;
         
         $this->showModal = true;
     }
@@ -156,14 +159,14 @@ class Index extends Component
 
         $data = [
             'id_kategori_soal' => $this->id_kategori_soal,
-            'type_soal_id' => $this->type_soal_id,
-            'type_jawaban_id' => $this->type_jawaban_id,
+            'type_soal' => $this->type_soal,
+            'type_jawaban' => $this->type_jawaban,
             'jawaban' => $this->jawaban,
             'status' => $this->status,
         ];
 
         // Handle soal data
-        if ($this->type_soal_id == 2) {
+        if ($this->type_soal === 'foto') {
             if (is_object($this->soal) && method_exists($this->soal, 'store')) {
                 $data['soal'] = $this->soal->store('soal-images', 'public');
             } elseif ($this->soalId) {
@@ -176,7 +179,7 @@ class Index extends Component
         // Handle pilihan data
         for ($i = 1; $i <= 4; $i++) {
             $field = "pilihan_$i";
-            if ($this->type_jawaban_id == 2) {
+            if ($this->type_jawaban === 'foto') {
                 if (is_object($this->$field) && method_exists($this->$field, 'store')) {
                     $data[$field] = $this->$field->store('jawaban-images', 'public');
                 } elseif ($this->soalId) {
@@ -204,11 +207,11 @@ class Index extends Component
         $soal = Soal::findOrFail($id);
 
         // Hapus file dari storage sebelum menghapus record dari database
-        if ($soal->type_soal_id == 2 && $soal->soal && Storage::disk('public')->exists($soal->soal)) {
+        if ($soal->type_soal === 'foto' && $soal->soal && Storage::disk('public')->exists($soal->soal)) {
             Storage::disk('public')->delete($soal->soal);
         }
-        
-        if ($soal->type_jawaban_id == 2) {
+
+        if ($soal->type_jawaban === 'foto') {
             for ($i = 1; $i <= 4; $i++) {
                 $pilihan = "pilihan_$i";
                 if ($soal->$pilihan && Storage::disk('public')->exists($soal->$pilihan)) {
@@ -232,8 +235,8 @@ class Index extends Component
         $this->pilihan_4 = '';
         $this->jawaban = '';
         $this->status = true;
-        $this->type_soal_id = 1;
-        $this->type_jawaban_id = 1;
+        $this->type_soal = 'text';
+        $this->type_jawaban = 'text';
         $this->oldSoal = null;
         $this->oldPilihan1 = null;
         $this->oldPilihan2 = null;

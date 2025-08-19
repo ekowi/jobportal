@@ -152,7 +152,7 @@
                                                 <div class="accordion-body">
                                                     <div class="mb-4">
                                                         <h6 class="text-muted mb-2">Pertanyaan:</h6>
-                                                        @if($question->type_soal_id == 2)
+                                                        @if($question->type_soal == 'foto')
                                                             <img src="{{ Storage::url($question->soal) }}" 
                                                                  class="img-fluid rounded shadow-sm question-image" 
                                                                  alt="Question Image"
@@ -165,7 +165,7 @@
                                                     <div class="mb-3">
                                                         <h6 class="text-muted mb-2">Jawaban Anda:</h6>
                                                         @if($userAnswer)
-                                                            @if($question->type_jawaban_id == 2)
+                                                            @if($question->type_jawaban == 'foto')
                                                                 <img src="{{ Storage::url($question->{'pilihan_' . $userAnswer}) }}" 
                                                                      class="img-fluid rounded shadow-sm answer-image mb-2" 
                                                                      alt="Your Answer"
@@ -318,7 +318,7 @@
                         
                         <div class="card-body p-4">
                             <div class="question-container mb-4">
-                                @if($questions[$currentQuestion]->type_soal_id == 2)
+                                @if($questions[$currentQuestion]->type_soal == 'foto')
                                     <div class="text-center mb-4">
                                         <img src="{{ Storage::url($questions[$currentQuestion]->soal) }}" 
                                              class="img-fluid rounded shadow-sm question-image" 
@@ -353,7 +353,7 @@
                                                 <span class="option-letter">{{ chr(65 + $index) }}</span>
                                             </div>
                                             <div class="answer-content flex-grow-1">
-                                                @if($questions[$currentQuestion]->type_jawaban_id == 2)
+                                                @if($questions[$currentQuestion]->type_jawaban == 'foto')
                                                     <img src="{{ Storage::url($questions[$currentQuestion]->$pilihan) }}" 
                                                         class="img-fluid rounded answer-image" 
                                                         alt="Answer Option {{ $optionValue }}"
