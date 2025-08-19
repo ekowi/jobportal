@@ -55,6 +55,7 @@ class CreateNewUser implements CreatesNewUsers
             'nama_belakang' => $input['nama_belakang'] ?? null,
             'bmi_score' => $testData['bmi']['score'],
             'blind_score' => $testData['blind']['score'],
+            'user_create' => $user->id,
         ]);
 
         return $user;

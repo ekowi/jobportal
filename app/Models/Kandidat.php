@@ -40,6 +40,8 @@ class Kandidat extends Model
         'pendidikan',
         'kemampuan_bahasa',
         'kemampuan',
+        'user_create',
+        'user_update',
     ];
 
     protected $casts = [
