@@ -27,7 +27,14 @@
             </div>
 
             @php
-                $countries = ['Indonesia', 'Malaysia', 'Singapore', 'Thailand', 'Philippines'];
+                $bundle = \ResourceBundle::create('en', 'ICUDATA-region')['Countries'];
+                $countries = [];
+                foreach ($bundle as $code => $name) {
+                    if (strlen($code) === 2 && ctype_alpha($code)) {
+                        $countries[] = $name;
+                    }
+                }
+                sort($countries);
             @endphp
             <div class="mb-3">
                 <x-label for="negara" value="{{ __('Negara') }}" />
