@@ -139,21 +139,24 @@
                                                 <td>{{ optional($lowongan->kategoriLowongan)->nama_kategori }}</td>
                                                 <td>{{ date('d M Y', strtotime($lowongan->tanggal_posting)) }}</td>
                                                 <td>{{ date('d M Y', strtotime($lowongan->tanggal_berakhir)) }}</td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                                        @if($lowongan->status === 'posted')
-                                                            <button class="btn btn-sm btn-outline-danger"
-                                                                wire:click="confirmStatusChange({{ $lowongan->id }}, 'archive')">
-                                                                Archive
-                                                            </button>
-                                                        @else
-                                                            <button class="btn btn-sm btn-outline-success"
-                                                                wire:click="confirmStatusChange({{ $lowongan->id }}, 'post')">
-                                                                Post
-                                                            </button>
-                                                        @endif
-                                                    </div>
+                                                <td class="p-3">
+                                                    {{-- Tombol Edit --}}
+                                                    <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-sm btn-soft-warning me-1">
+                                                        <i class="mdi mdi-pencil"></i>
+                                                    </a>
+
+                                                    {{-- Tombol Kondisional untuk Archive atau Post --}}
+                                                    @if($lowongan->status === 'posted')
+                                                        <button class="btn btn-sm btn-soft-danger me-1"
+                                                            wire:click="confirmStatusChange({{ $lowongan->id }}, 'archive')">
+                                                            <i class="mdi mdi-archive-arrow-down-outline"></i>
+                                                        </button>
+                                                    @else
+                                                        <button class="btn btn-sm btn-soft-success me-1"
+                                                            wire:click="confirmStatusChange({{ $lowongan->id }}, 'post')">
+                                                            <i class="mdi mdi-publish"></i>
+                                                        </button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
