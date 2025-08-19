@@ -28,6 +28,7 @@ class KandidatFactory extends Factory
             'nama_belakang' => $this->faker->lastName(),
             'no_telpon' => $this->faker->phoneNumber(),
             'alamat' => $this->faker->address(),
+            'kota' => $this->faker->city(),
             'kode_pos' => $this->faker->postcode(),
             'negara' => $this->faker->country(),
             'no_ktp' => $this->faker->unique()->numerify('##########'),
@@ -44,6 +45,9 @@ class KandidatFactory extends Factory
             'pendidikan' => $this->faker->randomElement(['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2']),
             'kemampuan_bahasa' => $this->faker->text(),
             'kemampuan' => $this->faker->text(),
+            'pernah_bekerja' => $this->faker->randomElement(['Ya', 'Tidak']),
+            'lokasi_bekerja' => $this->faker->city(),
+            'sumber_informasi' => $this->faker->sentence(),
             'user_create' => 1, // Assuming user with ID 1 is the creator
             'user_update' => 1, // Assuming user with ID 1 is the updater
             'created_at' => now(),

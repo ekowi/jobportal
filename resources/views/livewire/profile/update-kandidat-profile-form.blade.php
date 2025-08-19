@@ -76,7 +76,7 @@
                                 <hr class="my-4">
                             @endif
                             {{-- Data Pribadi Section --}}
-                            <div class="row">
+                            <div class="row" id="profile-info">
                                 <div class="col-12 mb-4">
                                     <h6 class="fw-bold text-primary border-bottom pb-2">
                                         <i class="mdi mdi-account-outline me-2"></i>Data Pribadi
@@ -164,18 +164,27 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
+                                    <label for="kota" class="form-label">{{ __('Kota') }} <span class="text-danger">*</span></label>
+                                    <input id="kota" type="text" class="form-control @error('state.kota') is-invalid @enderror"
+                                        wire:model.defer="state.kota" placeholder="Masukkan kota">
+                                    @error('state.kota')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-4 mb-3">
                                     <label for="kode_pos" class="form-label">{{ __('Kode Pos') }} <span class="text-danger">*</span></label>
-                                    <input id="kode_pos" type="text" class="form-control @error('state.kode_pos') is-invalid @enderror" 
+                                    <input id="kode_pos" type="text" class="form-control @error('state.kode_pos') is-invalid @enderror"
                                         wire:model.defer="state.kode_pos" placeholder="Masukkan kode pos">
                                     @error('state.kode_pos')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                
-                                <div class="col-md-6 mb-3">
+
+                                <div class="col-md-4 mb-3">
                                     <label for="negara" class="form-label">{{ __('Negara') }} <span class="text-danger">*</span></label>
-                                    <input id="negara" type="text" class="form-control @error('state.negara') is-invalid @enderror" 
+                                    <input id="negara" type="text" class="form-control @error('state.negara') is-invalid @enderror"
                                         wire:model.defer="state.negara" placeholder="Masukkan negara" value="Indonesia">
                                     @error('state.negara')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -235,7 +244,7 @@
                                     </h6>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3" id="education">
                                     <label for="pendidikan" class="form-label">{{ __('Pendidikan Terakhir') }} <span class="text-danger">*</span></label>
                                     <select id="pendidikan" wire:model.defer="state.pendidikan" class="form-select @error('state.pendidikan') is-invalid @enderror">
                                         <option value="">Pilih...</option>
@@ -255,7 +264,7 @@
                                     @enderror
                                 </div>
                                 
-                                <div class="col-12 mb-3">
+                                <div class="col-12 mb-3" id="work-experience">
                                     <label for="pengalaman_kerja" class="form-label">{{ __('Pengalaman Kerja (Opsional)') }}</label>
                                     <textarea id="pengalaman_kerja" class="form-control @error('state.pengalaman_kerja') is-invalid @enderror" 
                                         wire:model.defer="state.pengalaman_kerja" rows="4" 
@@ -266,7 +275,7 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-12 mb-3">
+                                <div class="col-12 mb-3" id="language">
                                     <label for="kemampuan_bahasa" class="form-label">{{ __('Kemampuan Bahasa (Opsional)') }}</label>
                                     <textarea id="kemampuan_bahasa" class="form-control @error('state.kemampuan_bahasa') is-invalid @enderror" 
                                         wire:model.defer="state.kemampuan_bahasa" rows="2" 
@@ -279,11 +288,53 @@
                                 
                                 <div class="col-12 mb-3">
                                     <label for="kemampuan" class="form-label">{{ __('Keahlian (Opsional)') }}</label>
-                                    <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror" 
-                                        wire:model.defer="state.kemampuan" rows="4" 
+                                    <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror"
+                                        wire:model.defer="state.kemampuan" rows="4"
                                         placeholder="Sebutkan keahlian yang Anda miliki, seperti bahasa pemrograman, software, sertifikasi, dll"></textarea>
                                     <small class="text-muted">Contoh: JavaScript, PHP, Laravel, MySQL, Adobe Photoshop, Google Analytics</small>
                                     @error('state.kemampuan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Divider --}}
+                            <hr class="my-4">
+
+                            {{-- Informasi Spesifik Section --}}
+                            <div class="row" id="specific-info">
+                                <div class="col-12 mb-4">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2">
+                                        <i class="mdi mdi-information-outline me-2"></i>Informasi Spesifik
+                                    </h6>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="pernah_bekerja" class="form-label">{{ __('Pernah bekerja di perusahaan ini?') }}</label>
+                                    <select id="pernah_bekerja" wire:model.defer="state.pernah_bekerja" class="form-select @error('state.pernah_bekerja') is-invalid @enderror">
+                                        <option value="">Pilih...</option>
+                                        <option value="Ya">Ya</option>
+                                        <option value="Tidak">Tidak</option>
+                                    </select>
+                                    @error('state.pernah_bekerja')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="lokasi_bekerja" class="form-label">{{ __('Lokasi bekerja sebelumnya') }}</label>
+                                    <input id="lokasi_bekerja" type="text" class="form-control @error('state.lokasi_bekerja') is-invalid @enderror"
+                                        wire:model.defer="state.lokasi_bekerja" placeholder="Masukkan lokasi">
+                                    @error('state.lokasi_bekerja')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="sumber_informasi" class="form-label">{{ __('Sumber informasi pekerjaan ini') }}</label>
+                                    <input id="sumber_informasi" type="text" class="form-control @error('state.sumber_informasi') is-invalid @enderror"
+                                        wire:model.defer="state.sumber_informasi" placeholder="Masukkan sumber informasi">
+                                    @error('state.sumber_informasi')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
