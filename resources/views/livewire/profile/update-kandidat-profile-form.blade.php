@@ -76,34 +76,25 @@
                                 <hr class="my-4">
                             @endif
                             {{-- Data Pribadi Section --}}
-                            <div class="row" id="profile-info">
+                            <div class="row">
                                 <div class="col-12 mb-4">
                                     <h6 class="fw-bold text-primary border-bottom pb-2">
                                         <i class="mdi mdi-account-outline me-2"></i>Data Pribadi
                                     </h6>
                                 </div>
                                 
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="nama_depan" class="form-label">{{ __('Nama Depan') }} <span class="text-danger">*</span></label>
-                                    <input id="nama_depan" type="text" class="form-control @error('state.nama_depan') is-invalid @enderror"
+                                    <input id="nama_depan" type="text" class="form-control @error('state.nama_depan') is-invalid @enderror" 
                                         wire:model.defer="state.nama_depan" autocomplete="given-name" placeholder="Masukkan nama depan">
                                     @error('state.nama_depan')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
-                                <div class="col-md-4 mb-3">
-                                    <label for="nama_tengah" class="form-label">{{ __('Nama Tengah') }}</label>
-                                    <input id="nama_tengah" type="text" class="form-control @error('state.nama_tengah') is-invalid @enderror"
-                                        wire:model.defer="state.nama_tengah" autocomplete="additional-name" placeholder="Masukkan nama tengah (jika ada)">
-                                    @error('state.nama_tengah')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="nama_belakang" class="form-label">{{ __('Nama Belakang') }} <span class="text-danger">*</span></label>
-                                    <input id="nama_belakang" type="text" class="form-control @error('state.nama_belakang') is-invalid @enderror"
+                                    <input id="nama_belakang" type="text" class="form-control @error('state.nama_belakang') is-invalid @enderror" 
                                         wire:model.defer="state.nama_belakang" autocomplete="family-name" placeholder="Masukkan nama belakang">
                                     @error('state.nama_belakang')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -173,27 +164,18 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-4 mb-3">
-                                    <label for="kota" class="form-label">{{ __('Kota') }} <span class="text-danger">*</span></label>
-                                    <input id="kota" type="text" class="form-control @error('state.kota') is-invalid @enderror"
-                                        wire:model.defer="state.kota" placeholder="Masukkan kota">
-                                    @error('state.kota')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="kode_pos" class="form-label">{{ __('Kode Pos') }} <span class="text-danger">*</span></label>
-                                    <input id="kode_pos" type="text" class="form-control @error('state.kode_pos') is-invalid @enderror"
+                                    <input id="kode_pos" type="text" class="form-control @error('state.kode_pos') is-invalid @enderror" 
                                         wire:model.defer="state.kode_pos" placeholder="Masukkan kode pos">
                                     @error('state.kode_pos')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-
-                                <div class="col-md-4 mb-3">
+                                
+                                <div class="col-md-6 mb-3">
                                     <label for="negara" class="form-label">{{ __('Negara') }} <span class="text-danger">*</span></label>
-                                    <input id="negara" type="text" class="form-control @error('state.negara') is-invalid @enderror"
+                                    <input id="negara" type="text" class="form-control @error('state.negara') is-invalid @enderror" 
                                         wire:model.defer="state.negara" placeholder="Masukkan negara" value="Indonesia">
                                     @error('state.negara')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -253,164 +235,55 @@
                                     </h6>
                                 </div>
 
-                                <div class="col-12 mb-3" id="work-experience">
-                                    <label class="form-label">{{ __('Riwayat Pengalaman Kerja') }}</label>
-                                    @foreach ($state['pengalaman_kerja'] as $index => $exp)
-                                        <div class="border rounded p-3 mb-3">
-                                            <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Tanggal Mulai') }}</label>
-                                                    <input type="date" class="form-control" wire:model.defer="state.pengalaman_kerja.{{ $index }}.tanggal_mulai">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Tanggal Terakhir') }}</label>
-                                                    <input type="date" class="form-control" wire:model.defer="state.pengalaman_kerja.{{ $index }}.tanggal_selesai">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Nama Perusahaan') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.pengalaman_kerja.{{ $index }}.nama_perusahaan" placeholder="Masukkan nama perusahaan">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Keterangan Bisnis Perusahaan') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.pengalaman_kerja.{{ $index }}.keterangan_bisnis" placeholder="Masukkan keterangan bisnis">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Jabatan') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.pengalaman_kerja.{{ $index }}.jabatan" placeholder="Masukkan jabatan">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Alasan Keluar/Berhenti') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.pengalaman_kerja.{{ $index }}.alasan_keluar" placeholder="Masukkan alasan keluar">
-                                                </div>
-                                            </div>
-                                            <div class="text-end mt-2">
-                                                <button type="button" class="btn btn-sm btn-danger" wire:click="removeWorkExperience({{ $index }})">Hapus</button>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                    <button type="button" class="btn btn-outline-primary btn-sm" wire:click="addWorkExperience">Tambah Pengalaman</button>
+                                <div class="col-md-6 mb-3">
+                                    <label for="pendidikan" class="form-label">{{ __('Pendidikan Terakhir') }} <span class="text-danger">*</span></label>
+                                    <select id="pendidikan" wire:model.defer="state.pendidikan" class="form-select @error('state.pendidikan') is-invalid @enderror">
+                                        <option value="">Pilih...</option>
+                                        <option value="SD">SD</option>
+                                        <option value="SMP">SMP</option>
+                                        <option value="SMA/SMK">SMA/SMK</option>
+                                        <option value="D1">D1</option>
+                                        <option value="D2">D2</option>
+                                        <option value="D3">D3</option>
+                                        <option value="D4">D4</option>
+                                        <option value="S1">S1</option>
+                                        <option value="S2">S2</option>
+                                        <option value="S3">S3</option>
+                                    </select>
+                                    @error('state.pendidikan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="pengalaman_kerja" class="form-label">{{ __('Pengalaman Kerja (Opsional)') }}</label>
+                                    <textarea id="pengalaman_kerja" class="form-control @error('state.pengalaman_kerja') is-invalid @enderror" 
+                                        wire:model.defer="state.pengalaman_kerja" rows="4" 
+                                        placeholder="Deskripsikan pengalaman kerja Anda, termasuk posisi, perusahaan, dan periode kerja"></textarea>
+                                    <small class="text-muted">Contoh: Software Developer di PT ABC (2020-2023), Web Designer di PT XYZ (2018-2020)</small>
+                                    @error('state.pengalaman_kerja')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
-                                <div class="col-12 mb-3" id="education">
-                                    <label class="form-label">{{ __('Riwayat Pendidikan') }}</label>
-                                    @foreach ($state['pendidikan'] as $index => $edu)
-                                        <div class="border rounded p-3 mb-3">
-                                            <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Tanggal Mulai') }}</label>
-                                                    <input type="date" class="form-control" wire:model.defer="state.pendidikan.{{ $index }}.tanggal_mulai">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Tanggal Berakhir') }}</label>
-                                                    <input type="date" class="form-control" wire:model.defer="state.pendidikan.{{ $index }}.tanggal_selesai">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Nama Pendidikan') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.pendidikan.{{ $index }}.nama_pendidikan" placeholder="Masukkan nama pendidikan">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Jurusan') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.pendidikan.{{ $index }}.jurusan" placeholder="Masukkan jurusan">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Tingkat Pendidikan') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.pendidikan.{{ $index }}.tingkat" placeholder="Masukkan tingkat pendidikan">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">{{ __('Pendidikan Tertinggi') }}</label>
-                                                    <select class="form-select" wire:model.defer="state.pendidikan.{{ $index }}.pendidikan_tertinggi">
-                                                        <option value="Tidak">Tidak</option>
-                                                        <option value="Ya">Ya</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="text-end mt-2">
-                                                <button type="button" class="btn btn-sm btn-danger" wire:click="removeEducation({{ $index }})">Hapus</button>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                    <button type="button" class="btn btn-outline-primary btn-sm" wire:click="addEducation">Tambah Pendidikan</button>
-                                </div>
-
-                                <div class="col-12 mb-3" id="language">
-                                    <label class="form-label">{{ __('Keterampilan Bahasa') }}</label>
-                                    @foreach ($state['kemampuan_bahasa'] as $index => $lang)
-                                        <div class="border rounded p-3 mb-3">
-                                            <div class="row g-2">
-                                                <div class="col-md-3">
-                                                    <label class="form-label">{{ __('Bahasa') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.kemampuan_bahasa.{{ $index }}.bahasa" placeholder="Masukkan bahasa">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label">{{ __('Berbicara') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.kemampuan_bahasa.{{ $index }}.bicara" placeholder="Kemahiran berbicara">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label">{{ __('Membaca') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.kemampuan_bahasa.{{ $index }}.membaca" placeholder="Kemahiran membaca">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label">{{ __('Menulis') }}</label>
-                                                    <input type="text" class="form-control" wire:model.defer="state.kemampuan_bahasa.{{ $index }}.menulis" placeholder="Kemahiran menulis">
-                                                </div>
-                                            </div>
-                                            <div class="text-end mt-2">
-                                                <button type="button" class="btn btn-sm btn-danger" wire:click="removeLanguage({{ $index }})">Hapus</button>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                    <button type="button" class="btn btn-outline-primary btn-sm" wire:click="addLanguage">Tambah Bahasa</button>
+                                <div class="col-12 mb-3">
+                                    <label for="kemampuan_bahasa" class="form-label">{{ __('Kemampuan Bahasa (Opsional)') }}</label>
+                                    <textarea id="kemampuan_bahasa" class="form-control @error('state.kemampuan_bahasa') is-invalid @enderror" 
+                                        wire:model.defer="state.kemampuan_bahasa" rows="2" 
+                                        placeholder="Sebutkan bahasa yang Anda kuasai dan tingkat kemahirannya"></textarea>
+                                    <small class="text-muted">Contoh: Indonesia (Native), Inggris (Menengah), Mandarin (Pemula)</small>
+                                    @error('state.kemampuan_bahasa')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 
                                 <div class="col-12 mb-3">
                                     <label for="kemampuan" class="form-label">{{ __('Keahlian (Opsional)') }}</label>
-                                    <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror"
-                                        wire:model.defer="state.kemampuan" rows="4"
+                                    <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror" 
+                                        wire:model.defer="state.kemampuan" rows="4" 
                                         placeholder="Sebutkan keahlian yang Anda miliki, seperti bahasa pemrograman, software, sertifikasi, dll"></textarea>
                                     <small class="text-muted">Contoh: JavaScript, PHP, Laravel, MySQL, Adobe Photoshop, Google Analytics</small>
                                     @error('state.kemampuan')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            {{-- Divider --}}
-                            <hr class="my-4">
-
-                            {{-- Informasi Spesifik Section --}}
-                            <div class="row" id="specific-info">
-                                <div class="col-12 mb-4">
-                                    <h6 class="fw-bold text-primary border-bottom pb-2">
-                                        <i class="mdi mdi-information-outline me-2"></i>Informasi Spesifik
-                                    </h6>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="pernah_bekerja" class="form-label">{{ __('Pernah bekerja di perusahaan ini?') }}</label>
-                                    <select id="pernah_bekerja" wire:model.defer="state.pernah_bekerja" class="form-select @error('state.pernah_bekerja') is-invalid @enderror">
-                                        <option value="">Pilih...</option>
-                                        <option value="Ya">Ya</option>
-                                        <option value="Tidak">Tidak</option>
-                                    </select>
-                                    @error('state.pernah_bekerja')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="lokasi_bekerja" class="form-label">{{ __('Lokasi bekerja sebelumnya') }}</label>
-                                    <input id="lokasi_bekerja" type="text" class="form-control @error('state.lokasi_bekerja') is-invalid @enderror"
-                                        wire:model.defer="state.lokasi_bekerja" placeholder="Masukkan lokasi">
-                                    @error('state.lokasi_bekerja')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="sumber_informasi" class="form-label">{{ __('Sumber informasi pekerjaan ini') }}</label>
-                                    <input id="sumber_informasi" type="text" class="form-control @error('state.sumber_informasi') is-invalid @enderror"
-                                        wire:model.defer="state.sumber_informasi" placeholder="Masukkan sumber informasi">
-                                    @error('state.sumber_informasi')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

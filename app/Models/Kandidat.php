@@ -21,11 +21,9 @@ class Kandidat extends Model
     protected $fillable = [
         'user_id',
         'nama_depan',
-        'nama_tengah',
         'nama_belakang',
         'no_telpon',
         'alamat',
-        'kota',
         'kode_pos',
         'negara',
         'no_ktp',
@@ -42,9 +40,6 @@ class Kandidat extends Model
         'pendidikan',
         'kemampuan_bahasa',
         'kemampuan',
-        'pernah_bekerja',
-        'lokasi_bekerja',
-        'sumber_informasi',
         'user_create',
         'user_update',
     ];
@@ -78,7 +73,7 @@ class Kandidat extends Model
      */
     public function getFullNameAttribute()
     {
-        return trim("{$this->nama_depan} {$this->nama_tengah} {$this->nama_belakang}");
+        return trim("{$this->nama_depan} {$this->nama_belakang}");
     }
 
     /**
