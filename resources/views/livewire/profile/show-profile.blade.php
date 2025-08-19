@@ -54,6 +54,10 @@
                                         <p class="fw-medium">{{ $kandidat->nama_depan }}</p>
                                     </div>
                                     <div class="col-md-6 mb-3">
+                                        <h6 class="text-muted mb-0">Nama Tengah</h6>
+                                        <p class="fw-medium">{{ $kandidat->nama_tengah ?? '-' }}</p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
                                         <h6 class="text-muted mb-0">Nama Belakang</h6>
                                         <p class="fw-medium">{{ $kandidat->nama_belakang }}</p>
                                     </div>
