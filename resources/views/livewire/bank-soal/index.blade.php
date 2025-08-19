@@ -81,7 +81,7 @@
                                         @forelse($soals as $soal)
                                         <tr class="align-middle">
                                             <td class="p-3">
-                                                @if($soal->type_soal_id == 2)
+                                                @if($soal->type_soal == 'foto')
                                                     <img src="{{ Storage::url($soal->soal) }}" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover;" alt="Soal">
                                                 @else
                                                     <span title="{{ $soal->soal }}">{{ Str::limit($soal->soal, 50) }}</span>
@@ -93,7 +93,7 @@
                                             @for($i = 1; $i <= 4; $i++)
                                                 @php $pilihan = "pilihan_$i"; @endphp
                                                 <td class="p-3 text-center">
-                                                    @if($soal->type_jawaban_id == 2)
+                                                    @if($soal->type_jawaban == 'foto')
                                                         <img src="{{ Storage::url($soal->$pilihan) }}" class="img-fluid rounded" style="width: 40px; height: 40px; object-fit: cover;" alt="Pilihan {{ $i }}">
                                                     @else
                                                         <span title="{{ $soal->$pilihan }}">{{ Str::limit($soal->$pilihan, 15) }}</span>
@@ -153,7 +153,7 @@
                     <h5 class="modal-title">{{ $soalId ? 'Edit Soal' : 'Tambah Soal Baru' }}</h5>
                     <button type="button" class="btn-close" wire:click="$set('showModal', false)"></button>
                 </div>
-                <form wire:submit.prevent="save" x-data="{ type_soal: @entangle('type_soal_id').live, type_jawaban: @entangle('type_jawaban_id').live }">
+                <form wire:submit.prevent="save" x-data="{ type_soal: @entangle('type_soal').live, type_jawaban: @entangle('type_jawaban').live }">
                     <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
                         <div class="row g-4">
                             {{-- Left Column: Basic Info & Question --}}
@@ -174,17 +174,17 @@
                                 <div class="row">
                                     <div class="col-sm-6 mb-3">
                                         <label class="form-label">Tipe Soal</label>
-                                        <select wire:model.live="type_soal_id" class="form-select">
-                                            @foreach($types as $type)
-                                                <option value="{{ $type->id }}">{{ $type->nama }}</option>
+                                        <select wire:model.live="type_soal" class="form-select">
+                                            @foreach($types as $value => $label)
+                                                <option value="{{ $value }}">{{ $label }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-sm-6 mb-3">
                                         <label class="form-label">Tipe Jawaban</label>
-                                        <select wire:model.live="type_jawaban_id" class="form-select">
-                                            @foreach($types as $type)
-                                                <option value="{{ $type->id }}">{{ $type->nama }}</option>
+                                        <select wire:model.live="type_jawaban" class="form-select">
+                                            @foreach($types as $value => $label)
+                                                <option value="{{ $value }}">{{ $label }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -194,7 +194,7 @@
                                 <hr class="mt-1 mb-3">
                                 <div class="mb-3">
                                     <label class="form-label">Pertanyaan <span class="text-danger">*</span></label>
-                                    <div x-show="type_soal == 2">
+                                    <div x-show="type_soal == 'foto'">
                                         <input type="file" wire:model="soal" class="form-control" accept="image/*">
                                         @if ($soal && method_exists($soal, 'temporaryUrl'))
                                             <img src="{{ $soal->temporaryUrl() }}" class="img-fluid rounded my-2" style="max-height: 150px; border: 1px solid #ddd; padding: 3px;">
@@ -202,7 +202,7 @@
                                             <img src="{{ Storage::url($oldSoal) }}" class="img-fluid rounded my-2" style="max-height: 150px; border: 1px solid #ddd; padding: 3px;">
                                         @endif
                                     </div>
-                                    <div x-show="type_soal != 2">
+                                    <div x-show="type_soal != 'foto'">
                                         <textarea wire:model="soal" class="form-control" rows="4" placeholder="Tulis pertanyaan soal di sini..."></textarea>
                                     </div>
                                     @error('soal') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
@@ -218,7 +218,7 @@
                                     @php $pilihan = "pilihan_$i"; $oldPilihan = "oldPilihan$i"; @endphp
                                     <div class="col-sm-6">
                                         <label class="form-label">Pilihan {{ $i }} <span class="text-danger">*</span></label>
-                                        <div x-show="type_jawaban == 2">
+                                        <div x-show="type_jawaban == 'foto'">
                                             <input type="file" wire:model="{{ $pilihan }}" class="form-control" accept="image/*">
                                             @if ($$pilihan && method_exists($$pilihan, 'temporaryUrl'))
                                                 <img src="{{ $$pilihan->temporaryUrl() }}" class="img-fluid rounded my-2" style="max-height: 80px; border: 1px solid #ddd; padding: 3px;">
@@ -226,7 +226,7 @@
                                                 <img src="{{ Storage::url($$oldPilihan) }}" class="img-fluid rounded my-2" style="max-height: 80px; border: 1px solid #ddd; padding: 3px;">
                                             @endif
                                         </div>
-                                        <div x-show="type_jawaban != 2">
+                                        <div x-show="type_jawaban != 'foto'">
                                             <input type="text" wire:model="{{ $pilihan }}" class="form-control" placeholder="Teks jawaban {{ $i }}">
                                         </div>
                                         @error($pilihan) <div class="text-danger small mt-1">{{ $message }}</div> @enderror
