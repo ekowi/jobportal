@@ -26,6 +26,20 @@
                 <x-custom-input-error for="email" />
             </div>
 
+            @php
+                $countries = ['Indonesia', 'Malaysia', 'Singapore', 'Thailand', 'Philippines'];
+            @endphp
+            <div class="mb-3">
+                <x-label for="negara" value="{{ __('Negara') }}" />
+                <select name="negara" id="negara" class="form-select" required>
+                    <option value="">{{ __('Pilih Negara') }}</option>
+                    @foreach($countries as $country)
+                        <option value="{{ $country }}" @selected(old('negara') === $country)>{{ $country }}</option>
+                    @endforeach
+                </select>
+                <x-custom-input-error for="negara" />
+            </div>
+
             <div class="mb-3">
                 <x-label for="loginpass" value="{{ __('Password') }}" />
                 <x-input name="password" id="loginpass" type="password" class="form-control" placeholder="Password" required autocomplete="new-password" />
