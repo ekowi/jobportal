@@ -27,21 +27,17 @@
             </div>
 
             @php
-                $bundle = \ResourceBundle::create('en', 'ICUDATA-region')['Countries'];
-                $countries = [];
-                foreach ($bundle as $code => $name) {
-                    if (strlen($code) === 2 && ctype_alpha($code)) {
-                        $countries[] = $name;
-                    }
-                }
-                sort($countries);
+                $countries = config('countries');
             @endphp
             <div class="mb-3">
                 <x-label for="negara" value="{{ __('Negara') }}" />
                 <select name="negara" id="negara" class="form-select" required>
                     <option value="">{{ __('Pilih Negara') }}</option>
-                    @foreach($countries as $country)
-                        <option value="{{ $country }}" @selected(old('negara') === $country)>{{ $country }}</option>
+                    @foreach($countries as $code => $country)
+                        @php
+                            $flag = mb_chr(127397 + ord($code[0])) . mb_chr(127397 + ord($code[1]));
+                        @endphp
+                        <option value="{{ $country }}" @selected(old('negara') === $country)>{{ $flag }} {{ $country }}</option>
                     @endforeach
                 </select>
                 <x-custom-input-error for="negara" />
