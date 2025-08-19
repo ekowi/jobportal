@@ -39,6 +39,7 @@ class CreateNewUser implements CreatesNewUsers
             'nama_depan' => ['required', 'string', 'max:255'],
             'nama_belakang' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'negara' => ['required', 'string', 'max:255'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
@@ -53,6 +54,7 @@ class CreateNewUser implements CreatesNewUsers
             'user_id' => $user->id,
             'nama_depan' => $input['nama_depan'],
             'nama_belakang' => $input['nama_belakang'] ?? null,
+            'negara' => $input['negara'],
             'bmi_score' => $testData['bmi']['score'],
             'blind_score' => $testData['blind']['score'],
             'user_create' => $user->id,
