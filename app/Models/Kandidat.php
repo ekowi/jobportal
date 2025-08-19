@@ -24,6 +24,7 @@ class Kandidat extends Model
         'nama_belakang',
         'no_telpon',
         'alamat',
+        'kota',
         'kode_pos',
         'negara',
         'no_ktp',
@@ -40,6 +41,9 @@ class Kandidat extends Model
         'pendidikan',
         'kemampuan_bahasa',
         'kemampuan',
+        'pernah_bekerja',
+        'lokasi_bekerja',
+        'sumber_informasi',
         'user_create',
         'user_update',
     ];

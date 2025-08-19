@@ -37,6 +37,12 @@ class UpdateKandidatProfileForm extends Component
             // Jika kandidat sudah ada, muat datanya
             $this->state = $this->kandidat->toArray();
 
+            // Pastikan field baru tersedia
+            $this->state['kota'] = $this->state['kota'] ?? '';
+            $this->state['pernah_bekerja'] = $this->state['pernah_bekerja'] ?? '';
+            $this->state['lokasi_bekerja'] = $this->state['lokasi_bekerja'] ?? '';
+            $this->state['sumber_informasi'] = $this->state['sumber_informasi'] ?? '';
+
             // PERBAIKAN: Ubah format tanggal agar sesuai dengan input HTML
             if (isset($this->state['tanggal_lahir'])) {
                 $this->state['tanggal_lahir'] = \Carbon\Carbon::parse($this->state['tanggal_lahir'])->setTimezone(config('app.timezone'))->format('Y-m-d');
@@ -49,6 +55,7 @@ class UpdateKandidatProfileForm extends Component
                 'no_telpon' => '',
                 'no_telpon_alternatif' => '',
                 'alamat' => '',
+                'kota' => '',
                 'kode_pos' => '',
                 'negara' => 'Indonesia',
                 'no_ktp' => '',
@@ -62,6 +69,9 @@ class UpdateKandidatProfileForm extends Component
                 'pengalaman_kerja' => '',
                 'kemampuan_bahasa' => '',
                 'kemampuan' => '',
+                'pernah_bekerja' => '',
+                'lokasi_bekerja' => '',
+                'sumber_informasi' => '',
             ];
         }
     }
@@ -81,6 +91,7 @@ class UpdateKandidatProfileForm extends Component
             'state.no_telpon' => ['required', 'string', 'max:20'],
             'state.no_telpon_alternatif' => ['nullable', 'string', 'max:20'],
             'state.alamat' => ['required', 'string'],
+            'state.kota' => ['required', 'string', 'max:100'],
             'state.kode_pos' => ['required', 'string', 'max:10'],
             'state.negara' => ['required', 'string', 'max:100'],
             'state.no_ktp' => ['required', 'string', 'max:20', Rule::unique('kandidats', 'no_ktp')->ignore($user->kandidat->id ?? null)],
@@ -94,6 +105,9 @@ class UpdateKandidatProfileForm extends Component
             'state.pengalaman_kerja' => ['nullable', 'string'],
             'state.kemampuan_bahasa' => ['nullable', 'string'],
             'state.kemampuan' => ['nullable', 'string'],
+            'state.pernah_bekerja' => ['nullable', 'string', 'max:100'],
+            'state.lokasi_bekerja' => ['nullable', 'string', 'max:255'],
+            'state.sumber_informasi' => ['nullable', 'string', 'max:255'],
         ]);
 
         // Gunakan updateOrCreate untuk membuat profil jika belum ada, atau memperbarui jika sudah ada
