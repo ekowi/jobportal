@@ -21,6 +21,7 @@ class Kandidat extends Model
     protected $fillable = [
         'user_id',
         'nama_depan',
+        'nama_tengah',
         'nama_belakang',
         'no_telpon',
         'alamat',
@@ -77,7 +78,7 @@ class Kandidat extends Model
      */
     public function getFullNameAttribute()
     {
-        return trim("{$this->nama_depan} {$this->nama_belakang}");
+        return trim("{$this->nama_depan} {$this->nama_tengah} {$this->nama_belakang}");
     }
 
     /**
