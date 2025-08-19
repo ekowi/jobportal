@@ -54,9 +54,6 @@
                                     @foreach($positions ?? [] as $position)
                                         <option value="{{ $position }}">{{ $position }}</option>
                                     @endforeach
-                                    @if (!collect($positions)->contains('Koordinator'))
-                                        <option value="Koordinator">Koordinator</option>
-                                    @endif
                                 </select>
                                 @error('officerData.jabatan') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
