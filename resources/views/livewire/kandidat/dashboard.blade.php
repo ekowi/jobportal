@@ -521,45 +521,9 @@
                             @endif
                             @endif
                             
-                            {{-- Data Pendidikan & Kemampuan --}}
-                            <div class="col-12 mb-4 mt-4">
-                                <h6 class="fw-bold text-primary border-bottom pb-2">Data Pendidikan & Kemampuan</h6>
-                            </div>
-                            
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Pendidikan Terakhir <span class="text-danger">*</span></label>
-                                <select class="form-select @error('pendidikan') is-invalid @enderror" 
-                                    wire:model="pendidikan">
-                                    <option value="">Pilih Pendidikan</option>
-                                    <option value="SD">SD</option>
-                                    <option value="SMP">SMP</option>
-                                    <option value="SMA/SMK">SMA/SMK</option>
-                                    <option value="D1">D1</option>
-                                    <option value="D2">D2</option>
-                                    <option value="D3">D3</option>
-                                    <option value="D4">D4</option>
-                                    <option value="S1">S1</option>
-                                    <option value="S2">S2</option>
-                                    <option value="S3">S3</option>
-                                </select>
-                                @error('pendidikan') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                            
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Pengalaman Kerja</label>
-                                <textarea class="form-control" wire:model="pengalaman_kerja" 
-                                    rows="3" placeholder="Deskripsikan pengalaman kerja Anda (opsional)"></textarea>
-                            </div>
-                            
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Kemampuan Bahasa</label>
-                                <textarea class="form-control" wire:model="kemampuan_bahasa" 
-                                    rows="2" placeholder="Sebutkan bahasa yang Anda kuasai (opsional)"></textarea>
-                            </div>
-                            
                             <div class="col-12 mb-3">
                                 <label class="form-label">Kemampuan Lainnya</label>
-                                <textarea class="form-control" wire:model="kemampuan" 
+                                <textarea class="form-control" wire:model="kemampuan"
                                     rows="3" placeholder="Sebutkan kemampuan lain yang Anda miliki (opsional)"></textarea>
                             </div>
                         </div>

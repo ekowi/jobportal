@@ -35,9 +35,6 @@ class Dashboard extends Component
     public $jenis_kelamin;
     public $status_perkawinan;
     public $agama;
-    public $pendidikan;
-    public $pengalaman_kerja;
-    public $kemampuan_bahasa;
     public $kemampuan;
     
     // Properti untuk BMI Test
@@ -80,10 +77,7 @@ class Dashboard extends Component
             'jenis_kelamin' => 'required|in:L,P',
             'status_perkawinan' => 'required|string|max:50',
             'agama' => 'required|string|max:50',
-            'pendidikan' => 'required|string',
             'no_npwp' => 'nullable|string|max:25',
-            'pengalaman_kerja' => 'nullable|string',
-            'kemampuan_bahasa' => 'nullable|string',
             'kemampuan' => 'nullable|string',
             'tinggi_badan' => 'required|numeric|min:100|max:250',
             'berat_badan' => 'required|numeric|min:30|max:200',
@@ -119,10 +113,7 @@ class Dashboard extends Component
         //     'jenis_kelamin' => 'required|in:L,P',
         //     'status_perkawinan' => 'required|string|max:50',
         //     'agama' => 'required|string|max:50',
-        //     'pendidikan' => 'required|string',
         //     'no_npwp' => 'nullable|string|max:25',
-        //     'pengalaman_kerja' => 'nullable|string',
-        //     'kemampuan_bahasa' => 'nullable|string',
         //     'kemampuan' => 'nullable|string',
         // ];
         
@@ -289,8 +280,7 @@ class Dashboard extends Component
             $this->reset([
                 'nama_depan', 'nama_belakang', 'no_telpon', 'alamat', 'kode_pos', 'negara',
                 'no_ktp', 'no_npwp', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin',
-                'status_perkawinan', 'agama', 'pendidikan', 'pengalaman_kerja',
-                'kemampuan_bahasa', 'kemampuan'
+                'status_perkawinan', 'agama', 'kemampuan'
             ]);
         }
     }

@@ -40,10 +40,20 @@ class KandidatFactory extends Factory
             'bmi_score' => $this->faker->randomFloat(2, 15, 25),
             'blind_score' => 'normal',
             'no_telpon_alternatif' => $this->faker->phoneNumber(),
-            'pengalaman_kerja' => $this->faker->text(),
-            'pendidikan' => $this->faker->randomElement(['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2']),
-            'kemampuan_bahasa' => $this->faker->text(),
+            'work_experiences' => [
+                ['start' => '2020-01-01', 'end' => '2021-01-01', 'company' => 'ABC', 'business' => 'IT', 'position' => 'Dev', 'reason' => ''],
+            ],
+            'education_history' => [
+                ['start' => '2015-01-01', 'end' => '2019-01-01', 'name' => 'Universitas X', 'major' => 'Teknik', 'level' => 'S1', 'highest' => true],
+            ],
+            'language_skills' => [
+                ['language' => 'Indonesia', 'speaking' => 'Baik', 'reading' => 'Baik', 'writing' => 'Baik'],
+            ],
             'kemampuan' => $this->faker->text(),
+            'worked_before' => false,
+            'previous_work_location' => null,
+            'job_info_source' => 'Internet',
+            'gender_identity' => 'Lainnya',
             'user_create' => 1, // Assuming user with ID 1 is the creator
             'user_update' => 1, // Assuming user with ID 1 is the updater
             'created_at' => now(),
