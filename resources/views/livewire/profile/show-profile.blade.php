@@ -262,9 +262,12 @@
                                         <div class="col-md-6 mb-3">
                                             <h6 class="text-muted mb-0">{{ $label }}</h6>
                                             @if (isset($documents[$key]))
-                                                <a href="{{ Storage::url($documents[$key]) }}" target="_blank" class="fw-medium text-primary">Lihat Dokumen</a>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <a href="{{ Storage::url($documents[$key]) }}" target="_blank" class="fw-medium text-primary">Lihat Dokumen</a>
+                                                    <button type="button" wire:click="openDocumentModal('{{ $key }}')" class="btn btn-link p-0 m-0">Ganti</button>
+                                                </div>
                                             @else
-                                                <p class="fw-medium text-muted mb-0">Belum diunggah</p>
+                                                <button type="button" wire:click="openDocumentModal('{{ $key }}')" class="btn btn-sm btn-outline-primary">Unggah</button>
                                             @endif
                                         </div>
                                     @endforeach
@@ -293,10 +296,17 @@
             <div class="modal-content">
                 <form wire:submit.prevent="uploadDocuments">
                     <div class="modal-header">
-                        <h5 class="modal-title">Unggah Dokumen Pendukung</h5>
+                        <h5 class="modal-title">
+                            @if($documentType)
+                                Ganti Dokumen {{ $docs[$documentType] ?? '' }}
+                            @else
+                                Unggah Dokumen Pendukung
+                            @endif
+                        </h5>
                         <button type="button" class="btn-close" wire:click="closeDocumentModal"></button>
                     </div>
                     <div class="modal-body">
+                        @if(!$documentType || $documentType === 'ktp')
                         <div class="mb-3">
                             <label class="form-label">KTP</label>
                             @if(isset($documents['ktp']))
@@ -316,6 +326,8 @@
                                 </div>
                             @endif
                         </div>
+                        @endif
+                        @if(!$documentType || $documentType === 'ijazah')
                         <div class="mb-3">
                             <label class="form-label">Ijazah</label>
                             @if(isset($documents['ijazah']))
@@ -335,6 +347,8 @@
                                 </div>
                             @endif
                         </div>
+                        @endif
+                        @if(!$documentType || $documentType === 'sertifikat')
                         <div class="mb-3">
                             <label class="form-label">Sertifikat</label>
                             @if(isset($documents['sertifikat']))
@@ -354,6 +368,8 @@
                                 </div>
                             @endif
                         </div>
+                        @endif
+                        @if(!$documentType || $documentType === 'surat_pengalaman')
                         <div class="mb-3">
                             <label class="form-label">Surat Pengalaman Kerja</label>
                             @if(isset($documents['surat_pengalaman']))
@@ -373,6 +389,8 @@
                                 </div>
                             @endif
                         </div>
+                        @endif
+                        @if(!$documentType || $documentType === 'skck')
                         <div class="mb-3">
                             <label class="form-label">SKCK</label>
                             @if(isset($documents['skck']))
@@ -392,6 +410,8 @@
                                 </div>
                             @endif
                         </div>
+                        @endif
+                        @if(!$documentType || $documentType === 'surat_sehat')
                         <div class="mb-3">
                             <label class="form-label">Surat Sehat</label>
                             @if(isset($documents['surat_sehat']))
@@ -411,6 +431,7 @@
                                 </div>
                             @endif
                         </div>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" wire:click="closeDocumentModal">Batal</button>
