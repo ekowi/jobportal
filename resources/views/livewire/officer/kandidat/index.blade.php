@@ -138,11 +138,13 @@
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Pendidikan</label>
-                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->pendidikan }}</p>
+                                    @php $edu = collect($selectedKandidat->education_history ?? [])->first(); @endphp
+                                    <p class="mb-0 fw-semibold">{{ $edu['level'] ?? '-' }}</p>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Pengalaman Kerja</label>
-                                    <p class="mb-0 fw-semibold">{{ $selectedKandidat->pengalaman_kerja }}</p>
+                                    @php $exp = collect($selectedKandidat->work_experiences ?? [])->first(); @endphp
+                                    <p class="mb-0 fw-semibold">{{ $exp['company'] ?? '-' }}</p>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Kemampuan</label>

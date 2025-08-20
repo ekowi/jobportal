@@ -44,4 +44,8 @@ Route::middleware([
     Route::get('/cbt/test', App\Livewire\Cbt\Test::class)->name('cbt.test');
     Route::get('/profile', App\Livewire\Profile\ShowProfile::class)->name('profile.show');
     Route::get('/profile/edit', App\Livewire\Profile\UpdateKandidatProfileForm::class)->name('profile.edit');
+    Route::get('/profile/experience', App\Livewire\Profile\UpdateWorkExperience::class)->name('profile.experience');
+    Route::get('/profile/education', App\Livewire\Profile\UpdateEducationHistory::class)->name('profile.education');
+    Route::get('/profile/language', App\Livewire\Profile\UpdateLanguageSkills::class)->name('profile.language');
+    Route::get('/profile/specific-info', App\Livewire\Profile\UpdateSpecificInfo::class)->name('profile.specific');
 });

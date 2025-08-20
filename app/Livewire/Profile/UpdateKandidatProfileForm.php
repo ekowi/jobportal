@@ -58,10 +58,7 @@ class UpdateKandidatProfileForm extends Component
                 'jenis_kelamin' => '',
                 'status_perkawinan' => '',
                 'agama' => '',
-                'pendidikan' => '',
-                'pengalaman_kerja' => '',
-                'kemampuan_bahasa' => '',
-                'kemampuan' => '',
+                // new specific info fields will be edited separately
             ];
         }
     }
@@ -90,10 +87,6 @@ class UpdateKandidatProfileForm extends Component
             'state.jenis_kelamin' => ['required', 'in:L,P'],
             'state.status_perkawinan' => ['required', 'string', 'max:50'],
             'state.agama' => ['required', 'string', 'max:50'],
-            'state.pendidikan' => ['required', 'string'],
-            'state.pengalaman_kerja' => ['nullable', 'string'],
-            'state.kemampuan_bahasa' => ['nullable', 'string'],
-            'state.kemampuan' => ['nullable', 'string'],
         ]);
 
         // Gunakan updateOrCreate untuk membuat profil jika belum ada, atau memperbarui jika sudah ada
