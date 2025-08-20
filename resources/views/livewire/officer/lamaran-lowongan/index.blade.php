@@ -71,7 +71,8 @@
                                         <col style="width:25%;">   {{-- Kandidat --}}
                                         <col style="width:22%;">   {{-- Posisi --}}
                                         <col style="width:16%;">   {{-- Tanggal Lamar --}}
-                                        <col style="width:32%;">   {{-- Aksi --}}
+                                        <col style="width:16%;">   {{-- Informasi Kandidat --}}
+                                        <col style="width:16%;">   {{-- Aksi --}}
                                     </colgroup>
 
                                     <thead class="table-light">
@@ -80,6 +81,7 @@
                                             <th>Kandidat</th>
                                             <th>Posisi</th>
                                             <th class="text-center">Tanggal Lamar</th>
+                                            <th class="text-center">Informasi Kandidat</th>
                                             <th class="text-center">Aksi</th>
                                         </tr>
                                     </thead>
@@ -108,12 +110,13 @@
 
                                                 <td class="text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
 
+                                                <td class="text-center">
+                                                    <button class="btn btn-outline-primary btn-sm" wire:click="viewDetail({{ $lamaran->id }})">
+                                                        <i class="mdi mdi-account-details me-1"></i> Detail
+                                                    </button>
+                                                </td>
+
                                                 <td>
-                                                    <div class="mb-2">
-                                                        <button class="btn btn-outline-primary btn-sm" wire:click="viewDetail({{ $lamaran->id }})">
-                                                            <i class="mdi mdi-account-details me-1"></i> Detail
-                                                        </button>
-                                                    </div>
                                                     {{-- Badge status terakhir (jika ada) --}}
                                                     @if($latest)
                                                         <div class="mb-2">
@@ -179,7 +182,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="5">
+                                                <td colspan="6">
                                                     <div class="text-center py-5">
                                                         <img src="{{ asset('images/illustrations/empty.svg') }}" alt="" class="mb-3" style="height: 80px;">
                                                         <h6 class="mb-1">Belum Ada Lamaran</h6>
