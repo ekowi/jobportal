@@ -40,6 +40,12 @@ class Kandidat extends Model
         'pendidikan',
         'kemampuan_bahasa',
         'kemampuan',
+        'ktp_path',
+        'ijazah_path',
+        'sertifikat_path',
+        'surat_pengalaman_path',
+        'skck_path',
+        'surat_sehat_path',
         'user_create',
         'user_update',
     ];
