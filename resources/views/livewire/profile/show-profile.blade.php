@@ -195,17 +195,45 @@
                                         <p class="fw-medium">{{ $kandidat->pendidikan }}</p>
                                     </div>
                                     <div class="col-md-12 mb-3">
-                                        <h6 class="text-muted mb-0">Pengalaman Kerja</h6>
-                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->pengalaman_kerja ?? '-' }}</p>
-                                    </div>
-                                    <div class="col-md-12 mb-3">
-                                        <h6 class="text-muted mb-0">Kemampuan Bahasa</h6>
-                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan_bahasa ?? '-' }}</p>
-                                    </div>
-                                    <div class="col-md-12 mb-3">
                                         <h6 class="text-muted mb-0">Keahlian Lainnya</h6>
                                         <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan ?? '-' }}</p>
                                     </div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-12 mb-4">
+                                        <h6 class="fw-bold text-primary border-bottom pb-2">
+                                            <i class="mdi mdi-briefcase-outline me-2"></i>Riwayat Pengalaman Kerja
+                                        </h6>
+                                    </div>
+                                    <div id="profile-work-experiences" class="row"></div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-12 mb-4">
+                                        <h6 class="fw-bold text-primary border-bottom pb-2">
+                                            <i class="mdi mdi-school-outline me-2"></i>Riwayat Pendidikan
+                                        </h6>
+                                    </div>
+                                    <div id="profile-education" class="row"></div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-12 mb-4">
+                                        <h6 class="fw-bold text-primary border-bottom pb-2">
+                                            <i class="mdi mdi-translate me-2"></i>Keterampilan Bahasa
+                                        </h6>
+                                    </div>
+                                    <div id="profile-languages" class="row"></div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-12 mb-4">
+                                        <h6 class="fw-bold text-primary border-bottom pb-2">
+                                            <i class="mdi mdi-information-outline me-2"></i>Informasi Spesifik
+                                        </h6>
+                                    </div>
+                                    <div id="profile-specific" class="col-12"></div>
                                 </div>
 
                                 {{-- Divider --}}
@@ -396,3 +424,50 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function renderOrEmpty(data, container, renderFn) {
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p class="text-muted">Belum ada data.</p>';
+                return;
+            }
+            renderFn(data, container);
+        }
+
+        const workData = JSON.parse(localStorage.getItem('work_experiences') || '[]');
+        const workContainer = document.getElementById('profile-work-experiences');
+        renderOrEmpty(workData, workContainer, (data, el) => {
+            data.forEach(item => {
+                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.position} - ${item.company}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Bisnis: ${item.business}</p><p class="mb-0">Alasan keluar: ${item.reason}</p></div>`;
+            });
+        });
+
+        const eduData = JSON.parse(localStorage.getItem('education_history') || '[]');
+        const eduContainer = document.getElementById('profile-education');
+        renderOrEmpty(eduData, eduContainer, (data, el) => {
+            data.forEach(item => {
+                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.name} - ${item.major}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Tingkat: ${item.level}${item.highest ? ' (Tertinggi)' : ''}</p></div>`;
+            });
+        });
+
+        const langData = JSON.parse(localStorage.getItem('language_skills') || '[]');
+        const langContainer = document.getElementById('profile-languages');
+        renderOrEmpty(langData, langContainer, (data, el) => {
+            data.forEach(item => {
+                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.language}</p><p class="mb-0">Berbicara: ${item.speaking}, Membaca: ${item.reading}, Menulis: ${item.writing}</p></div>`;
+            });
+        });
+
+        const spec = JSON.parse(localStorage.getItem('specific_info') || '{}');
+        const specContainer = document.getElementById('profile-specific');
+        if (!spec.pernah && !spec.info) {
+            specContainer.innerHTML = '<p class="text-muted">Belum ada data.</p>';
+        } else {
+            specContainer.innerHTML = `<p class="mb-1">Pernah bekerja di perusahaan ini? <strong>${spec.pernah || '-'}</strong></p>` +
+                (spec.pernah === 'Ya' ? `<p class="mb-1">Lokasi: <strong>${spec.lokasi || '-'}</strong></p>` : '') +
+                `<p class="mb-0">Sumber informasi pekerjaan: <strong>${spec.info || '-'}</strong></p>`;
+        }
+    });
+</script>
+@endpush
