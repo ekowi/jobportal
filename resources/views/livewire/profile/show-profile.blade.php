@@ -183,75 +183,28 @@
                                 {{-- Divider --}}
                                 <hr class="my-4">
 
-                                {{-- Riwayat Pengalaman Kerja --}}
+                                {{-- Data Pendidikan & Kemampuan Section --}}
                                 <div class="row">
-                                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+                                    <div class="col-12 mb-4">
                                         <h6 class="fw-bold text-primary border-bottom pb-2">
-                                            <i class="mdi mdi-briefcase-outline me-2"></i>Riwayat Pengalaman Kerja
+                                            <i class="mdi mdi-school-outline me-2"></i>Data Pendidikan & Kemampuan
                                         </h6>
-                                        <a href="{{ route('profile.experience.edit') }}" class="btn btn-sm btn-primary">
-                                            <i class="mdi mdi-pencil me-1"></i>Edit
-                                        </a>
                                     </div>
-                                    <div class="col-12">
-                                        <p class="text-muted">Belum ada riwayat pengalaman kerja.</p>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Pendidikan Terakhir</h6>
+                                        <p class="fw-medium">{{ $kandidat->pendidikan }}</p>
                                     </div>
-                                </div>
-
-                                {{-- Divider --}}
-                                <hr class="my-4">
-
-                                {{-- Riwayat Pendidikan --}}
-                                <div class="row">
-                                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
-                                        <h6 class="fw-bold text-primary border-bottom pb-2">
-                                            <i class="mdi mdi-school-outline me-2"></i>Riwayat Pendidikan
-                                        </h6>
-                                        <a href="{{ route('profile.education.edit') }}" class="btn btn-sm btn-primary">
-                                            <i class="mdi mdi-pencil me-1"></i>Edit
-                                        </a>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Pengalaman Kerja</h6>
+                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->pengalaman_kerja ?? '-' }}</p>
                                     </div>
-                                    <div class="col-12">
-                                        <p class="text-muted">Belum ada riwayat pendidikan.</p>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Kemampuan Bahasa</h6>
+                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan_bahasa ?? '-' }}</p>
                                     </div>
-                                </div>
-
-                                {{-- Divider --}}
-                                <hr class="my-4">
-
-                                {{-- Keterampilan Bahasa --}}
-                                <div class="row">
-                                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
-                                        <h6 class="fw-bold text-primary border-bottom pb-2">
-                                            <i class="mdi mdi-translate me-2"></i>Keterampilan Bahasa
-                                        </h6>
-                                        <a href="{{ route('profile.language.edit') }}" class="btn btn-sm btn-primary">
-                                            <i class="mdi mdi-pencil me-1"></i>Edit
-                                        </a>
-                                    </div>
-                                    <div class="col-12">
-                                        <p class="text-muted">Belum ada keterampilan bahasa.</p>
-                                    </div>
-                                </div>
-
-                                {{-- Divider --}}
-                                <hr class="my-4">
-
-                                {{-- Spesifik Informasi --}}
-                                <div class="row">
-                                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
-                                        <h6 class="fw-bold text-primary border-bottom pb-2">
-                                            <i class="mdi mdi-information-outline me-2"></i>Spesifik Informasi
-                                        </h6>
-                                        <a href="{{ route('profile.specific.edit') }}" class="btn btn-sm btn-primary">
-                                            <i class="mdi mdi-pencil me-1"></i>Edit
-                                        </a>
-                                    </div>
-                                    <div class="col-12">
-                                        <p class="text-muted mb-1">Apakah pernah bekerja di Perusahaan ini sebelumnya? -</p>
-                                        <p class="text-muted mb-1">Jika ya, di lokasi mana anda bekerja? -</p>
-                                        <p class="text-muted mb-1">Bagaimana anda mendapatkan informasi pekerjaan ini? -</p>
-                                        <p class="text-muted">Identifikasi jenis kelamin -</p>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Keahlian Lainnya</h6>
+                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan ?? '-' }}</p>
                                     </div>
                                 </div>
 

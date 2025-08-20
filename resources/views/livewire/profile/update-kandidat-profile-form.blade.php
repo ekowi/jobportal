@@ -224,6 +224,71 @@
                                 </div>
                             </div>
 
+                            {{-- Divider --}}
+                            <hr class="my-4">
+
+                            {{-- Data Pendidikan & Kemampuan Section --}}
+                            <div class="row">
+                                <div class="col-12 mb-4">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2">
+                                        <i class="mdi mdi-school-outline me-2"></i>Data Pendidikan & Kemampuan
+                                    </h6>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="pendidikan" class="form-label">{{ __('Pendidikan Terakhir') }} <span class="text-danger">*</span></label>
+                                    <select id="pendidikan" wire:model.defer="state.pendidikan" class="form-select @error('state.pendidikan') is-invalid @enderror">
+                                        <option value="">Pilih...</option>
+                                        <option value="SD">SD</option>
+                                        <option value="SMP">SMP</option>
+                                        <option value="SMA/SMK">SMA/SMK</option>
+                                        <option value="D1">D1</option>
+                                        <option value="D2">D2</option>
+                                        <option value="D3">D3</option>
+                                        <option value="D4">D4</option>
+                                        <option value="S1">S1</option>
+                                        <option value="S2">S2</option>
+                                        <option value="S3">S3</option>
+                                    </select>
+                                    @error('state.pendidikan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="pengalaman_kerja" class="form-label">{{ __('Pengalaman Kerja (Opsional)') }}</label>
+                                    <textarea id="pengalaman_kerja" class="form-control @error('state.pengalaman_kerja') is-invalid @enderror" 
+                                        wire:model.defer="state.pengalaman_kerja" rows="4" 
+                                        placeholder="Deskripsikan pengalaman kerja Anda, termasuk posisi, perusahaan, dan periode kerja"></textarea>
+                                    <small class="text-muted">Contoh: Software Developer di PT ABC (2020-2023), Web Designer di PT XYZ (2018-2020)</small>
+                                    @error('state.pengalaman_kerja')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <label for="kemampuan_bahasa" class="form-label">{{ __('Kemampuan Bahasa (Opsional)') }}</label>
+                                    <textarea id="kemampuan_bahasa" class="form-control @error('state.kemampuan_bahasa') is-invalid @enderror" 
+                                        wire:model.defer="state.kemampuan_bahasa" rows="2" 
+                                        placeholder="Sebutkan bahasa yang Anda kuasai dan tingkat kemahirannya"></textarea>
+                                    <small class="text-muted">Contoh: Indonesia (Native), Inggris (Menengah), Mandarin (Pemula)</small>
+                                    @error('state.kemampuan_bahasa')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="kemampuan" class="form-label">{{ __('Keahlian (Opsional)') }}</label>
+                                    <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror" 
+                                        wire:model.defer="state.kemampuan" rows="4" 
+                                        placeholder="Sebutkan keahlian yang Anda miliki, seperti bahasa pemrograman, software, sertifikasi, dll"></textarea>
+                                    <small class="text-muted">Contoh: JavaScript, PHP, Laravel, MySQL, Adobe Photoshop, Google Analytics</small>
+                                    @error('state.kemampuan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
                             {{-- Action Buttons --}}
                             <div class="row">
                                 <div class="col-12">
