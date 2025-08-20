@@ -237,21 +237,6 @@
                                 {{-- Divider --}}
                                 <hr class="my-4">
 
-                                {{-- Keahlian Lainnya --}}
-                                <div class="row">
-                                    <div class="col-12 mb-4">
-                                        <h6 class="fw-bold text-primary border-bottom pb-2">
-                                            <i class="mdi mdi-lightbulb-outline me-2"></i>Keahlian Lainnya
-                                        </h6>
-                                    </div>
-                                    <div class="col-12">
-                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan ?? '-' }}</p>
-                                    </div>
-                                </div>
-
-                                {{-- Divider --}}
-                                <hr class="my-4">
-
                                 {{-- Spesifik Informasi --}}
                                 <div class="row">
                                     <div class="col-12 mb-4 d-flex justify-content-between align-items-center">

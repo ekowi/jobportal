@@ -10,6 +10,15 @@
                     </div>
                 </div>
             </div>
+            <div class="position-middle-bottom">
+                <nav aria-label="breadcrumb" class="d-block">
+                    <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('profile.show') }}">Profile</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit Pengalaman Kerja</li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </section>
     <div class="position-relative">
@@ -25,7 +34,10 @@
                 <div class="col-12">
                     <div class="card border-0 shadow rounded">
                         <div class="card-header bg-primary p-4">
-                            <h5 class="card-title text-white mb-0">Pengalaman Kerja</h5>
+                            <h5 class="card-title text-white mb-0">
+                                <i class="mdi mdi-briefcase-outline me-2"></i>Pengalaman Kerja
+                            </h5>
+                            <p class="text-white-50 mb-0 mt-1">Tambah atau perbarui pengalaman kerja Anda.</p>
                         </div>
                         <form class="card-body p-4">
                             <div id="experience-container">
