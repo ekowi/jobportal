@@ -42,9 +42,6 @@
                                 <i class="mdi mdi-account-circle-outline me-2"></i>Informasi Profil
                             </h5>
                             <div class="d-flex gap-2">
-                                <button wire:click="openDocumentModal" class="btn btn-sm btn-light">
-                                    <i class="mdi mdi-upload me-1"></i>Upload Dokumen
-                                </button>
                                 <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-light">
                                     <i class="mdi mdi-pencil me-1"></i>Edit Profil
                                 </a>
