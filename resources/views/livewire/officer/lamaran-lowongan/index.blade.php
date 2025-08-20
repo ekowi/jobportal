@@ -40,7 +40,7 @@
                             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
                                 <div>
                                     <h6 class="mb-1">Daftar Lamaran</h6>
-                                    <p class="text-muted mb-0">Ubah status lamaran kandidat via dropdown.</p>
+                                    <p class="text-muted mb-0">Ubah status lamaran kandidat melalui tombol aksi.</p>
                                 </div>
                                 <div class="w-100 w-md-50" style="max-width: 360px;">
                                     <div class="position-relative">
@@ -64,7 +64,7 @@
                             @endif
 
                             <div class="table-responsive">
-                                <table class="table table-centered table-hover align-middle">
+                                <table class="table table-striped table-hover align-middle">
                                     {{-- Atur persentase kolom dengan colgroup --}}
                                     <colgroup>
                                         <col style="width:5%;">
@@ -111,24 +111,20 @@
                                                 <td class="text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
 
                                                 <td class="text-center">
-                                                    <button class="btn btn-outline-primary btn-sm" wire:click="viewDetail({{ $lamaran->id }})">
-                                                        <i class="mdi mdi-account-details me-1"></i> Detail
+                                                    <button class="btn btn-outline-primary btn-sm" title="Detail kandidat" wire:click="viewDetail({{ $lamaran->id }})">
+                                                        <i class="mdi mdi-account-details"></i>
                                                     </button>
                                                 </td>
 
-                                                <td>
+                                                <td class="text-center">
                                                     {{-- Badge status terakhir (jika ada) --}}
                                                     @if($latest)
-                                                        <div class="mb-2">
-                                                            @php
-                                                                $color = 'info';
-                                                                if ($latest->status === 'diterima') $color = 'success';
-                                                                elseif ($latest->status === 'ditolak') $color = 'danger';
-                                                            @endphp
-                                                            <span class="badge bg-{{ $color }}">
-                                                                {{ ucfirst($latest->status) }}
-                                                            </span>
-                                                        </div>
+                                                        @php
+                                                            $color = 'info';
+                                                            if ($latest->status === 'diterima') $color = 'success';
+                                                            elseif ($latest->status === 'ditolak') $color = 'danger';
+                                                        @endphp
+                                                        <span class="badge bg-{{ $color }} mb-2">{{ ucfirst($latest->status) }}</span>
                                                     @endif
 
                                                     {{-- Detail Interview --}}
@@ -144,39 +140,20 @@
                                                         </div>
                                                     @endif
 
-                                                    {{-- Dropdown ubah status --}}
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
-                                                                id="dropdownStatus{{ $lamaran->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            Ubah Status
+                                                    {{-- Aksi cepat --}}
+                                                    <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
+                                                        <button type="button" class="btn btn-outline-success" title="Terima" wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')">
+                                                            <i class="mdi mdi-check-circle-outline"></i>
                                                         </button>
-                                                        <ul class="dropdown-menu" aria-labelledby="dropdownStatus{{ $lamaran->id }}">
-                                                            <li>
-                                                                <a href="#" class="dropdown-item"
-                                                                   wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')">
-                                                                    <i class="mdi mdi-check-circle-outline me-1"></i> Diterima
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="#" class="dropdown-item"
-                                                                   wire:click.prevent="prepareInterview({{ $lamaran->id }})">
-                                                                    <i class="mdi mdi-calendar-clock me-1"></i> Interview
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="#" class="dropdown-item"
-                                                                   wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')">
-                                                                    <i class="mdi mdi-brain me-1"></i> Psikotes
-                                                                </a>
-                                                            </li>
-                                                            <li><hr class="dropdown-divider"></li>
-                                                            <li>
-                                                                <a href="#" class="dropdown-item text-danger"
-                                                                   wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')">
-                                                                    <i class="mdi mdi-close-circle-outline me-1"></i> Tolak
-                                                                </a>
-                                                            </li>
-                                                        </ul>
+                                                        <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" wire:click.prevent="prepareInterview({{ $lamaran->id }})">
+                                                            <i class="mdi mdi-calendar-clock"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-warning" title="Psikotes" wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')">
+                                                            <i class="mdi mdi-brain"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-danger" title="Tolak" wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')">
+                                                            <i class="mdi mdi-close-circle-outline"></i>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
