@@ -423,56 +423,48 @@
 </div>
 @push('scripts')
 <script>
-    document.addEventListener('livewire:load', function () {
-        function renderProfileData() {
-            function renderOrEmpty(data, container, renderFn) {
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p class="text-muted">Belum ada data.</p>';
-                    return;
-                }
-                renderFn(data, container);
+    document.addEventListener('DOMContentLoaded', function () {
+        function renderOrEmpty(data, container, renderFn) {
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p class="text-muted">Belum ada data.</p>';
+                return;
             }
-
-            const workData = JSON.parse(localStorage.getItem('work_experiences') || '[]');
-            const workContainer = document.getElementById('profile-work-experiences');
-            renderOrEmpty(workData, workContainer, (data, el) => {
-                data.forEach(item => {
-                    el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.position} - ${item.company}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Bisnis: ${item.business}</p><p class="mb-0">Alasan keluar: ${item.reason}</p></div>`;
-                });
-            });
-
-            const eduData = JSON.parse(localStorage.getItem('education_history') || '[]');
-            const eduContainer = document.getElementById('profile-education');
-            renderOrEmpty(eduData, eduContainer, (data, el) => {
-                data.forEach(item => {
-                    el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.name} - ${item.major}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Tingkat: ${item.level}${item.highest ? ' (Tertinggi)' : ''}</p></div>`;
-                });
-            });
-
-            const langData = JSON.parse(localStorage.getItem('language_skills') || '[]');
-            const langContainer = document.getElementById('profile-languages');
-            renderOrEmpty(langData, langContainer, (data, el) => {
-                data.forEach(item => {
-                    el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.language}</p><p class="mb-0">Berbicara: ${item.speaking}, Membaca: ${item.reading}, Menulis: ${item.writing}</p></div>`;
-                });
-            });
-
-            const spec = JSON.parse(localStorage.getItem('specific_info') || '{}');
-            const specContainer = document.getElementById('profile-specific');
-            if (!spec.pernah && !spec.info) {
-                specContainer.innerHTML = '<p class="text-muted">Belum ada data.</p>';
-            } else {
-                specContainer.innerHTML = `<p class="mb-1">Pernah bekerja di perusahaan ini? <strong>${spec.pernah || '-'}</strong></p>` +
-                    (spec.pernah === 'Ya' ? `<p class="mb-1">Lokasi: <strong>${spec.lokasi || '-'}</strong></p>` : '') +
-                    `<p class="mb-0">Sumber informasi pekerjaan: <strong>${spec.info || '-'}</strong></p>`;
-            }
+            renderFn(data, container);
         }
 
-        renderProfileData();
-
-        Livewire.hook('message.processed', (message, component) => {
-            renderProfileData();
+        const workData = JSON.parse(localStorage.getItem('work_experiences') || '[]');
+        const workContainer = document.getElementById('profile-work-experiences');
+        renderOrEmpty(workData, workContainer, (data, el) => {
+            data.forEach(item => {
+                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.position} - ${item.company}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Bisnis: ${item.business}</p><p class="mb-0">Alasan keluar: ${item.reason}</p></div>`;
+            });
         });
+
+        const eduData = JSON.parse(localStorage.getItem('education_history') || '[]');
+        const eduContainer = document.getElementById('profile-education');
+        renderOrEmpty(eduData, eduContainer, (data, el) => {
+            data.forEach(item => {
+                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.name} - ${item.major}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Tingkat: ${item.level}${item.highest ? ' (Tertinggi)' : ''}</p></div>`;
+            });
+        });
+
+        const langData = JSON.parse(localStorage.getItem('language_skills') || '[]');
+        const langContainer = document.getElementById('profile-languages');
+        renderOrEmpty(langData, langContainer, (data, el) => {
+            data.forEach(item => {
+                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.language}</p><p class="mb-0">Berbicara: ${item.speaking}, Membaca: ${item.reading}, Menulis: ${item.writing}</p></div>`;
+            });
+        });
+
+        const spec = JSON.parse(localStorage.getItem('specific_info') || '{}');
+        const specContainer = document.getElementById('profile-specific');
+        if (!spec.pernah && !spec.info) {
+            specContainer.innerHTML = '<p class="text-muted">Belum ada data.</p>';
+        } else {
+            specContainer.innerHTML = `<p class="mb-1">Pernah bekerja di perusahaan ini? <strong>${spec.pernah || '-'}</strong></p>` +
+                (spec.pernah === 'Ya' ? `<p class="mb-1">Lokasi: <strong>${spec.lokasi || '-'}</strong></p>` : '') +
+                `<p class="mb-0">Sumber informasi pekerjaan: <strong>${spec.info || '-'}</strong></p>`;
+        }
     });
 </script>
 @endpush
