@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Str;
+@endphp
 <div>
     {{-- Hero Section --}}
     <section class="bg-half-170 d-table w-100" style="background: url('{{ asset('images/hero/bg.jpg') }}');">
@@ -276,7 +279,11 @@
                             <label class="form-label">KTP</label>
                             @if(isset($documents['ktp']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['ktp'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if(Str::contains(Str::lower($documents['ktp']), '.pdf'))
+                                        <iframe src="{{ $documents['ktp'] }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $documents['ktp'] }}" class="img-fluid rounded" style="max-width: 200px;"/>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="ktp">
@@ -295,7 +302,11 @@
                             <label class="form-label">Ijazah</label>
                             @if(isset($documents['ijazah']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['ijazah'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if(Str::contains(Str::lower($documents['ijazah']), '.pdf'))
+                                        <iframe src="{{ $documents['ijazah'] }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $documents['ijazah'] }}" class="img-fluid rounded" style="max-width: 200px;"/>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="ijazah">
@@ -314,7 +325,11 @@
                             <label class="form-label">Sertifikat</label>
                             @if(isset($documents['sertifikat']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['sertifikat'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if(Str::contains(Str::lower($documents['sertifikat']), '.pdf'))
+                                        <iframe src="{{ $documents['sertifikat'] }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $documents['sertifikat'] }}" class="img-fluid rounded" style="max-width: 200px;"/>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="sertifikat">
@@ -333,7 +348,11 @@
                             <label class="form-label">Surat Pengalaman Kerja</label>
                             @if(isset($documents['surat_pengalaman']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['surat_pengalaman'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if(Str::contains(Str::lower($documents['surat_pengalaman']), '.pdf'))
+                                        <iframe src="{{ $documents['surat_pengalaman'] }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $documents['surat_pengalaman'] }}" class="img-fluid rounded" style="max-width: 200px;"/>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="surat_pengalaman">
@@ -352,7 +371,11 @@
                             <label class="form-label">SKCK</label>
                             @if(isset($documents['skck']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['skck'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if(Str::contains(Str::lower($documents['skck']), '.pdf'))
+                                        <iframe src="{{ $documents['skck'] }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $documents['skck'] }}" class="img-fluid rounded" style="max-width: 200px;"/>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="skck">
@@ -371,7 +394,11 @@
                             <label class="form-label">Surat Sehat</label>
                             @if(isset($documents['surat_sehat']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['surat_sehat'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if(Str::contains(Str::lower($documents['surat_sehat']), '.pdf'))
+                                        <iframe src="{{ $documents['surat_sehat'] }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $documents['surat_sehat'] }}" class="img-fluid rounded" style="max-width: 200px;"/>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="surat_sehat">
