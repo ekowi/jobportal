@@ -262,9 +262,13 @@
                                         <div class="col-md-6 mb-3">
                                             <h6 class="text-muted mb-0">{{ $label }}</h6>
                                             @if (isset($documents[$key]))
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <a href="{{ Storage::url($documents[$key]) }}" target="_blank" class="fw-medium text-primary">Lihat Dokumen</a>
-                                                    <button type="button" wire:click="openDocumentModal('{{ $key }}')" class="btn btn-link p-0 m-0">Ganti</button>
+                                                <div>
+                                                    <a href="{{ Storage::url($documents[$key]) }}" target="_blank" class="fw-medium text-primary d-block mb-2">
+                                                        <i class="mdi mdi-eye-outline me-1"></i>Lihat Dokumen
+                                                    </a>
+                                                    <button type="button" wire:click="openDocumentModal('{{ $key }}')" class="btn btn-sm btn-outline-secondary">
+                                                        <i class="mdi mdi-swap-horizontal me-1"></i>Ganti
+                                                    </button>
                                                 </div>
                                             @else
                                                 <button type="button" wire:click="openDocumentModal('{{ $key }}')" class="btn btn-sm btn-outline-primary">Unggah</button>
