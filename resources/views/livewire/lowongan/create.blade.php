@@ -174,32 +174,6 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">Dokumen Pendukung Diperlukan:</label>
-                                            <div class="row">
-                                                @php
-                                                    $docs = [
-                                                        'ktp' => 'KTP',
-                                                        'ijazah' => 'Ijazah',
-                                                        'sertifikat' => 'Sertifikat',
-                                                        'surat_pengalaman' => 'Surat Pengalaman Kerja',
-                                                        'skck' => 'SKCK',
-                                                        'surat_sehat' => 'Surat Sehat',
-                                                    ];
-                                                @endphp
-                                                @foreach($docs as $key => $label)
-                                                    <div class="col-md-4">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="doc_{{ $key }}" value="{{ $key }}" wire:model.defer="dokumen_pendukung">
-                                                            <label class="form-check-label" for="doc_{{ $key }}">{{ $label }}</label>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                            @error('dokumen_pendukung') <div class="text-danger">{{ $message }}</div> @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="mb-3">
                                             <label class="form-label fw-semibold">Photo:</label>
                                             <input type="file" wire:model="foto" class="form-control" accept="image/*">
                                             @error('foto') <div class="text-danger">{{ $message }}</div> @enderror

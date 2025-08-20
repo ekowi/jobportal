@@ -24,7 +24,6 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->string('range_gaji')->nullable();
             $table->text('kemampuan_yang_dibutuhkan')->nullable();
-            $table->json('dokumen_pendukung')->nullable();
             $table->boolean('is_active')->default(true);
             $table->enum('status', ['posted', 'archived'])->default('posted');
             $table->foreignId('user_create')->constrained('users')->onDelete('cascade');

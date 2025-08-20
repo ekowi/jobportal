@@ -22,7 +22,6 @@ class Create extends Component
     public $deskripsi = '';
     public $range_gaji;
     public $kemampuan_yang_dibutuhkan;
-    public $dokumen_pendukung = [];
 
     public $status = 'posted'; // draft|scheduled
 
@@ -60,7 +59,6 @@ class Create extends Component
             'deskripsi' => 'required|min:10',
             'range_gaji' => 'nullable|string',
             'kemampuan_yang_dibutuhkan' => 'nullable|string',
-            'dokumen_pendukung' => 'nullable|array',
         ];
     }
 
@@ -91,7 +89,6 @@ class Create extends Component
             'deskripsi' => $this->deskripsi,
             'range_gaji' => $this->range_gaji,
             'kemampuan_yang_dibutuhkan' => $this->kemampuan_yang_dibutuhkan,
-            'dokumen_pendukung' => $this->dokumen_pendukung,
             'is_active' => true,
             'status' => $this->status,
             'user_create' => Auth::id(),

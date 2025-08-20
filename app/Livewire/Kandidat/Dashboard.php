@@ -7,20 +7,17 @@ use Livewire\Component;
 use App\Models\Lowongan;
 use App\Models\Kandidat;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 
 class Dashboard extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithPagination;
 
     public $showJobModal = false;
     public $showProfileModal = false;
     public $showBmiTestModal = false;
     public $showBlindTestModal = false;
     public $showResultModal = false;
-    public $showDocumentModal = false;
     public $selectedLowongan;
     
     // Properti untuk form kandidat
@@ -54,17 +51,6 @@ class Dashboard extends Component
     public $total_blind_tests = 5;
     public $blind_test_options = [];
     public $testResults = [];
-    public $requiredDocuments = [];
-    public $missingDocuments = [];
-    public $documents = [];
-
-    // Uploaded document placeholders
-    public $ktp;
-    public $ijazah;
-    public $sertifikat;
-    public $surat_pengalaman;
-    public $skck;
-    public $surat_sehat;
 
     protected $correct_blind_test_answers = [ 1 => '8', 2 => '29', 3 => '5', 4 => '6', 5 => '42' ];
 
@@ -157,8 +143,6 @@ class Dashboard extends Component
             if (!$user->kandidat) $this->showProfileModal = true;
             elseif (!$user->kandidat->bmi_score) $this->showBmiTestModal = true;
             elseif (!$user->kandidat->blind_score) $this->showBlindTestModal = true;
-            elseif (!$this->hasRequiredDocuments($this->selectedLowongan))
-                $this->openDocumentModal();
             else $this->showJobModal = true;
         } else {
             // Alur untuk pengguna tamu: langsung mulai tes
@@ -280,87 +264,6 @@ class Dashboard extends Component
 
         if ($meetsBmi && $meetsBlind) {
             $this->dispatch('prompt-auth-after-test');
-        }
-    }
-
-    public function openDocumentModal()
-    {
-        $this->resetUploadFields();
-        $this->refreshDocuments();
-        $this->showDocumentModal = true;
-    }
-
-    public function closeDocumentModal()
-    {
-        $this->showDocumentModal = false;
-    }
-
-    protected function resetUploadFields()
-    {
-        $this->ktp = $this->ijazah = $this->sertifikat = $this->surat_pengalaman = $this->skck = $this->surat_sehat = null;
-    }
-
-    protected function getUserDocuments()
-    {
-        $userId = Auth::id();
-        $path = "documents/{$userId}";
-        $files = [];
-        if (Storage::disk('public')->exists($path)) {
-            foreach (Storage::disk('public')->files($path) as $file) {
-                $name = pathinfo($file, PATHINFO_FILENAME);
-                $files[$name] = Storage::url($file);
-            }
-        }
-        return $files;
-    }
-
-    protected function refreshDocuments()
-    {
-        $this->documents = $this->getUserDocuments();
-    }
-
-    protected function hasRequiredDocuments($lowongan)
-    {
-        $this->requiredDocuments = $lowongan->dokumen_pendukung ?? [];
-        $userDocs = $this->getUserDocuments();
-        $this->missingDocuments = [];
-        foreach ($this->requiredDocuments as $doc) {
-            if (!isset($userDocs[$doc])) {
-                $this->missingDocuments[] = $doc;
-            }
-        }
-        return empty($this->missingDocuments);
-    }
-
-    public function uploadDocuments()
-    {
-        $userId = Auth::id();
-        $basePath = "documents/{$userId}";
-
-        if ($this->ktp) {
-            $this->ktp->storeAs($basePath, 'ktp.' . $this->ktp->getClientOriginalExtension(), 'public');
-        }
-        if ($this->ijazah) {
-            $this->ijazah->storeAs($basePath, 'ijazah.' . $this->ijazah->getClientOriginalExtension(), 'public');
-        }
-        if ($this->sertifikat) {
-            $this->sertifikat->storeAs($basePath, 'sertifikat.' . $this->sertifikat->getClientOriginalExtension(), 'public');
-        }
-        if ($this->surat_pengalaman) {
-            $this->surat_pengalaman->storeAs($basePath, 'surat_pengalaman.' . $this->surat_pengalaman->getClientOriginalExtension(), 'public');
-        }
-        if ($this->skck) {
-            $this->skck->storeAs($basePath, 'skck.' . $this->skck->getClientOriginalExtension(), 'public');
-        }
-        if ($this->surat_sehat) {
-            $this->surat_sehat->storeAs($basePath, 'surat_sehat.' . $this->surat_sehat->getClientOriginalExtension(), 'public');
-        }
-
-        $this->refreshDocuments();
-        $this->closeDocumentModal();
-
-        if ($this->selectedLowongan && $this->hasRequiredDocuments($this->selectedLowongan)) {
-            $this->showJobModal = true;
         }
     }
 

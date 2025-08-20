@@ -23,7 +23,6 @@ class Lowongan extends Model
         'deskripsi',
         'range_gaji',
         'kemampuan_yang_dibutuhkan',
-        'dokumen_pendukung',
         'is_aktif',
         'kategori_lowongan_id',
         'user_create',
@@ -35,7 +34,6 @@ class Lowongan extends Model
         'tanggal_berakhir' => 'date',
         'is_remote' => 'boolean',
         'is_aktif' => 'boolean',
-        'dokumen_pendukung' => 'array',
     ];
 
     /**
