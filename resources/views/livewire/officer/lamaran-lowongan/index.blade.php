@@ -109,9 +109,6 @@
                                                 <td class="text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
 
                                                 <td>
-                                                    <button class="btn btn-outline-primary btn-sm mb-2" wire:click="openProfile({{ $lamaran->kandidat_id }})">
-                                                        <i class="mdi mdi-eye"></i> Lihat Profil
-                                                    </button>
                                                     {{-- Badge status terakhir (jika ada) --}}
                                                     @if($latest)
                                                         <div class="mb-2">
@@ -237,50 +234,6 @@
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detail Kandidat -->
-    <div class="modal fade @if($showProfileModal) show @endif" tabindex="-1" style="@if($showProfileModal) display:block; @endif">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detail Kandidat</h5>
-                    <button type="button" class="btn-close" wire:click="closeProfile"></button>
-                </div>
-                <div class="modal-body">
-                    @if($selectedKandidat)
-                        <div class="mb-4">
-                            <h6 class="fw-bold">Data Diri</h6>
-                            <p class="mb-1"><strong>Nama:</strong> {{ $selectedKandidat->full_name }}</p>
-                            <p class="mb-1"><strong>Email:</strong> {{ optional($selectedKandidat->user)->email }}</p>
-                            <p class="mb-1"><strong>No Telepon:</strong> {{ $selectedKandidat->no_telpon }}</p>
-                            <p class="mb-1"><strong>Alamat:</strong> {{ $selectedKandidat->formatted_address }}</p>
-                            <p class="mb-1"><strong>No KTP:</strong> {{ $selectedKandidat->no_ktp }}</p>
-                            <p class="mb-1"><strong>No NPWP:</strong> {{ $selectedKandidat->no_npwp }}</p>
-                            <p class="mb-1"><strong>Tempat, Tanggal Lahir:</strong> {{ $selectedKandidat->tempat_lahir }}, {{ optional($selectedKandidat->tanggal_lahir)->format('d M Y') }}</p>
-                            <p class="mb-1"><strong>Jenis Kelamin:</strong> {{ $selectedKandidat->jenis_kelamin }}</p>
-                            <p class="mb-1"><strong>Status Perkawinan:</strong> {{ $selectedKandidat->status_perkawinan }}</p>
-                            <p class="mb-1"><strong>Agama:</strong> {{ $selectedKandidat->agama }}</p>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold">Dokumen Pendukung</h6>
-                            @if($documents)
-                                <ul class="list-unstyled mb-0">
-                                    @foreach($documents as $name => $url)
-                                        <li><a href="{{ $url }}" target="_blank" class="text-primary">{{ ucwords(str_replace('_',' ', $name)) }}</a></li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <p class="text-muted mb-0">Belum ada dokumen.</p>
-                            @endif
-                        </div>
-                    @endif
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" wire:click="closeProfile">Tutup</button>
-                </div>
             </div>
         </div>
     </div>

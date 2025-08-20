@@ -6,9 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\LamarLowongan;
 use App\Models\User;
-use App\Models\Kandidat;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class Index extends Component
 {
@@ -25,11 +23,6 @@ class Index extends Component
     public $interviewLink;
     public $interviewWaktu;
     public $interviewOfficer;
-
-    // Modal melihat profil kandidat
-    public $showProfileModal = false;
-    public $selectedKandidat;
-    public $documents = [];
 
 
     public function mount()
@@ -53,34 +46,6 @@ class Index extends Component
         return view('livewire.officer.lamaran-lowongan.index', [
             'lamaranList' => $lamaran
         ]);
-    }
-
-    public function openProfile($kandidatId)
-    {
-        $this->selectedKandidat = Kandidat::with('user')->find($kandidatId);
-        $this->loadDocuments();
-        $this->showProfileModal = true;
-    }
-
-    protected function loadDocuments()
-    {
-        $this->documents = [];
-        if ($this->selectedKandidat) {
-            $path = 'documents/' . $this->selectedKandidat->user_id;
-            if (Storage::disk('public')->exists($path)) {
-                foreach (Storage::disk('public')->files($path) as $file) {
-                    $name = pathinfo($file, PATHINFO_FILENAME);
-                    $this->documents[$name] = Storage::url($file);
-                }
-            }
-        }
-    }
-
-    public function closeProfile()
-    {
-        $this->showProfileModal = false;
-        $this->selectedKandidat = null;
-        $this->documents = [];
     }
 
     // Backward compatible dengan tombol lama
