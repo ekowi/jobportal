@@ -183,89 +183,30 @@
                                 {{-- Divider --}}
                                 <hr class="my-4">
 
-                                {{-- Riwayat dan Kemampuan Section --}}
-        <div class="row">
-            <div class="col-12 mb-4">
-                <h6 class="fw-bold text-primary border-bottom pb-2">
-                    <i class="mdi mdi-school-outline me-2"></i>Riwayat & Kemampuan
-                </h6>
-            </div>
-
-            <div class="col-12 mb-3">
-                <div class="d-flex justify-content-between">
-                    <h6 class="text-muted mb-0">Riwayat Pengalaman Kerja</h6>
-                    <a href="{{ route('profile.experience') }}" class="btn btn-sm btn-link">Edit</a>
-                </div>
-                @php $experiences = $kandidat->work_experiences ?? []; @endphp
-                @forelse ($experiences as $exp)
-                    <p class="fw-medium mb-1">{{ $exp['start'] ?? '-' }} - {{ $exp['end'] ?? '-' }} | {{ $exp['company'] ?? '-' }} ({{ $exp['position'] ?? '-' }})</p>
-                    <p class="text-muted mb-2">{{ $exp['business'] ?? '-' }} | Alasan: {{ $exp['reason'] ?? '-' }}</p>
-                @empty
-                    <p class="fw-medium">-</p>
-                @endforelse
-            </div>
-
-            <div class="col-12 mb-3">
-                <div class="d-flex justify-content-between">
-                    <h6 class="text-muted mb-0">Riwayat Pendidikan</h6>
-                    <a href="{{ route('profile.education') }}" class="btn btn-sm btn-link">Edit</a>
-                </div>
-                @php $educations = $kandidat->education_history ?? []; @endphp
-                @forelse ($educations as $edu)
-                    <p class="fw-medium mb-1">{{ $edu['start'] ?? '-' }} - {{ $edu['end'] ?? '-' }} | {{ $edu['name'] ?? '-' }} ({{ $edu['major'] ?? '-' }})</p>
-                    <p class="text-muted mb-2">Tingkat: {{ $edu['level'] ?? '-' }} | Tertinggi: {{ !empty($edu['highest']) ? 'Ya' : 'Tidak' }}</p>
-                @empty
-                    <p class="fw-medium">-</p>
-                @endforelse
-            </div>
-
-            <div class="col-12 mb-3">
-                <div class="d-flex justify-content-between">
-                    <h6 class="text-muted mb-0">Keterampilan Bahasa</h6>
-                    <a href="{{ route('profile.language') }}" class="btn btn-sm btn-link">Edit</a>
-                </div>
-                @php $languages = $kandidat->language_skills ?? []; @endphp
-                @forelse ($languages as $lang)
-                    <p class="fw-medium mb-1">{{ $lang['language'] ?? '-' }}</p>
-                    <p class="text-muted mb-2">Bicara: {{ $lang['speaking'] ?? '-' }}, Baca: {{ $lang['reading'] ?? '-' }}, Tulis: {{ $lang['writing'] ?? '-' }}</p>
-                @empty
-                    <p class="fw-medium">-</p>
-                @endforelse
-            </div>
-
-            <div class="col-12 mb-3">
-                <h6 class="text-muted mb-0">Keahlian Lainnya</h6>
-                <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan ?? '-' }}</p>
-            </div>
-        </div>
-
-        {{-- Informasi Spesifik --}}
-        <div class="row mt-4">
-            <div class="col-12 mb-4">
-                <h6 class="fw-bold text-primary border-bottom pb-2">
-                    <i class="mdi mdi-information-outline me-2"></i>Informasi Spesifik
-                </h6>
-            </div>
-            <div class="col-12 mb-3">
-                <div class="d-flex justify-content-between">
-                    <span>Pernah bekerja di perusahaan ini?</span>
-                    <a href="{{ route('profile.specific') }}" class="btn btn-sm btn-link">Edit</a>
-                </div>
-                <p class="fw-medium">{{ $kandidat->worked_before ? 'Ya' : 'Tidak' }}</p>
-            </div>
-            <div class="col-12 mb-3">
-                <h6 class="text-muted mb-0">Lokasi bekerja sebelumnya</h6>
-                <p class="fw-medium">{{ $kandidat->previous_work_location ?? '-' }}</p>
-            </div>
-            <div class="col-12 mb-3">
-                <h6 class="text-muted mb-0">Sumber informasi pekerjaan</h6>
-                <p class="fw-medium">{{ $kandidat->job_info_source ?? '-' }}</p>
-            </div>
-            <div class="col-12 mb-3">
-                <h6 class="text-muted mb-0">Identifikasi Jenis Kelamin</h6>
-                <p class="fw-medium">{{ $kandidat->gender_identity ?? '-' }}</p>
-            </div>
-        </div>
+                                {{-- Data Pendidikan & Kemampuan Section --}}
+                                <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <h6 class="fw-bold text-primary border-bottom pb-2">
+                                            <i class="mdi mdi-school-outline me-2"></i>Data Pendidikan & Kemampuan
+                                        </h6>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Pendidikan Terakhir</h6>
+                                        <p class="fw-medium">{{ $kandidat->pendidikan }}</p>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Pengalaman Kerja</h6>
+                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->pengalaman_kerja ?? '-' }}</p>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Kemampuan Bahasa</h6>
+                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan_bahasa ?? '-' }}</p>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="text-muted mb-0">Keahlian Lainnya</h6>
+                                        <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan ?? '-' }}</p>
+                                    </div>
+                                </div>
 
                                 {{-- Divider --}}
                                 <hr class="my-4">

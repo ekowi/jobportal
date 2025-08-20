@@ -23,6 +23,9 @@ class CompleteApply extends Component
     public $status_perkawinan;
     public $agama;
     public $no_telpon_alternatif;
+    public $pengalaman_kerja;
+    public $pendidikan;
+    public $kemampuan_bahasa;
     public $kemampuan;
 
     protected $kandidatRepository;
@@ -52,6 +55,9 @@ class CompleteApply extends Component
             $this->status_perkawinan = $kandidat->status_perkawinan;
             $this->agama = $kandidat->agama;
             $this->no_telpon_alternatif = $kandidat->no_telpon_alternatif;
+            $this->pengalaman_kerja = $kandidat->pengalaman_kerja;
+            $this->pendidikan = $kandidat->pendidikan;
+            $this->kemampuan_bahasa = $kandidat->kemampuan_bahasa;
             $this->kemampuan = $kandidat->kemampuan;
         }
     }
@@ -73,6 +79,9 @@ class CompleteApply extends Component
             'status_perkawinan' => 'nullable|string|max:255',
             'agama' => 'nullable|string|max:255',
             'no_telpon_alternatif' => 'nullable|string|max:15',
+            'pengalaman_kerja' => 'nullable|string|max:1000',
+            'pendidikan' => 'nullable|string|max:1000',
+            'kemampuan_bahasa' => 'nullable|string|max:1000',
             'kemampuan' => 'nullable|string|max:1000',
         ]);
 
@@ -94,6 +103,9 @@ class CompleteApply extends Component
                 'status_perkawinan' => $this->status_perkawinan,
                 'agama' => $this->agama,
                 'no_telpon_alternatif' => $this->no_telpon_alternatif,
+                'pengalaman_kerja' => $this->pengalaman_kerja,
+                'pendidikan' => $this->pendidikan,
+                'kemampuan_bahasa' => $this->kemampuan_bahasa,
                 'kemampuan' => $this->kemampuan,
             ]
         );

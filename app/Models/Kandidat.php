@@ -36,27 +36,16 @@ class Kandidat extends Model
         'bmi_score',
         'blind_score',
         'no_telpon_alternatif',
-        // Detail sections stored as JSON
-        'work_experiences',
-        'education_history',
-        'language_skills',
-        // Additional skills
+        'pengalaman_kerja',
+        'pendidikan',
+        'kemampuan_bahasa',
         'kemampuan',
-        // Specific information fields
-        'worked_before',
-        'previous_work_location',
-        'job_info_source',
-        'gender_identity',
         'user_create',
         'user_update',
     ];
 
     protected $casts = [
-        'tanggal_lahir' => 'date:Y-m-d',
-        'work_experiences' => 'array',
-        'education_history' => 'array',
-        'language_skills' => 'array',
-        'worked_before' => 'boolean',
+        'tanggal_lahir' => 'date:Y-m-d'
     ];
 
     /**

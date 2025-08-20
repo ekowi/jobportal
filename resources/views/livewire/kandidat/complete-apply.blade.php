@@ -126,6 +126,30 @@
 
                 <div class="col-12">
                     <div class="mb-3">
+                        <label class="form-label fw-semibold">Work Experience:</label>
+                        <textarea wire:model="pengalaman_kerja" rows="4" class="form-control" placeholder="Work Experience :"></textarea>
+                        @error('pengalaman_kerja') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Education:</label>
+                        <textarea wire:model="pendidikan" rows="4" class="form-control" placeholder="Education :"></textarea>
+                        @error('pendidikan') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Language Skills:</label>
+                        <textarea wire:model="kemampuan_bahasa" rows="4" class="form-control" placeholder="Language Skills :"></textarea>
+                        @error('kemampuan_bahasa') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-3">
                         <label class="form-label fw-semibold">Skills:</label>
                         <textarea wire:model="kemampuan" rows="4" class="form-control" placeholder="Skills :"></textarea>
                         @error('kemampuan') <span class="text-danger">{{ $message }}</span> @enderror
