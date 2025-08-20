@@ -247,22 +247,23 @@
                                         </button>
                                     </div>
 
-                                    @php
-                                        $docs = [
-                                            'ktp' => 'KTP',
-                                            'ijazah' => 'Ijazah',
-                                            'sertifikat' => 'Sertifikat',
-                                            'surat_pengalaman' => 'Surat Pengalaman Kerja',
-                                            'skck' => 'SKCK',
-                                            'surat_sehat' => 'Surat Sehat',
-                                        ];
-                                    @endphp
+@php
+    use Illuminate\Support\Facades\Storage;
+    $docs = [
+        'ktp' => 'KTP',
+        'ijazah' => 'Ijazah',
+        'sertifikat' => 'Sertifikat',
+        'surat_pengalaman' => 'Surat Pengalaman Kerja',
+        'skck' => 'SKCK',
+        'surat_sehat' => 'Surat Sehat',
+    ];
+@endphp
 
                                     @foreach ($docs as $key => $label)
                                         <div class="col-md-6 mb-3">
                                             <h6 class="text-muted mb-0">{{ $label }}</h6>
                                             @if (isset($documents[$key]))
-                                                <a href="{{ $documents[$key] }}" target="_blank" class="fw-medium text-primary">Lihat Dokumen</a>
+                                                <a href="{{ Storage::url($documents[$key]) }}" target="_blank" class="fw-medium text-primary">Lihat Dokumen</a>
                                             @else
                                                 <p class="fw-medium text-muted mb-0">Belum diunggah</p>
                                             @endif
@@ -301,7 +302,7 @@
                             <label class="form-label">KTP</label>
                             @if(isset($documents['ktp']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['ktp'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    <a href="{{ Storage::url($documents['ktp']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="ktp">
@@ -320,7 +321,7 @@
                             <label class="form-label">Ijazah</label>
                             @if(isset($documents['ijazah']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['ijazah'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    <a href="{{ Storage::url($documents['ijazah']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="ijazah">
@@ -339,7 +340,7 @@
                             <label class="form-label">Sertifikat</label>
                             @if(isset($documents['sertifikat']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['sertifikat'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    <a href="{{ Storage::url($documents['sertifikat']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="sertifikat">
@@ -358,7 +359,7 @@
                             <label class="form-label">Surat Pengalaman Kerja</label>
                             @if(isset($documents['surat_pengalaman']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['surat_pengalaman'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    <a href="{{ Storage::url($documents['surat_pengalaman']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="surat_pengalaman">
@@ -377,7 +378,7 @@
                             <label class="form-label">SKCK</label>
                             @if(isset($documents['skck']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['skck'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    <a href="{{ Storage::url($documents['skck']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="skck">
@@ -396,7 +397,7 @@
                             <label class="form-label">Surat Sehat</label>
                             @if(isset($documents['surat_sehat']))
                                 <div class="mb-2">
-                                    <a href="{{ $documents['surat_sehat'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    <a href="{{ Storage::url($documents['surat_sehat']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="surat_sehat">

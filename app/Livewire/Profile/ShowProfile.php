@@ -57,25 +57,36 @@ class ShowProfile extends Component
     {
         $userId = Auth::id();
         $basePath = "documents/{$userId}";
+        $fields = [
+            'ktp',
+            'ijazah',
+            'sertifikat',
+            'surat_pengalaman',
+            'skck',
+            'surat_sehat',
+        ];
 
-        if ($this->ktp) {
-            $this->ktp->storeAs($basePath, 'ktp.' . $this->ktp->getClientOriginalExtension(), 'public');
+        foreach ($fields as $field) {
+            if ($this->$field) {
+                $column = $field . '_path';
+
+                // Hapus file lama jika ada
+                if ($this->kandidat->$column) {
+                    Storage::disk('public')->delete($this->kandidat->$column);
+                }
+
+                // Simpan file baru dan update path di database
+                $path = $this->$field->storeAs(
+                    $basePath,
+                    $field . '.' . $this->$field->getClientOriginalExtension(),
+                    'public'
+                );
+
+                $this->kandidat->$column = $path;
+            }
         }
-        if ($this->ijazah) {
-            $this->ijazah->storeAs($basePath, 'ijazah.' . $this->ijazah->getClientOriginalExtension(), 'public');
-        }
-        if ($this->sertifikat) {
-            $this->sertifikat->storeAs($basePath, 'sertifikat.' . $this->sertifikat->getClientOriginalExtension(), 'public');
-        }
-        if ($this->surat_pengalaman) {
-            $this->surat_pengalaman->storeAs($basePath, 'surat_pengalaman.' . $this->surat_pengalaman->getClientOriginalExtension(), 'public');
-        }
-        if ($this->skck) {
-            $this->skck->storeAs($basePath, 'skck.' . $this->skck->getClientOriginalExtension(), 'public');
-        }
-        if ($this->surat_sehat) {
-            $this->surat_sehat->storeAs($basePath, 'surat_sehat.' . $this->surat_sehat->getClientOriginalExtension(), 'public');
-        }
+
+        $this->kandidat->save();
 
         $this->refreshDocuments();
         $this->closeDocumentModal();
@@ -83,14 +94,21 @@ class ShowProfile extends Component
 
     public function refreshDocuments()
     {
-        $userId = Auth::id();
-        $path = "documents/{$userId}";
-        $files = [];
+        $this->kandidat->refresh();
+        $fields = [
+            'ktp',
+            'ijazah',
+            'sertifikat',
+            'surat_pengalaman',
+            'skck',
+            'surat_sehat',
+        ];
 
-        if (Storage::disk('public')->exists($path)) {
-            foreach (Storage::disk('public')->files($path) as $file) {
-                $name = pathinfo($file, PATHINFO_FILENAME);
-                $files[$name] = Storage::url($file);
+        $files = [];
+        foreach ($fields as $field) {
+            $column = $field . '_path';
+            if ($this->kandidat->$column) {
+                $files[$field] = $this->kandidat->$column;
             }
         }
 
