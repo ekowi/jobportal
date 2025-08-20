@@ -286,7 +286,7 @@
                                     @if(str_contains($ktp->getMimeType(), 'pdf'))
                                         <iframe src="{{ $ktp->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
                                     @else
-                                        <img src="{{ $ktp->temporaryUrl() }}" class="img-fluid rounded"/>
+                                        <img src="{{ $ktp->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
                                 </div>
                             @endif
@@ -305,7 +305,7 @@
                                     @if(str_contains($ijazah->getMimeType(), 'pdf'))
                                         <iframe src="{{ $ijazah->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
                                     @else
-                                        <img src="{{ $ijazah->temporaryUrl() }}" class="img-fluid rounded"/>
+                                        <img src="{{ $ijazah->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
                                 </div>
                             @endif
@@ -324,7 +324,7 @@
                                     @if(str_contains($sertifikat->getMimeType(), 'pdf'))
                                         <iframe src="{{ $sertifikat->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
                                     @else
-                                        <img src="{{ $sertifikat->temporaryUrl() }}" class="img-fluid rounded"/>
+                                        <img src="{{ $sertifikat->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
                                 </div>
                             @endif
@@ -343,7 +343,7 @@
                                     @if(str_contains($surat_pengalaman->getMimeType(), 'pdf'))
                                         <iframe src="{{ $surat_pengalaman->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
                                     @else
-                                        <img src="{{ $surat_pengalaman->temporaryUrl() }}" class="img-fluid rounded"/>
+                                        <img src="{{ $surat_pengalaman->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
                                 </div>
                             @endif
@@ -362,7 +362,7 @@
                                     @if(str_contains($skck->getMimeType(), 'pdf'))
                                         <iframe src="{{ $skck->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
                                     @else
-                                        <img src="{{ $skck->temporaryUrl() }}" class="img-fluid rounded"/>
+                                        <img src="{{ $skck->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
                                 </div>
                             @endif
@@ -381,7 +381,7 @@
                                     @if(str_contains($surat_sehat->getMimeType(), 'pdf'))
                                         <iframe src="{{ $surat_sehat->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
                                     @else
-                                        <img src="{{ $surat_sehat->temporaryUrl() }}" class="img-fluid rounded"/>
+                                        <img src="{{ $surat_sehat->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
                                 </div>
                             @endif
