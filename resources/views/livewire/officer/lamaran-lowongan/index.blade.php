@@ -109,6 +109,11 @@
                                                 <td class="text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
 
                                                 <td>
+                                                    <div class="mb-2">
+                                                        <button class="btn btn-outline-primary btn-sm" wire:click="viewDetail({{ $lamaran->id }})">
+                                                            <i class="mdi mdi-account-details me-1"></i> Detail
+                                                        </button>
+                                                    </div>
                                                     {{-- Badge status terakhir (jika ada) --}}
                                                     @if($latest)
                                                         <div class="mb-2">
@@ -234,6 +239,98 @@
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail Kandidat -->
+    <div class="modal fade @if($detailModal) show @endif" tabindex="-1" style="@if($detailModal) display:block; @endif">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Kandidat</h5>
+                    <button type="button" class="btn-close" wire:click="closeDetailModal"></button>
+                </div>
+                <div class="modal-body">
+                    @if($selectedKandidat)
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">Nama Lengkap</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->nama_depan }} {{ $selectedKandidat->nama_belakang }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">Email</h6>
+                                <p class="fw-medium">{{ optional($selectedKandidat->user)->email }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">No. KTP</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->no_ktp }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">No. NPWP</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->no_npwp ?? '-' }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">Tempat & Tanggal Lahir</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->tempat_lahir }}, {{ optional($selectedKandidat->tanggal_lahir)->format('d M Y') }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">Jenis Kelamin</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">Status Perkawinan</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->status_perkawinan }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">Agama</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->agama }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">No. Telepon</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->no_telpon }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-0">No. Telepon Alternatif</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->no_telpon_alternatif ?? '-' }}</p>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <h6 class="text-muted mb-0">Alamat</h6>
+                                <p class="fw-medium">{{ $selectedKandidat->formatted_address }}</p>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        @php
+                            $docLabels = [
+                                'ktp' => 'KTP',
+                                'ijazah' => 'Ijazah',
+                                'sertifikat' => 'Sertifikat',
+                                'surat_pengalaman' => 'Surat Pengalaman Kerja',
+                                'skck' => 'SKCK',
+                                'surat_sehat' => 'Surat Sehat',
+                            ];
+                        @endphp
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <h6 class="fw-bold text-primary"><i class="mdi mdi-file-upload-outline me-2"></i>Dokumen Pendukung</h6>
+                            </div>
+                            @foreach($docLabels as $key => $label)
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-muted mb-0">{{ $label }}</h6>
+                                    @if(isset($documents[$key]))
+                                        <a href="{{ Storage::url($documents[$key]) }}" target="_blank" class="d-block text-primary">
+                                            <i class="mdi mdi-eye-outline me-1"></i>Lihat Dokumen
+                                        </a>
+                                    @else
+                                        <span class="text-muted">Tidak ada</span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

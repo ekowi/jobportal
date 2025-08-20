@@ -24,6 +24,11 @@ class Index extends Component
     public $interviewWaktu;
     public $interviewOfficer;
 
+    // detail kandidat
+    public $detailModal = false;
+    public $selectedKandidat;
+    public $documents = [];
+
 
     public function mount()
     {
@@ -129,6 +134,42 @@ class Index extends Component
             Log::error('Gagal menyimpan interview: '.$e->getMessage());
             session()->flash('error', 'Terjadi kesalahan saat menyimpan data.');
         }
+    }
+
+    /**
+     * Tampilkan detail kandidat beserta dokumen pendukungnya.
+     */
+    public function viewDetail($lamaranId)
+    {
+        $lamaran = LamarLowongan::with('kandidat.user')->findOrFail($lamaranId);
+        $this->selectedKandidat = $lamaran->kandidat;
+
+        $fields = [
+            'ktp',
+            'ijazah',
+            'sertifikat',
+            'surat_pengalaman',
+            'skck',
+            'surat_sehat',
+        ];
+
+        $files = [];
+        foreach ($fields as $field) {
+            $column = $field . '_path';
+            if ($lamaran->kandidat->$column) {
+                $files[$field] = $lamaran->kandidat->$column;
+            }
+        }
+
+        $this->documents = $files;
+        $this->detailModal = true;
+    }
+
+    public function closeDetailModal()
+    {
+        $this->detailModal = false;
+        $this->selectedKandidat = null;
+        $this->documents = [];
     }
 
 }
