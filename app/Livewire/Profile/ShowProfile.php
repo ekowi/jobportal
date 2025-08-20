@@ -39,6 +39,7 @@ class ShowProfile extends Component
     public function openDocumentModal()
     {
         $this->resetUploadFields();
+        $this->refreshDocuments();
         $this->showDocumentModal = true;
     }
 

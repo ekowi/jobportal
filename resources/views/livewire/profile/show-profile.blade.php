@@ -274,27 +274,117 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">KTP</label>
+                            @if(isset($documents['ktp']))
+                                <div class="mb-2">
+                                    <a href="{{ $documents['ktp'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                </div>
+                            @endif
                             <input type="file" class="form-control" wire:model="ktp">
+                            @if ($ktp)
+                                <div class="mt-2">
+                                    <span class="d-block">Preview:</span>
+                                    @if(str_contains($ktp->getMimeType(), 'pdf'))
+                                        <iframe src="{{ $ktp->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $ktp->temporaryUrl() }}" class="img-fluid rounded"/>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Ijazah</label>
+                            @if(isset($documents['ijazah']))
+                                <div class="mb-2">
+                                    <a href="{{ $documents['ijazah'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                </div>
+                            @endif
                             <input type="file" class="form-control" wire:model="ijazah">
+                            @if ($ijazah)
+                                <div class="mt-2">
+                                    <span class="d-block">Preview:</span>
+                                    @if(str_contains($ijazah->getMimeType(), 'pdf'))
+                                        <iframe src="{{ $ijazah->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $ijazah->temporaryUrl() }}" class="img-fluid rounded"/>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Sertifikat</label>
+                            @if(isset($documents['sertifikat']))
+                                <div class="mb-2">
+                                    <a href="{{ $documents['sertifikat'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                </div>
+                            @endif
                             <input type="file" class="form-control" wire:model="sertifikat">
+                            @if ($sertifikat)
+                                <div class="mt-2">
+                                    <span class="d-block">Preview:</span>
+                                    @if(str_contains($sertifikat->getMimeType(), 'pdf'))
+                                        <iframe src="{{ $sertifikat->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $sertifikat->temporaryUrl() }}" class="img-fluid rounded"/>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Surat Pengalaman Kerja</label>
+                            @if(isset($documents['surat_pengalaman']))
+                                <div class="mb-2">
+                                    <a href="{{ $documents['surat_pengalaman'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                </div>
+                            @endif
                             <input type="file" class="form-control" wire:model="surat_pengalaman">
+                            @if ($surat_pengalaman)
+                                <div class="mt-2">
+                                    <span class="d-block">Preview:</span>
+                                    @if(str_contains($surat_pengalaman->getMimeType(), 'pdf'))
+                                        <iframe src="{{ $surat_pengalaman->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $surat_pengalaman->temporaryUrl() }}" class="img-fluid rounded"/>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label class="form-label">SKCK</label>
+                            @if(isset($documents['skck']))
+                                <div class="mb-2">
+                                    <a href="{{ $documents['skck'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                </div>
+                            @endif
                             <input type="file" class="form-control" wire:model="skck">
+                            @if ($skck)
+                                <div class="mt-2">
+                                    <span class="d-block">Preview:</span>
+                                    @if(str_contains($skck->getMimeType(), 'pdf'))
+                                        <iframe src="{{ $skck->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $skck->temporaryUrl() }}" class="img-fluid rounded"/>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Surat Sehat</label>
+                            @if(isset($documents['surat_sehat']))
+                                <div class="mb-2">
+                                    <a href="{{ $documents['surat_sehat'] }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                </div>
+                            @endif
                             <input type="file" class="form-control" wire:model="surat_sehat">
+                            @if ($surat_sehat)
+                                <div class="mt-2">
+                                    <span class="d-block">Preview:</span>
+                                    @if(str_contains($surat_sehat->getMimeType(), 'pdf'))
+                                        <iframe src="{{ $surat_sehat->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                    @else
+                                        <img src="{{ $surat_sehat->temporaryUrl() }}" class="img-fluid rounded"/>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="modal-footer">
