@@ -41,11 +41,16 @@
                             <h5 class="card-title text-white mb-0">
                                 <i class="mdi mdi-account-circle-outline me-2"></i>Informasi Profil
                             </h5>
-                            <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-light">
-                                <i class="mdi mdi-pencil me-1"></i>Edit Profil
-                            </a>
+                            <div class="d-flex gap-2">
+                                <button wire:click="openDocumentModal" class="btn btn-sm btn-light">
+                                    <i class="mdi mdi-upload me-1"></i>Upload Dokumen
+                                </button>
+                                <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-light">
+                                    <i class="mdi mdi-pencil me-1"></i>Edit Profil
+                                </a>
+                            </div>
                         </div>
-                        
+
                         <div class="card-body p-4">
                             @if ($kandidat)
                                 {{-- Data Test Section --}}
@@ -202,6 +207,43 @@
                                         <p class="fw-medium" style="white-space: pre-wrap;">{{ $kandidat->kemampuan ?? '-' }}</p>
                                     </div>
                                 </div>
+
+                                {{-- Divider --}}
+                                <hr class="my-4">
+
+                                {{-- Dokumen Pendukung --}}
+                                <div class="row">
+                                    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+                                        <h6 class="fw-bold text-primary border-bottom pb-2">
+                                            <i class="mdi mdi-file-upload-outline me-2"></i>Dokumen Pendukung
+                                        </h6>
+                                        <button wire:click="openDocumentModal" class="btn btn-sm btn-primary">
+                                            <i class="mdi mdi-upload me-1"></i>Unggah Dokumen
+                                        </button>
+                                    </div>
+
+                                    @php
+                                        $docs = [
+                                            'ktp' => 'KTP',
+                                            'ijazah' => 'Ijazah',
+                                            'sertifikat' => 'Sertifikat',
+                                            'surat_pengalaman' => 'Surat Pengalaman Kerja',
+                                            'skck' => 'SKCK',
+                                            'surat_sehat' => 'Surat Sehat',
+                                        ];
+                                    @endphp
+
+                                    @foreach ($docs as $key => $label)
+                                        <div class="col-md-6 mb-3">
+                                            <h6 class="text-muted mb-0">{{ $label }}</h6>
+                                            @if (isset($documents[$key]))
+                                                <a href="{{ $documents[$key] }}" target="_blank" class="fw-medium text-primary">Lihat Dokumen</a>
+                                            @else
+                                                <p class="fw-medium text-muted mb-0">Belum diunggah</p>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
                             @else
                                 {{-- Pesan jika profil belum lengkap --}}
                                 <div class="text-center py-5">
@@ -219,4 +261,48 @@
             </div>
         </div>
     </section>
+
+    {{-- Modal Upload Dokumen --}}
+    <div class="modal fade @if($showDocumentModal) show @endif" tabindex="-1" style="@if($showDocumentModal) display:block; @endif">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form wire:submit.prevent="uploadDocuments">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Unggah Dokumen Pendukung</h5>
+                        <button type="button" class="btn-close" wire:click="closeDocumentModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">KTP</label>
+                            <input type="file" class="form-control" wire:model="ktp">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ijazah</label>
+                            <input type="file" class="form-control" wire:model="ijazah">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sertifikat</label>
+                            <input type="file" class="form-control" wire:model="sertifikat">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Surat Pengalaman Kerja</label>
+                            <input type="file" class="form-control" wire:model="surat_pengalaman">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SKCK</label>
+                            <input type="file" class="form-control" wire:model="skck">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Surat Sehat</label>
+                            <input type="file" class="form-control" wire:model="surat_sehat">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" wire:click="closeDocumentModal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
