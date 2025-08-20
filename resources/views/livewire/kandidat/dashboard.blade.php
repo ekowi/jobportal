@@ -1,4 +1,7 @@
 <div>
+    @php
+        use Illuminate\Support\Str;
+    @endphp
     <link rel="stylesheet" href="{{ asset('css/colorblind-test.css') }}">
     <section class="bg-half-170 d-table w-100" style="background: url('{{ asset('images/hero/bg.jpg') }}');">
         <div class="bg-overlay bg-gradient-overlay"></div>
@@ -578,6 +581,69 @@
                         </span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+    @endif
+
+    {{-- MODAL DOCUMENT: Untuk Lengkapi Dokumen Pendukung --}}
+    @if($showDocumentModal)
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" wire:ignore.self>
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded shadow-lg">
+                <form wire:submit.prevent="uploadDocuments">
+                    <div class="modal-header p-4">
+                        <h5 class="modal-title fw-bold">Unggah Dokumen Pendukung</h5>
+                        <button type="button" class="btn-close" wire:click="closeDocumentModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        @if(!empty($requiredDocuments))
+                            <div class="alert alert-info">
+                                Dokumen yang diperlukan: {{ implode(', ', array_map(fn($d)=>Str::title(str_replace('_',' ', $d)), $requiredDocuments)) }}
+                            </div>
+                        @endif
+                        @php
+                            $labels = [
+                                'ktp' => 'KTP',
+                                'ijazah' => 'Ijazah',
+                                'sertifikat' => 'Sertifikat',
+                                'surat_pengalaman' => 'Surat Pengalaman Kerja',
+                                'skck' => 'SKCK',
+                                'surat_sehat' => 'Surat Sehat',
+                            ];
+                        @endphp
+                        @foreach($requiredDocuments as $doc)
+                            <div class="mb-3">
+                                <label class="form-label">{{ $labels[$doc] ?? Str::title(str_replace('_',' ', $doc)) }}</label>
+                                <input type="file" class="form-control" wire:model="{{$doc}}">
+                                @php $temp = data_get($this, $doc); $existing = $documents[$doc] ?? null; @endphp
+                                @if($temp)
+                                    <div class="mt-2">
+                                        <span class="d-block">Preview:</span>
+                                        @if(str_contains($temp->getMimeType(), 'pdf'))
+                                            <iframe src="{{ $temp->temporaryUrl() }}" class="w-100" style="height:400px;"></iframe>
+                                        @else
+                                            <img src="{{ $temp->temporaryUrl() }}" class="img-fluid rounded" style="max-width:200px;"/>
+                                        @endif
+                                    </div>
+                                @elseif($existing)
+                                    <div class="mt-2">
+                                        @if(Str::contains(Str::lower($existing), '.pdf'))
+                                            <iframe src="{{ $existing }}" class="w-100" style="height:400px;"></iframe>
+                                        @else
+                                            <img src="{{ $existing }}" class="img-fluid rounded" style="max-width:200px;"/>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="modal-footer p-3 bg-light">
+                        <button type="button" class="btn btn-soft-secondary" wire:click="closeDocumentModal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
