@@ -248,7 +248,6 @@
                                     </div>
 
 @php
-    use Illuminate\Support\Facades\Storage;
     $docs = [
         'ktp' => 'KTP',
         'ijazah' => 'Ijazah',
