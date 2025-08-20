@@ -26,6 +26,7 @@ class ShowProfile extends Component
 
     public $showDocumentModal = false;
     public $documents = [];
+    public $documentType = null;
 
     public function mount()
     {
@@ -36,16 +37,18 @@ class ShowProfile extends Component
         $this->refreshDocuments();
     }
 
-    public function openDocumentModal()
+    public function openDocumentModal($type = null)
     {
         $this->resetUploadFields();
         $this->refreshDocuments();
+        $this->documentType = $type;
         $this->showDocumentModal = true;
     }
 
     public function closeDocumentModal()
     {
         $this->showDocumentModal = false;
+        $this->documentType = null;
     }
 
     protected function resetUploadFields()
@@ -57,14 +60,16 @@ class ShowProfile extends Component
     {
         $userId = Auth::id();
         $basePath = "documents/{$userId}";
-        $fields = [
-            'ktp',
-            'ijazah',
-            'sertifikat',
-            'surat_pengalaman',
-            'skck',
-            'surat_sehat',
-        ];
+        $fields = $this->documentType
+            ? [$this->documentType]
+            : [
+                'ktp',
+                'ijazah',
+                'sertifikat',
+                'surat_pengalaman',
+                'skck',
+                'surat_sehat',
+            ];
 
         foreach ($fields as $field) {
             if ($this->$field) {
