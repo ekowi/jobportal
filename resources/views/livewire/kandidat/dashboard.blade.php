@@ -183,87 +183,29 @@
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="row">
-                        <div class="col-md-4 mb-3 text-center">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="flex-shrink-0 bg-light rounded p-1" style="width: 80px; height: 80px;">
                             @if($selectedLowongan->foto)
-                                <img src="{{ asset('storage/image/lowongan/' . $selectedLowongan->foto) }}" alt="Foto Lowongan" class="img-fluid rounded">
+                                <img src="{{ asset('storage/image/lowongan/' . $selectedLowongan->foto) }}" alt="Foto Lowongan" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: contain;">
                             @else
-                                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 150px;">
-                                    <span class="text-muted">No Image</span>
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="mdi mdi-image-area" style="font-size: 40px; color: #ccc;"></i>
                                 </div>
                             @endif
                         </div>
-                        <div class="col-md-8">
-                            <table class="table table-sm table-striped">
-                                <tbody>
-                                    <tr>
-                                        <th>ID</th>
-                                        <td>{{ $selectedLowongan->id }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Kategori</th>
-                                        <td>{{ optional($selectedLowongan->kategoriLowongan)->nama_kategori }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Status</th>
-                                        <td>{{ ucfirst($selectedLowongan->status) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Nama Posisi</th>
-                                        <td>{{ $selectedLowongan->nama_posisi }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Departemen</th>
-                                        <td>{{ $selectedLowongan->departemen }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Lokasi Penugasan</th>
-                                        <td>{{ $selectedLowongan->lokasi_penugasan }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Remote</th>
-                                        <td>{{ $selectedLowongan->is_remote ? 'Ya' : 'Tidak' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Tanggal Posting</th>
-                                        <td>{{ \Carbon\Carbon::parse($selectedLowongan->tanggal_posting)->format('d M Y') }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Range Gaji</th>
-                                        <td>{{ $selectedLowongan->range_gaji }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Kemampuan</th>
-                                        <td>{{ $selectedLowongan->kemampuan_yang_dibutuhkan }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Deskripsi</th>
-                                        <td class="text-wrap">{!! $selectedLowongan->deskripsi !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Aktif</th>
-                                        <td>{{ $selectedLowongan->is_active ? 'Aktif' : 'Tidak Aktif' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>User Create</th>
-                                        <td>{{ $selectedLowongan->user_create }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>User Update</th>
-                                        <td>{{ $selectedLowongan->user_update ?? '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Dibuat</th>
-                                        <td>{{ $selectedLowongan->created_at?->format('d M Y H:i') }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Diperbarui</th>
-                                        <td>{{ $selectedLowongan->updated_at?->format('d M Y H:i') }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="ms-3">
+                            <h6 class="mb-0">{{ optional($selectedLowongan->kategoriLowongan)->nama_kategori }}</h6>
+                            <p class="text-muted mb-0"><i class="mdi mdi-office-building-outline me-1"></i>{{ $selectedLowongan->departemen }}</p>
                         </div>
                     </div>
+                    
+                    <h6 class="fw-bold">Deskripsi Pekerjaan</h6>
+                    <div class="text-muted job-description">
+                        {!! $selectedLowongan->deskripsi !!}
+                    </div>
+
+                    <h6 class="fw-bold mt-4">Kemampuan yang Dibutuhkan</h6>
+                    <p class="text-muted">{{ $selectedLowongan->kemampuan_yang_dibutuhkan }}</p>
                 </div>
                 <div class="modal-footer p-3 bg-light">
                     <button type="button" class="btn btn-soft-secondary" wire:click="closeModal">Tutup</button>
