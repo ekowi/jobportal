@@ -30,9 +30,11 @@ return new class extends Migration
             $table->string('bmi_score');
             $table->string('blind_score');
             $table->string('no_telpon_alternatif')->nullable();
-            $table->text('pengalaman_kerja')->nullable();
-            $table->text('pendidikan')->nullable();
-            $table->text('kemampuan_bahasa')->nullable();
+            $table->string('pendidikan')->nullable();
+            $table->json('riwayat_pengalaman_kerja')->nullable();
+            $table->json('riwayat_pendidikan')->nullable();
+            $table->json('kemampuan_bahasa')->nullable();
+            $table->json('informasi_spesifik')->nullable();
             $table->text('kemampuan')->nullable();
             $table->foreignId('user_create')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_update')->nullable()->constrained('users')->onDelete('cascade');
