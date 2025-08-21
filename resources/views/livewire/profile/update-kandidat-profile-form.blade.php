@@ -235,26 +235,6 @@
                                     </h6>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="pendidikan" class="form-label">{{ __('Pendidikan Terakhir') }} <span class="text-danger">*</span></label>
-                                    <select id="pendidikan" wire:model.defer="state.pendidikan" class="form-select @error('state.pendidikan') is-invalid @enderror">
-                                        <option value="">Pilih...</option>
-                                        <option value="SD">SD</option>
-                                        <option value="SMP">SMP</option>
-                                        <option value="SMA/SMK">SMA/SMK</option>
-                                        <option value="D1">D1</option>
-                                        <option value="D2">D2</option>
-                                        <option value="D3">D3</option>
-                                        <option value="D4">D4</option>
-                                        <option value="S1">S1</option>
-                                        <option value="S2">S2</option>
-                                        <option value="S3">S3</option>
-                                    </select>
-                                    @error('state.pendidikan')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                
                                 <div class="col-12 mb-3">
                                     <label class="form-label fw-bold"><i class="mdi mdi-briefcase-outline me-2"></i>Riwayat Pengalaman Kerja</label>
                                     <div id="work-experience-list"></div>
@@ -372,13 +352,20 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label>Tingkat Pendidikan</label>
-                                            <input type="text" class="form-control" name="edu_level[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3 d-flex align-items-center">
-                                            <div class="form-check mt-4">
-                                                <input class="form-check-input" type="checkbox" name="edu_highest[]">
-                                                <label class="form-check-label">Pendidikan Tertinggi</label>
-                                            </div>
+                                            <select class="form-select" name="edu_level[]">
+                                                <option value="">Pilih...</option>
+                                                <option value="SD">SD</option>
+                                                <option value="SMP">SMP</option>
+                                                <option value="SMA/SMK">SMA/SMK</option>
+                                                <option value="D1">D1</option>
+                                                <option value="D2">D2</option>
+                                                <option value="D3">D3</option>
+                                                <option value="D4">D4</option>
+                                                <option value="S1">S1</option>
+                                                <option value="S2">S2</option>
+                                                <option value="S3">S3</option>
+                                                <option value="Post Doktoral">Post Doktoral</option>
+                                            </select>
                                         </div>
                                         <div class="col-12 text-end">
                                             <button type="button" class="btn btn-sm btn-danger remove-education">Hapus</button>
@@ -596,7 +583,6 @@
                     el.querySelector('[name="edu_name[]"]').value = item.name;
                     el.querySelector('[name="edu_major[]"]').value = item.major;
                     el.querySelector('[name="edu_level[]"]').value = item.level;
-                    el.querySelector('[name="edu_highest[]"]').checked = item.highest;
                     eduList.appendChild(tmpl);
                 });
 
@@ -649,7 +635,6 @@
                     name: el.querySelector('[name="edu_name[]"]').value,
                     major: el.querySelector('[name="edu_major[]"]').value,
                     level: el.querySelector('[name="edu_level[]"]').value,
-                    highest: el.querySelector('[name="edu_highest[]"]').checked,
                 }));
                 localStorage.setItem('education_history', JSON.stringify(eduData));
                 document.getElementById('riwayat_pendidikan').value = JSON.stringify(eduData);
@@ -670,7 +655,7 @@
                 };
                 localStorage.setItem('specific_info', JSON.stringify(specData));
                 document.getElementById('informasi_spesifik').value = JSON.stringify(specData);
-            });
+            }, true);
         });
     </script>
     @endpush
