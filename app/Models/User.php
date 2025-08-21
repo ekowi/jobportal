@@ -78,7 +78,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasRole('officer') &&
                 $this->officer &&
-                $this->officer->jabatan === $position;
+                strtolower($this->officer->jabatan) === strtolower($position);
     }
 
     public function kandidat()

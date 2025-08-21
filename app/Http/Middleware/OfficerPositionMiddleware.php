@@ -26,9 +26,10 @@ class OfficerPositionMiddleware
         $user = $request->user();
 
         // Ensure user is an officer and has one of the required positions
-        $userPosition = optional($user->officer)->jabatan;
+        $userPosition = strtolower(optional($user->officer)->jabatan);
+        $allowedPositions = array_map('strtolower', $positions);
 
-        if (!$user->hasRole('officer') || !$userPosition || !in_array($userPosition, $positions, true)) {
+        if (!$user->hasRole('officer') || !$userPosition || !in_array($userPosition, $allowedPositions, true)) {
             abort(403, 'Unauthorized action.');
         }
 
