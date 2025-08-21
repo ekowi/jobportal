@@ -24,6 +24,14 @@ class DatabaseSeeder extends Seeder
         $this->call([
             OfficerSeeder::class,
             KandidatSeeder::class,
+            LowonganSeeder::class,
+            ProgressRekrutmenSeeder::class,
+            KategoriSoalSeeder::class,
+            SoalSeeder::class,
+            KategoriLowonganSeeder::class,
+            LowonganSeeder::class,
+            InterviewSeeder::class,
+            LamarLowonganSeeder::class,
         ]);
     }
 }
