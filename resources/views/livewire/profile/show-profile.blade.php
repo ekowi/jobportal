@@ -203,7 +203,12 @@
                                             <i class="mdi mdi-briefcase-outline me-2"></i>Riwayat Pengalaman Kerja
                                         </h6>
                                     </div>
-@php $workData = $kandidat->riwayat_pengalaman_kerja ? json_decode($kandidat->riwayat_pengalaman_kerja, true) : []; @endphp
+@php
+    $workData = $kandidat->riwayat_pengalaman_kerja ?? [];
+    if (!is_array($workData)) {
+        $workData = json_decode($workData, true) ?: [];
+    }
+@endphp
 @if($workData)
     @foreach($workData as $item)
         <div class="col-12 mb-3">
@@ -224,7 +229,12 @@
                                             <i class="mdi mdi-school-outline me-2"></i>Riwayat Pendidikan
                                         </h6>
                                     </div>
-                                    @php $eduData = $kandidat->riwayat_pendidikan ? json_decode($kandidat->riwayat_pendidikan, true) : []; @endphp
+                                    @php
+                                        $eduData = $kandidat->riwayat_pendidikan ?? [];
+                                        if (!is_array($eduData)) {
+                                            $eduData = json_decode($eduData, true) ?: [];
+                                        }
+                                    @endphp
                                     @if($eduData)
                                         @foreach($eduData as $item)
                                             <div class="col-12 mb-3">
@@ -244,7 +254,12 @@
                                             <i class="mdi mdi-translate me-2"></i>Keterampilan Bahasa
                                         </h6>
                                     </div>
-                                    @php $langData = $kandidat->kemampuan_bahasa ? json_decode($kandidat->kemampuan_bahasa, true) : []; @endphp
+                                    @php
+                                        $langData = $kandidat->kemampuan_bahasa ?? [];
+                                        if (!is_array($langData)) {
+                                            $langData = json_decode($langData, true) ?: [];
+                                        }
+                                    @endphp
                                     @if($langData)
                                         @foreach($langData as $item)
                                             <div class="col-12 mb-3">
@@ -263,7 +278,12 @@
                                             <i class="mdi mdi-information-outline me-2"></i>Informasi Spesifik
                                         </h6>
                                     </div>
-                                    @php $spec = $kandidat->informasi_spesifik ? json_decode($kandidat->informasi_spesifik, true) : []; @endphp
+                                    @php
+                                        $spec = $kandidat->informasi_spesifik ?? [];
+                                        if (!is_array($spec)) {
+                                            $spec = json_decode($spec, true) ?: [];
+                                        }
+                                    @endphp
                                     @if($spec)
                                         <div class="col-12">
                                             <p class="mb-1">Pernah bekerja di perusahaan ini? <strong>{{ $spec['pernah'] ?? '-' }}</strong></p>
