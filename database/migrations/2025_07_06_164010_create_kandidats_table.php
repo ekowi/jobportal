@@ -33,7 +33,6 @@ return new class extends Migration
             $table->text('pengalaman_kerja')->nullable();
             $table->text('pendidikan')->nullable();
             $table->text('kemampuan_bahasa')->nullable();
-            $table->text('informasi_spesifik')->nullable();
             $table->text('kemampuan')->nullable();
             $table->foreignId('user_create')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_update')->nullable()->constrained('users')->onDelete('cascade');

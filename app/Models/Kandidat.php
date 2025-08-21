@@ -39,7 +39,6 @@ class Kandidat extends Model
         'pengalaman_kerja',
         'pendidikan',
         'kemampuan_bahasa',
-        'informasi_spesifik',
         'kemampuan',
         'ktp_path',
         'ijazah_path',

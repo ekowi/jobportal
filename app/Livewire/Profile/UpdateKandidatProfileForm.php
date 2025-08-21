@@ -61,7 +61,6 @@ class UpdateKandidatProfileForm extends Component
                 'pendidikan' => '',
                 'pengalaman_kerja' => '',
                 'kemampuan_bahasa' => '',
-                'informasi_spesifik' => '',
                 'kemampuan' => '',
             ];
         }
@@ -94,7 +93,6 @@ class UpdateKandidatProfileForm extends Component
             'state.pendidikan' => ['required', 'string'],
             'state.pengalaman_kerja' => ['nullable', 'string'],
             'state.kemampuan_bahasa' => ['nullable', 'string'],
-            'state.informasi_spesifik' => ['nullable', 'string'],
             'state.kemampuan' => ['nullable', 'string'],
         ]);
 
@@ -112,7 +110,6 @@ class UpdateKandidatProfileForm extends Component
 
         // Bisa juga dengan flash message jika halaman direfresh
         session()->flash('status', 'Profil kandidat berhasil diperbarui.');
-        return redirect()->route('profile.show');
     }
 
     /**
