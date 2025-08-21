@@ -234,194 +234,43 @@
                                         <i class="mdi mdi-school-outline me-2"></i>Data Pendidikan & Kemampuan
                                     </h6>
                                 </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="pendidikan" class="form-label">{{ __('Pendidikan Terakhir') }} <span class="text-danger">*</span></label>
-                                    <select id="pendidikan" wire:model.defer="state.pendidikan" class="form-select @error('state.pendidikan') is-invalid @enderror">
-                                        <option value="">Pilih...</option>
-                                        <option value="SD">SD</option>
-                                        <option value="SMP">SMP</option>
-                                        <option value="SMA/SMK">SMA/SMK</option>
-                                        <option value="D1">D1</option>
-                                        <option value="D2">D2</option>
-                                        <option value="D3">D3</option>
-                                        <option value="D4">D4</option>
-                                        <option value="S1">S1</option>
-                                        <option value="S2">S2</option>
-                                        <option value="S3">S3</option>
-                                    </select>
+                                <div class="col-12 mb-3">
+                                    <label for="pengalaman_kerja" class="form-label">{{ __('Riwayat Pengalaman Kerja') }}</label>
+                                    <textarea id="pengalaman_kerja" class="form-control @error('state.pengalaman_kerja') is-invalid @enderror" wire:model.defer="state.pengalaman_kerja" rows="3"></textarea>
+                                    @error('state.pengalaman_kerja')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label for="pendidikan" class="form-label">{{ __('Riwayat Pendidikan') }}</label>
+                                    <textarea id="pendidikan" class="form-control @error('state.pendidikan') is-invalid @enderror" wire:model.defer="state.pendidikan" rows="3"></textarea>
                                     @error('state.pendidikan')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                
                                 <div class="col-12 mb-3">
-                                    <label class="form-label fw-bold"><i class="mdi mdi-briefcase-outline me-2"></i>Riwayat Pengalaman Kerja</label>
-                                    <div id="work-experience-list"></div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-work-experience">
-                                        <i class="mdi mdi-plus"></i> Tambah Pengalaman
-                                    </button>
+                                    <label for="kemampuan_bahasa" class="form-label">{{ __('Keterampilan Bahasa') }}</label>
+                                    <textarea id="kemampuan_bahasa" class="form-control @error('state.kemampuan_bahasa') is-invalid @enderror" wire:model.defer="state.kemampuan_bahasa" rows="3"></textarea>
+                                    @error('state.kemampuan_bahasa')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-
                                 <div class="col-12 mb-3">
-                                    <label class="form-label fw-bold"><i class="mdi mdi-school-outline me-2"></i>Riwayat Pendidikan</label>
-                                    <div id="education-list"></div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-education">
-                                        <i class="mdi mdi-plus"></i> Tambah Pendidikan
-                                    </button>
+                                    <label for="informasi_spesifik" class="form-label">{{ __('Informasi Spesifik') }}</label>
+                                    <textarea id="informasi_spesifik" class="form-control @error('state.informasi_spesifik') is-invalid @enderror" wire:model.defer="state.informasi_spesifik" rows="3"></textarea>
+                                    @error('state.informasi_spesifik')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-
-                                <div class="col-12 mb-3">
-                                    <label class="form-label fw-bold"><i class="mdi mdi-translate me-2"></i>Keterampilan Bahasa</label>
-                                    <div id="language-list"></div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-language">
-                                        <i class="mdi mdi-plus"></i> Tambah Bahasa
-                                    </button>
-                                </div>
-
-                                <div class="col-12 mb-3">
-                                    <label class="form-label fw-bold"><i class="mdi mdi-information-outline me-2"></i>Informasi Spesifik</label>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label>Pernah bekerja di Perusahaan ini?</label>
-                                            <select id="pernah-bekerja" class="form-select">
-                                                <option value="Tidak">Tidak</option>
-                                                <option value="Ya">Ya</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3" id="lokasi-wrapper" style="display:none;">
-                                            <label>Jika ya, di Lokasi mana anda bekerja?</label>
-                                            <input type="text" class="form-control" id="lokasi-bekerja" placeholder="Masukkan lokasi">
-                                        </div>
-                                        <div class="col-12 mb-3">
-                                            <label>Bagaimana anda menpatkan informasi pekerjaan ini?</label>
-                                            <input type="text" class="form-control" id="info-lowongan" placeholder="Contoh: Website perusahaan, teman, iklan">
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div class="col-12 mb-3">
                                     <label for="kemampuan" class="form-label">{{ __('Keahlian (Opsional)') }}</label>
-                                    <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror"
-                                        wire:model.defer="state.kemampuan" rows="4"
-                                        placeholder="Sebutkan keahlian yang Anda miliki, seperti bahasa pemrograman, software, sertifikasi, dll"></textarea>
+                                    <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror" wire:model.defer="state.kemampuan" rows="4" placeholder="Sebutkan keahlian yang Anda miliki, seperti bahasa pemrograman, software, sertifikasi, dll"></textarea>
                                     <small class="text-muted">Contoh: JavaScript, PHP, Laravel, MySQL, Adobe Photoshop, Google Analytics</small>
                                     @error('state.kemampuan')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-
-                            <template id="work-experience-template">
-                                <div class="work-experience-item border rounded p-3 mb-3">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label>Tanggal Mulai</label>
-                                            <input type="date" class="form-control" name="work_start[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Tanggal Selesai</label>
-                                            <input type="date" class="form-control" name="work_end[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Nama Perusahaan</label>
-                                            <input type="text" class="form-control" name="company_name[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Keterangan Bisnis Perusahaan</label>
-                                            <input type="text" class="form-control" name="company_business[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Jabatan</label>
-                                            <input type="text" class="form-control" name="position[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Alasan keluar/berhenti</label>
-                                            <input type="text" class="form-control" name="reason[]">
-                                        </div>
-                                        <div class="col-12 text-end">
-                                            <button type="button" class="btn btn-sm btn-danger remove-work-experience">Hapus</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-
-                            <template id="education-template">
-                                <div class="education-item border rounded p-3 mb-3">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label>Tanggal Mulai</label>
-                                            <input type="date" class="form-control" name="edu_start[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Tanggal Berakhir</label>
-                                            <input type="date" class="form-control" name="edu_end[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Nama Pendidikan</label>
-                                            <input type="text" class="form-control" name="edu_name[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Jurusan</label>
-                                            <input type="text" class="form-control" name="edu_major[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label>Tingkat Pendidikan</label>
-                                            <input type="text" class="form-control" name="edu_level[]">
-                                        </div>
-                                        <div class="col-md-6 mb-3 d-flex align-items-center">
-                                            <div class="form-check mt-4">
-                                                <input class="form-check-input" type="checkbox" name="edu_highest[]">
-                                                <label class="form-check-label">Pendidikan Tertinggi</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 text-end">
-                                            <button type="button" class="btn btn-sm btn-danger remove-education">Hapus</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-
-                            <template id="language-template">
-                                <div class="language-item border rounded p-3 mb-3">
-                                    <div class="row">
-                                        <div class="col-md-3 mb-3">
-                                            <label>Bahasa</label>
-                                            <input type="text" class="form-control" name="language_name[]">
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label>Kemahiran Berbicara</label>
-                                            <select class="form-select" name="speaking[]">
-                                                <option value="">Pilih...</option>
-                                                <option value="Baik">Baik</option>
-                                                <option value="Cukup">Cukup</option>
-                                                <option value="Kurang">Kurang</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label>Kemahiran Membaca</label>
-                                            <select class="form-select" name="reading[]">
-                                                <option value="">Pilih...</option>
-                                                <option value="Baik">Baik</option>
-                                                <option value="Cukup">Cukup</option>
-                                                <option value="Kurang">Kurang</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label>Kemahiran Menulis</label>
-                                            <select class="form-select" name="writing[]">
-                                                <option value="">Pilih...</option>
-                                                <option value="Baik">Baik</option>
-                                                <option value="Cukup">Cukup</option>
-                                                <option value="Kurang">Kurang</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12 text-end">
-                                            <button type="button" class="btn btn-sm btn-danger remove-language">Hapus</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
 
                             {{-- Action Buttons --}}
                             <div class="row">
@@ -490,161 +339,5 @@
         </div>
     @endif
 
-    {{-- Scripts for dynamic form and alerts --}}
-    @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto hide alerts after 5 seconds
-            setTimeout(function() {
-                const alerts = document.querySelectorAll('.alert-dismissible');
-                alerts.forEach(function(alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
-
-            // ===== Dynamic Work Experience =====
-            const workList = document.getElementById('work-experience-list');
-            document.getElementById('add-work-experience').addEventListener('click', () => {
-                const tmpl = document.getElementById('work-experience-template').content.cloneNode(true);
-                workList.appendChild(tmpl);
-            });
-            workList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-work-experience')) {
-                    e.target.closest('.work-experience-item').remove();
-                }
-            });
-
-            // ===== Dynamic Education =====
-            const eduList = document.getElementById('education-list');
-            document.getElementById('add-education').addEventListener('click', () => {
-                const tmpl = document.getElementById('education-template').content.cloneNode(true);
-                eduList.appendChild(tmpl);
-            });
-            eduList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-education')) {
-                    e.target.closest('.education-item').remove();
-                }
-            });
-
-            // ===== Dynamic Language =====
-            const langList = document.getElementById('language-list');
-            document.getElementById('add-language').addEventListener('click', () => {
-                const tmpl = document.getElementById('language-template').content.cloneNode(true);
-                langList.appendChild(tmpl);
-            });
-            langList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-language')) {
-                    e.target.closest('.language-item').remove();
-                }
-            });
-
-            // ===== Specific Info =====
-            const pernah = document.getElementById('pernah-bekerja');
-            const lokasiWrapper = document.getElementById('lokasi-wrapper');
-            pernah.addEventListener('change', () => {
-                lokasiWrapper.style.display = (pernah.value === 'Ya') ? 'block' : 'none';
-                if (pernah.value !== 'Ya') {
-                    document.getElementById('lokasi-bekerja').value = '';
-                }
-            });
-
-            // Load data from localStorage
-            function loadData() {
-                const workData = JSON.parse(localStorage.getItem('work_experiences') || '[]');
-                workData.forEach(item => {
-                    const tmpl = document.getElementById('work-experience-template').content.cloneNode(true);
-                    const el = tmpl.querySelector('.work-experience-item');
-                    el.querySelector('[name="work_start[]"]').value = item.start;
-                    el.querySelector('[name="work_end[]"]').value = item.end;
-                    el.querySelector('[name="company_name[]"]').value = item.company;
-                    el.querySelector('[name="company_business[]"]').value = item.business;
-                    el.querySelector('[name="position[]"]').value = item.position;
-                    el.querySelector('[name="reason[]"]').value = item.reason;
-                    workList.appendChild(tmpl);
-                });
-
-                const eduData = JSON.parse(localStorage.getItem('education_history') || '[]');
-                eduData.forEach(item => {
-                    const tmpl = document.getElementById('education-template').content.cloneNode(true);
-                    const el = tmpl.querySelector('.education-item');
-                    el.querySelector('[name="edu_start[]"]').value = item.start;
-                    el.querySelector('[name="edu_end[]"]').value = item.end;
-                    el.querySelector('[name="edu_name[]"]').value = item.name;
-                    el.querySelector('[name="edu_major[]"]').value = item.major;
-                    el.querySelector('[name="edu_level[]"]').value = item.level;
-                    el.querySelector('[name="edu_highest[]"]').checked = item.highest;
-                    eduList.appendChild(tmpl);
-                });
-
-                const langData = JSON.parse(localStorage.getItem('language_skills') || '[]');
-                langData.forEach(item => {
-                    const tmpl = document.getElementById('language-template').content.cloneNode(true);
-                    const el = tmpl.querySelector('.language-item');
-                    el.querySelector('[name="language_name[]"]').value = item.language;
-                    el.querySelector('[name="speaking[]"]').value = item.speaking;
-                    el.querySelector('[name="reading[]"]').value = item.reading;
-                    el.querySelector('[name="writing[]"]').value = item.writing;
-                    langList.appendChild(tmpl);
-                });
-
-                const spec = JSON.parse(localStorage.getItem('specific_info') || '{}');
-                if (spec.pernah) {
-                    pernah.value = spec.pernah;
-                    if (spec.pernah === 'Ya') {
-                        lokasiWrapper.style.display = 'block';
-                    }
-                }
-                document.getElementById('lokasi-bekerja').value = spec.lokasi || '';
-                document.getElementById('info-lowongan').value = spec.info || '';
-            }
-
-            loadData();
-
-            // Save to localStorage on submit
-            document.getElementById('kandidat-form').addEventListener('submit', () => {
-                function collect(list, selector, mapper) {
-                    const items = [];
-                    list.querySelectorAll(selector).forEach(el => items.push(mapper(el)));
-                    return items;
-                }
-
-                const workData = collect(workList, '.work-experience-item', el => ({
-                    start: el.querySelector('[name="work_start[]"]').value,
-                    end: el.querySelector('[name="work_end[]"]').value,
-                    company: el.querySelector('[name="company_name[]"]').value,
-                    business: el.querySelector('[name="company_business[]"]').value,
-                    position: el.querySelector('[name="position[]"]').value,
-                    reason: el.querySelector('[name="reason[]"]').value,
-                }));
-                localStorage.setItem('work_experiences', JSON.stringify(workData));
-
-                const eduData = collect(eduList, '.education-item', el => ({
-                    start: el.querySelector('[name="edu_start[]"]').value,
-                    end: el.querySelector('[name="edu_end[]"]').value,
-                    name: el.querySelector('[name="edu_name[]"]').value,
-                    major: el.querySelector('[name="edu_major[]"]').value,
-                    level: el.querySelector('[name="edu_level[]"]').value,
-                    highest: el.querySelector('[name="edu_highest[]"]').checked,
-                }));
-                localStorage.setItem('education_history', JSON.stringify(eduData));
-
-                const langData = collect(langList, '.language-item', el => ({
-                    language: el.querySelector('[name="language_name[]"]').value,
-                    speaking: el.querySelector('[name="speaking[]"]').value,
-                    reading: el.querySelector('[name="reading[]"]').value,
-                    writing: el.querySelector('[name="writing[]"]').value,
-                }));
-                localStorage.setItem('language_skills', JSON.stringify(langData));
-
-                const specData = {
-                    pernah: pernah.value,
-                    lokasi: document.getElementById('lokasi-bekerja').value,
-                    info: document.getElementById('info-lowongan').value,
-                };
-                localStorage.setItem('specific_info', JSON.stringify(specData));
-            });
-        });
-    </script>
-    @endpush
+    {{-- Scripts removed: dynamic form now persisted in database --}}
 </div>
