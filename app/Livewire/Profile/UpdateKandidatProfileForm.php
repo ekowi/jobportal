@@ -92,13 +92,33 @@ class UpdateKandidatProfileForm extends Component
             'state.jenis_kelamin' => ['required', 'in:L,P'],
             'state.status_perkawinan' => ['required', 'string', 'max:50'],
             'state.agama' => ['required', 'string', 'max:50'],
-            'state.pendidikan' => ['required', 'string'],
+            'state.pendidikan' => ['nullable', 'string'],
             'state.riwayat_pengalaman_kerja' => ['nullable', 'string'],
             'state.riwayat_pendidikan' => ['nullable', 'string'],
             'state.kemampuan_bahasa' => ['nullable', 'string'],
             'state.informasi_spesifik' => ['nullable', 'string'],
             'state.kemampuan' => ['nullable', 'string'],
         ]);
+
+        // Tentukan pendidikan tertinggi secara otomatis dari riwayat pendidikan
+        $educationHistory = json_decode($validatedData['state']['riwayat_pendidikan'] ?? '[]', true);
+        if (is_array($educationHistory) && !empty($educationHistory)) {
+            $levels = [
+                'SD', 'SMP', 'SMA/SMK', 'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3', 'Post Doktoral'
+            ];
+            $highest = null;
+            $currentMax = -1;
+            foreach ($educationHistory as $edu) {
+                $index = array_search($edu['level'] ?? '', $levels, true);
+                if ($index !== false && $index > $currentMax) {
+                    $currentMax = $index;
+                    $highest = $edu['level'];
+                }
+            }
+            $validatedData['state']['pendidikan'] = $highest;
+        } else {
+            $validatedData['state']['pendidikan'] = null;
+        }
 
         // Gunakan updateOrCreate untuk membuat profil jika belum ada, atau memperbarui jika sudah ada
         Kandidat::updateOrCreate(

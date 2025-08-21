@@ -188,7 +188,7 @@
                                         </h6>
                                     </div>
                                     <div class="col-md-12 mb-3">
-                                        <h6 class="text-muted mb-0">Pendidikan Terakhir</h6>
+                                        <h6 class="text-muted mb-0">Pendidikan Tertinggi</h6>
                                         <p class="fw-medium">{{ $kandidat->pendidikan }}</p>
                                     </div>
                                     <div class="col-md-12 mb-3">
@@ -230,7 +230,7 @@
                                             <div class="col-12 mb-3">
                                                 <p class="mb-0 fw-medium">{{ $item['name'] ?? '-' }} - {{ $item['major'] ?? '-' }}</p>
                                                 <small class="text-muted">{{ $item['start'] ?? '-' }} - {{ $item['end'] ?? '-' }}</small>
-                                                <p class="mb-0">Tingkat: {{ $item['level'] ?? '-' }}@if(!empty($item['highest'])) (Tertinggi)@endif</p>
+                                                <p class="mb-0">Tingkat: {{ $item['level'] ?? '-' }}</p>
                                             </div>
                                         @endforeach
                                     @else
