@@ -79,6 +79,14 @@ class Index extends Component
 
     public function openCreateModal()
     {
+        if (auth()->user()->hasPosition('recruiter')) {
+            $this->dispatch('showNotification', [
+                'status' => 'error',
+                'message' => __('Unauthorized action.')
+            ]);
+            return;
+        }
+
         $this->dispatch('showModal');
     }
 

@@ -12,23 +12,31 @@ Route::middleware([
     'verified',
     'role:officer', // Ensure the user has the 'officer' role
 ])->group(function () {
-    Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
-    Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.Index');
-    Route::get('/lowongan', App\Livewire\Lowongan\Index::class)->name('lowongan.index');
-    Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)->name('lowongan.create');
-    Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)->name('lowongan.edit');
-    Route::get('/recruitment-progress', App\Livewire\ProgressRekrutmenTimeline::class)->name('recruitment.progress');
-    Route::get('/bank-soal', App\Livewire\BankSoal\Index::class)->name('bank-soal.index');
-    Route::get('/kategori-soal', App\Livewire\KategoriSoal\Index::class)->name('kategori-soal.index');
+    Route::middleware('position:manager,coordinator,recruiter')->group(function () {
+        Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
+        Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.Index');
+        Route::get('/lowongan', App\Livewire\Lowongan\Index::class)->name('lowongan.index');
+        Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)->name('lowongan.create');
+        Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)->name('lowongan.edit');
+        Route::get('/lamaran-lowongan', App\Livewire\Officer\LamaranLowongan\Index::class)
+            ->name('lamaran-lowongan.index');
+        Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)->name('test-results.index');
+    });
+
+    Route::middleware('position:manager,coordinator')->group(function () {
+        Route::get('/bank-soal', App\Livewire\BankSoal\Index::class)->name('bank-soal.index');
+        Route::get('/kategori-soal', App\Livewire\KategoriSoal\Index::class)->name('kategori-soal.index');
+    });
+
+    Route::middleware('position:manager')->group(function () {
+        Route::get('/recruitment-progress', App\Livewire\ProgressRekrutmenTimeline::class)->name('recruitment.progress');
+        Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)->name('kandidat.index');
+        Route::get('/jadwal-interview', App\Livewire\Officer\InterviewSchedule\Index::class)
+            ->name('jadwal-interview.index');
+    });
+
     Route::get('/Lowongan/Index', App\Livewire\Lowongan\Index::class)->name('Lowongan.Index');
     Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)->name('Lowongan.Create');
-    Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)->name('test-results.index');
-    Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)->name('kandidat.index');
-    Route::get('/lamaran-lowongan', App\Livewire\Officer\LamaranLowongan\Index::class)
-    ->name('lamaran-lowongan.index');
-    Route::get('/jadwal-interview', App\Livewire\Officer\InterviewSchedule\Index::class)
-    ->name('jadwal-interview.index');
-
 });
 
 Route::middleware([

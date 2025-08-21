@@ -53,7 +53,9 @@
                     <div class="card border-0 rounded shadow">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">{{ __('Officer List') }}</h5>
-                            <a href="#" wire:click.prevent="openCreateModal" class="btn btn-primary btn-sm">{{ __('Add New Officer') }}</a>
+                            @unless(auth()->user()->hasPosition('recruiter'))
+                                <a href="#" wire:click.prevent="openCreateModal" class="btn btn-primary btn-sm">{{ __('Add New Officer') }}</a>
+                            @endunless
                         </div>
                         <!-- Filter Section -->
                        <div class="card-body border-bottom">
