@@ -59,8 +59,10 @@ class UpdateKandidatProfileForm extends Component
                 'status_perkawinan' => '',
                 'agama' => '',
                 'pendidikan' => '',
-                'pengalaman_kerja' => '',
+                'riwayat_pengalaman_kerja' => '',
+                'riwayat_pendidikan' => '',
                 'kemampuan_bahasa' => '',
+                'informasi_spesifik' => '',
                 'kemampuan' => '',
             ];
         }
@@ -91,8 +93,10 @@ class UpdateKandidatProfileForm extends Component
             'state.status_perkawinan' => ['required', 'string', 'max:50'],
             'state.agama' => ['required', 'string', 'max:50'],
             'state.pendidikan' => ['required', 'string'],
-            'state.pengalaman_kerja' => ['nullable', 'string'],
+            'state.riwayat_pengalaman_kerja' => ['nullable', 'string'],
+            'state.riwayat_pendidikan' => ['nullable', 'string'],
             'state.kemampuan_bahasa' => ['nullable', 'string'],
+            'state.informasi_spesifik' => ['nullable', 'string'],
             'state.kemampuan' => ['nullable', 'string'],
         ]);
 
@@ -105,11 +109,9 @@ class UpdateKandidatProfileForm extends Component
         // Beri feedback ke pengguna
         $this->dispatch('saved');
 
-        // Refresh state jika diperlukan (opsional, tergantung UX)
-        // $this->state = $user->fresh()->kandidat->toArray();
+        session()->flash('success', 'Profil kandidat berhasil diperbarui.');
 
-        // Bisa juga dengan flash message jika halaman direfresh
-        session()->flash('status', 'Profil kandidat berhasil diperbarui.');
+        return redirect()->route('profile.show');
     }
 
     /**

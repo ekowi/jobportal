@@ -203,7 +203,19 @@
                                             <i class="mdi mdi-briefcase-outline me-2"></i>Riwayat Pengalaman Kerja
                                         </h6>
                                     </div>
-                                    <div id="profile-work-experiences" class="row"></div>
+@php $workData = $kandidat->riwayat_pengalaman_kerja ? json_decode($kandidat->riwayat_pengalaman_kerja, true) : []; @endphp
+@if($workData)
+    @foreach($workData as $item)
+        <div class="col-12 mb-3">
+            <p class="mb-0 fw-medium">{{ $item['position'] ?? '-' }} - {{ $item['company'] ?? '-' }}</p>
+            <small class="text-muted">{{ $item['start'] ?? '-' }} - {{ $item['end'] ?? '-' }}</small>
+            <p class="mb-0">Bisnis: {{ $item['business'] ?? '-' }}</p>
+            <p class="mb-0">Alasan keluar: {{ $item['reason'] ?? '-' }}</p>
+        </div>
+    @endforeach
+@else
+    <div class="col-12"><p class="text-muted">Belum ada riwayat pengalaman kerja.</p></div>
+@endif
                                 </div>
 
                                 <div class="row mt-4">
@@ -212,7 +224,18 @@
                                             <i class="mdi mdi-school-outline me-2"></i>Riwayat Pendidikan
                                         </h6>
                                     </div>
-                                    <div id="profile-education" class="row"></div>
+                                    @php $eduData = $kandidat->riwayat_pendidikan ? json_decode($kandidat->riwayat_pendidikan, true) : []; @endphp
+                                    @if($eduData)
+                                        @foreach($eduData as $item)
+                                            <div class="col-12 mb-3">
+                                                <p class="mb-0 fw-medium">{{ $item['name'] ?? '-' }} - {{ $item['major'] ?? '-' }}</p>
+                                                <small class="text-muted">{{ $item['start'] ?? '-' }} - {{ $item['end'] ?? '-' }}</small>
+                                                <p class="mb-0">Tingkat: {{ $item['level'] ?? '-' }}@if(!empty($item['highest'])) (Tertinggi)@endif</p>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="col-12"><p class="text-muted">Belum ada riwayat pendidikan.</p></div>
+                                    @endif
                                 </div>
 
                                 <div class="row mt-4">
@@ -221,7 +244,17 @@
                                             <i class="mdi mdi-translate me-2"></i>Keterampilan Bahasa
                                         </h6>
                                     </div>
-                                    <div id="profile-languages" class="row"></div>
+                                    @php $langData = $kandidat->kemampuan_bahasa ? json_decode($kandidat->kemampuan_bahasa, true) : []; @endphp
+                                    @if($langData)
+                                        @foreach($langData as $item)
+                                            <div class="col-12 mb-3">
+                                                <p class="mb-0 fw-medium">{{ $item['language'] ?? '-' }}</p>
+                                                <p class="mb-0">Berbicara: {{ $item['speaking'] ?? '-' }}, Membaca: {{ $item['reading'] ?? '-' }}, Menulis: {{ $item['writing'] ?? '-' }}</p>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="col-12"><p class="text-muted">Belum ada keterampilan bahasa.</p></div>
+                                    @endif
                                 </div>
 
                                 <div class="row mt-4">
@@ -230,7 +263,18 @@
                                             <i class="mdi mdi-information-outline me-2"></i>Informasi Spesifik
                                         </h6>
                                     </div>
-                                    <div id="profile-specific" class="col-12"></div>
+                                    @php $spec = $kandidat->informasi_spesifik ? json_decode($kandidat->informasi_spesifik, true) : []; @endphp
+                                    @if($spec)
+                                        <div class="col-12">
+                                            <p class="mb-1">Pernah bekerja di perusahaan ini? <strong>{{ $spec['pernah'] ?? '-' }}</strong></p>
+                                            @if(isset($spec['pernah']) && $spec['pernah'] === 'Ya')
+                                                <p class="mb-1">Lokasi: <strong>{{ $spec['lokasi'] ?? '-' }}</strong></p>
+                                            @endif
+        <p class="mb-0">Sumber informasi pekerjaan: <strong>{{ $spec['info'] ?? '-' }}</strong></p>
+                                        </div>
+                                    @else
+                                        <div class="col-12"><p class="text-muted">Belum ada informasi spesifik.</p></div>
+                                    @endif
                                 </div>
 
                                 {{-- Divider --}}
@@ -446,50 +490,3 @@
         </div>
     </div>
 </div>
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        function renderOrEmpty(data, container, renderFn) {
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p class="text-muted">Belum ada data.</p>';
-                return;
-            }
-            renderFn(data, container);
-        }
-
-        const workData = JSON.parse(localStorage.getItem('work_experiences') || '[]');
-        const workContainer = document.getElementById('profile-work-experiences');
-        renderOrEmpty(workData, workContainer, (data, el) => {
-            data.forEach(item => {
-                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.position} - ${item.company}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Bisnis: ${item.business}</p><p class="mb-0">Alasan keluar: ${item.reason}</p></div>`;
-            });
-        });
-
-        const eduData = JSON.parse(localStorage.getItem('education_history') || '[]');
-        const eduContainer = document.getElementById('profile-education');
-        renderOrEmpty(eduData, eduContainer, (data, el) => {
-            data.forEach(item => {
-                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.name} - ${item.major}</p><small class="text-muted">${item.start} - ${item.end}</small><p class="mb-0">Tingkat: ${item.level}${item.highest ? ' (Tertinggi)' : ''}</p></div>`;
-            });
-        });
-
-        const langData = JSON.parse(localStorage.getItem('language_skills') || '[]');
-        const langContainer = document.getElementById('profile-languages');
-        renderOrEmpty(langData, langContainer, (data, el) => {
-            data.forEach(item => {
-                el.innerHTML += `<div class="col-12 mb-3"><p class="mb-0 fw-medium">${item.language}</p><p class="mb-0">Berbicara: ${item.speaking}, Membaca: ${item.reading}, Menulis: ${item.writing}</p></div>`;
-            });
-        });
-
-        const spec = JSON.parse(localStorage.getItem('specific_info') || '{}');
-        const specContainer = document.getElementById('profile-specific');
-        if (!spec.pernah && !spec.info) {
-            specContainer.innerHTML = '<p class="text-muted">Belum ada data.</p>';
-        } else {
-            specContainer.innerHTML = `<p class="mb-1">Pernah bekerja di perusahaan ini? <strong>${spec.pernah || '-'}</strong></p>` +
-                (spec.pernah === 'Ya' ? `<p class="mb-1">Lokasi: <strong>${spec.lokasi || '-'}</strong></p>` : '') +
-                `<p class="mb-0">Sumber informasi pekerjaan: <strong>${spec.info || '-'}</strong></p>`;
-        }
-    });
-</script>
-@endpush

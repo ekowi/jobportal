@@ -300,6 +300,11 @@
                                     </div>
                                 </div>
 
+                                <input type="hidden" wire:model.defer="state.riwayat_pengalaman_kerja" id="riwayat_pengalaman_kerja">
+                                <input type="hidden" wire:model.defer="state.riwayat_pendidikan" id="riwayat_pendidikan">
+                                <input type="hidden" wire:model.defer="state.kemampuan_bahasa" id="kemampuan_bahasa">
+                                <input type="hidden" wire:model.defer="state.informasi_spesifik" id="informasi_spesifik">
+
                                 <div class="col-12 mb-3">
                                     <label for="kemampuan" class="form-label">{{ __('Keahlian (Opsional)') }}</label>
                                     <textarea id="kemampuan" class="form-control @error('state.kemampuan') is-invalid @enderror"
@@ -549,6 +554,24 @@
                 }
             });
 
+            // Seed localStorage with data from server if empty
+            const initialWork = @json($state['riwayat_pengalaman_kerja'] ? json_decode($state['riwayat_pengalaman_kerja'], true) : []);
+            if (!localStorage.getItem('work_experiences') && initialWork.length) {
+                localStorage.setItem('work_experiences', JSON.stringify(initialWork));
+            }
+            const initialEdu = @json($state['riwayat_pendidikan'] ? json_decode($state['riwayat_pendidikan'], true) : []);
+            if (!localStorage.getItem('education_history') && initialEdu.length) {
+                localStorage.setItem('education_history', JSON.stringify(initialEdu));
+            }
+            const initialLang = @json($state['kemampuan_bahasa'] ? json_decode($state['kemampuan_bahasa'], true) : []);
+            if (!localStorage.getItem('language_skills') && initialLang.length) {
+                localStorage.setItem('language_skills', JSON.stringify(initialLang));
+            }
+            const initialSpec = @json($state['informasi_spesifik'] ? json_decode($state['informasi_spesifik'], true) : []);
+            if (!localStorage.getItem('specific_info') && Object.keys(initialSpec).length) {
+                localStorage.setItem('specific_info', JSON.stringify(initialSpec));
+            }
+
             // Load data from localStorage
             function loadData() {
                 const workData = JSON.parse(localStorage.getItem('work_experiences') || '[]');
@@ -618,6 +641,7 @@
                     reason: el.querySelector('[name="reason[]"]').value,
                 }));
                 localStorage.setItem('work_experiences', JSON.stringify(workData));
+                document.getElementById('riwayat_pengalaman_kerja').value = JSON.stringify(workData);
 
                 const eduData = collect(eduList, '.education-item', el => ({
                     start: el.querySelector('[name="edu_start[]"]').value,
@@ -628,6 +652,7 @@
                     highest: el.querySelector('[name="edu_highest[]"]').checked,
                 }));
                 localStorage.setItem('education_history', JSON.stringify(eduData));
+                document.getElementById('riwayat_pendidikan').value = JSON.stringify(eduData);
 
                 const langData = collect(langList, '.language-item', el => ({
                     language: el.querySelector('[name="language_name[]"]').value,
@@ -636,6 +661,7 @@
                     writing: el.querySelector('[name="writing[]"]').value,
                 }));
                 localStorage.setItem('language_skills', JSON.stringify(langData));
+                document.getElementById('kemampuan_bahasa').value = JSON.stringify(langData);
 
                 const specData = {
                     pernah: pernah.value,
@@ -643,6 +669,7 @@
                     info: document.getElementById('info-lowongan').value,
                 };
                 localStorage.setItem('specific_info', JSON.stringify(specData));
+                document.getElementById('informasi_spesifik').value = JSON.stringify(specData);
             });
         });
     </script>
