@@ -14,7 +14,7 @@
             <div class="position-middle-bottom">
                 <nav aria-label="breadcrumb" class="d-block">
                     <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('officers.index') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Kelola Lamaran</li>
                     </ul>
                 </nav>
