@@ -61,6 +61,11 @@ class Index extends Component
 
     public function setStatus($id, $status)
     {
+        if (auth()->user()->hasPosition('recruiter')) {
+            session()->flash('error', __('Unauthorized action.'));
+            return;
+        }
+
         $allowed = ['diterima', 'psikotes', 'ditolak'];
         if (!in_array($status, $allowed, true)) {
             session()->flash('error', 'Status tidak valid.');
@@ -96,6 +101,11 @@ class Index extends Component
 
     public function prepareInterview($lamaranId)
     {
+        if (auth()->user()->hasPosition('recruiter')) {
+            session()->flash('error', __('Unauthorized action.'));
+            return;
+        }
+
         $this->interviewLamaranId = $lamaranId;
         $this->interviewLink = '';
         $this->interviewWaktu = '';
@@ -105,6 +115,11 @@ class Index extends Component
 
     public function saveInterview()
     {
+        if (auth()->user()->hasPosition('recruiter')) {
+            session()->flash('error', __('Unauthorized action.'));
+            return;
+        }
+
         $this->validate([
             'interviewLink' => 'required|url',
             'interviewWaktu' => 'required|date',
