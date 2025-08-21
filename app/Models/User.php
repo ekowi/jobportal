@@ -11,6 +11,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Kandidat;
+use App\Models\Officer;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -79,6 +80,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasRole('officer') &&
                 $this->officer &&
                 $this->officer->jabatan === $position;
+    }
+
+    public function officer()
+    {
+        return $this->hasOne(Officer::class, 'user_id');
     }
 
     public function kandidat()
