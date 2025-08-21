@@ -102,7 +102,9 @@ class Create extends Component
             $this->notificationMessage = 'Lowongan gagal ditambahkan.';
         }
         $this->dispatch('lowonganUpdated');
-        return redirect()->route('lowongan.index');
+        session()->flash('success', 'Lowongan berhasil dibuat.');
+        
+        return redirect()->route('Lowongan.Index');
     }
 
     public function render()

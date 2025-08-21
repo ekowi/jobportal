@@ -141,7 +141,7 @@
                                                 <td>{{ date('d M Y', strtotime($lowongan->tanggal_berakhir)) }}</td>
                                                 <td class="p-3">
                                                     {{-- Tombol Edit --}}
-                                                    <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-sm btn-soft-warning me-1">
+                                                    <a href="{{ route('Lowongan.Edit', $lowongan->id) }}" class="btn btn-sm btn-soft-warning me-1">
                                                         <i class="mdi mdi-pencil"></i>
                                                     </a>
 

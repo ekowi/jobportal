@@ -112,11 +112,11 @@ class Edit extends Component
             $this->notificationMessage = 'Lowongan gagal diubah.';
         }
         $this->dispatch('lowonganUpdated');
-        return redirect()->route('lowongan.index');
+        return redirect()->route('Lowongan.index');
     }
 
     public function render()
     {
-        return view('livewire.lowongan.edit');
+        return view('livewire.Lowongan.edit');
     }
 }

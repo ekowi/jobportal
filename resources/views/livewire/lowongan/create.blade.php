@@ -61,6 +61,7 @@
                     <nav aria-label="breadcrumb" class="d-block">
                         <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
                             <li class="breadcrumb-item"><a href="{{ route('officers.index') }}">{{ __('Home') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('Lowongan.Index') }}">{{ __('Lowongan') }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ __('Create Job Vacancy') }}</li>
                         </ul>
                     </nav>

@@ -140,21 +140,42 @@
                                                         </div>
                                                     @endif
 
+                                                    @php
+                                                        $isRecruiter = strtolower(optional(auth()->user()->officer)->jabatan) === 'recruiter';
+                                                    @endphp
+
                                                     {{-- Aksi cepat --}}
-                                                    <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
-                                                        <button type="button" class="btn btn-outline-success" title="Terima" wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')">
-                                                            <i class="mdi mdi-check-circle-outline"></i>
-                                                        </button>
-                                                        <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" wire:click.prevent="prepareInterview({{ $lamaran->id }})">
-                                                            <i class="mdi mdi-calendar-clock"></i>
-                                                        </button>
-                                                        <button type="button" class="btn btn-outline-warning" title="Psikotes" wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')">
-                                                            <i class="mdi mdi-brain"></i>
-                                                        </button>
-                                                        <button type="button" class="btn btn-outline-danger" title="Tolak" wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')">
-                                                            <i class="mdi mdi-close-circle-outline"></i>
-                                                        </button>
-                                                    </div>
+                                                    @if($isRecruiter)
+                                                        <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
+                                                            <button type="button" class="btn btn-outline-success" title="Terima" disabled>
+                                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" disabled>
+                                                                <i class="mdi mdi-calendar-clock"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-warning" title="Psikotes" disabled>
+                                                                <i class="mdi mdi-brain"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-danger" title="Tolak" disabled>
+                                                                <i class="mdi mdi-close-circle-outline"></i>
+                                                            </button>
+                                                        </div>
+                                                    @else
+                                                        <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
+                                                            <button type="button" class="btn btn-outline-success" title="Terima" wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')">
+                                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" wire:click.prevent="prepareInterview({{ $lamaran->id }})">
+                                                                <i class="mdi mdi-calendar-clock"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-warning" title="Psikotes" wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')">
+                                                                <i class="mdi mdi-brain"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-danger" title="Tolak" wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')">
+                                                                <i class="mdi mdi-close-circle-outline"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @empty

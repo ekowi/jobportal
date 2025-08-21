@@ -81,6 +81,12 @@ class User extends Authenticatable implements MustVerifyEmail
                 $this->officer->jabatan === $position;
     }
 
+    // Tambahkan relasi officer untuk mengakses jabatan officer
+    public function officer()
+    {
+        return $this->hasOne(\App\Models\Officer::class, 'user_id');
+    }
+
     public function kandidat()
     {
         return $this->hasOne(Kandidat::class, 'user_id');

@@ -10,25 +10,53 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-    'role:officer', // Ensure the user has the 'officer' role
+    'role:officer', // pastikan user adalah officer
 ])->group(function () {
     Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
-    Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)->name('kategori-lowongan.Index');
-    Route::get('/lowongan', App\Livewire\Lowongan\Index::class)->name('lowongan.index');
-    Route::get('/lowongan/create', App\Livewire\Lowongan\Create::class)->name('lowongan.create');
-    Route::get('/lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)->name('lowongan.edit');
-    Route::get('/recruitment-progress', App\Livewire\ProgressRekrutmenTimeline::class)->name('recruitment.progress');
-    Route::get('/bank-soal', App\Livewire\BankSoal\Index::class)->name('bank-soal.index');
-    Route::get('/kategori-soal', App\Livewire\KategoriSoal\Index::class)->name('kategori-soal.index');
-    Route::get('/Lowongan/Index', App\Livewire\Lowongan\Index::class)->name('Lowongan.Index');
-    Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)->name('Lowongan.Create');
-    Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)->name('test-results.index');
-    Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)->name('kandidat.index');
-    Route::get('/lamaran-lowongan', App\Livewire\Officer\LamaranLowongan\Index::class)
-    ->name('lamaran-lowongan.index');
-    Route::get('/jadwal-interview', App\Livewire\Officer\InterviewSchedule\Index::class)
-    ->name('jadwal-interview.index');
 
+    // Kategori Lowongan - manager, recruiter, coordinator
+    Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('kategori-lowongan.Index');
+
+    // Lowongan - manager, recruiter, coordinator
+    Route::get('/Lowongan/Index', App\Livewire\Lowongan\Index::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('Lowongan.Index');
+    Route::get('/Lowongan/Create', App\Livewire\Lowongan\Create::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('Lowongan.Create');
+    Route::get('/Lowongan/{id}/edit', App\Livewire\Lowongan\Edit::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('Lowongan.Edit');
+
+    // Bank Soal & Kategori Soal - manager, coordinator
+    Route::get('/bank-soal', App\Livewire\BankSoal\Index::class)
+        ->middleware('role:officer,manager,coordinator')
+        ->name('bank-soal.index');
+    Route::get('/kategori-soal', App\Livewire\KategoriSoal\Index::class)
+        ->middleware('role:officer,manager,coordinator')
+        ->name('kategori-soal.index');
+
+    // Test Results - manager, recruiter, coordinator
+    Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('test-results.index');
+
+    // Manajemen Kandidat - asumsi khusus manager
+    Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)
+        ->middleware('role:officer,manager,coordinator')
+        ->name('kandidat.index');
+
+    // Lamaran Lowongan - manager, recruiter, coordinator (aksi akan dinonaktifkan di Blade untuk recruiter)
+    Route::get('/lamaran-lowongan', App\Livewire\Officer\LamaranLowongan\Index::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('lamaran-lowongan.index');
+
+    // Jadwal Interview - asumsi khusus manager
+    Route::get('/jadwal-interview', App\Livewire\Officer\InterviewSchedule\Index::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('jadwal-interview.index');
 });
 
 Route::middleware([
