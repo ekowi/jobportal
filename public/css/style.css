@@ -4287,3 +4287,14 @@ footer .footer-bar {
         
 
 /*# sourceMappingURL=style.css.map */
+
+/* Custom action steps for lamaran lowongan */
+.action-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.action-steps .btn {
+    width: 100%;
+}
