@@ -276,44 +276,47 @@
     </section>
 
     <!-- Modal Jadwalkan Interview -->
-    <div class="modal fade @if($interviewModal) show @endif" tabindex="-1" style="@if($interviewModal) display:block; @endif">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form wire:submit.prevent="saveInterview">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Jadwalkan Interview</h5>
-                        <button type="button" class="btn-close" wire:click="$set('interviewModal', false)"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Link Zoom</label>
-                            <input type="url" class="form-control" wire:model.defer="interviewLink" required>
-                            @error('interviewLink') <div class="small text-danger">{{ $message }}</div> @enderror
+    @if($interviewModal)
+        <div class="modal fade show d-block" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form wire:submit.prevent="saveInterview">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Jadwalkan Interview</h5>
+                            <button type="button" class="btn-close" wire:click="$set('interviewModal', false)"></button>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Waktu Pelaksanaan</label>
-                            <input type="datetime-local" class="form-control" wire:model.defer="interviewWaktu" required>
-                            @error('interviewWaktu') <div class="small text-danger">{{ $message }}</div> @enderror
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Link Zoom</label>
+                                <input type="url" class="form-control" wire:model.defer="interviewLink" required>
+                                @error('interviewLink') <div class="small text-danger">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Waktu Pelaksanaan</label>
+                                <input type="datetime-local" class="form-control" wire:model.defer="interviewWaktu" required>
+                                @error('interviewWaktu') <div class="small text-danger">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Interviewer</label>
+                                <select class="form-select" wire:model.defer="interviewOfficer" required>
+                                    <option value="">Pilih Officer</option>
+                                    @foreach($officerList as $officer)
+                                        <option value="{{ $officer->id }}">{{ $officer->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('interviewOfficer') <div class="small text-danger">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Interviewer</label>
-                            <select class="form-select" wire:model.defer="interviewOfficer" required>
-                                <option value="">Pilih Officer</option>
-                                @foreach($officerList as $officer)
-                                    <option value="{{ $officer->id }}">{{ $officer->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('interviewOfficer') <div class="small text-danger">{{ $message }}</div> @enderror
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" wire:click="$set('interviewModal', false)">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" wire:click="$set('interviewModal', false)">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+        <div class="modal-backdrop fade show"></div>
+    @endif
 
     <!-- Modal Detail Kandidat -->
     <div class="modal fade @if($detailModal) show @endif" tabindex="-1" style="@if($detailModal) display:block; @endif">
