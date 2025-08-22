@@ -32,81 +32,79 @@
 
     <section class="section">
         <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h6 class="mb-1">Daftar Jadwal Interview</h6>
+                    <p class="text-muted mb-0">Kelola hasil interview kandidat Anda.</p>
+                </div>
+            </div>
+
+            @if (session()->has('success'))
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                    <i class="mdi mdi-check-circle-outline me-2"></i>
+                    <div>{{ session('success') }}</div>
+                </div>
+            @endif
+            @if (session()->has('error'))
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="mdi mdi-alert-circle-outline me-2"></i>
+                    <div>{{ session('error') }}</div>
+                </div>
+            @endif
+
             <div class="row">
                 <div class="col-12">
-                    <div class="card border-0 shadow rounded-3">
-                        <div class="card-body p-4 p-md-5">
-                            <div class="mb-4">
-                                <h6 class="mb-1">Daftar Jadwal Interview</h6>
-                                <p class="text-muted mb-0">Kelola hasil interview kandidat Anda.</p>
-                            </div>
+                    <div class="table-responsive shadow rounded">
+                        <table class="table table-center bg-white mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="border-bottom p-3 text-center" style="width:5%;">#</th>
+                                    <th class="border-bottom p-3" style="width:35%;">Kandidat</th>
+                                    <th class="border-bottom p-3" style="width:25%;">Waktu</th>
+                                    <th class="border-bottom p-3" style="width:20%;">Link Zoom</th>
+                                    <th class="border-bottom p-3" style="width:15%;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($interviews as $index => $progress)
+                                    <tr>
+                                        <td class="text-center">{{ $interviews->firstItem() + $index }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="avatar avatar-md rounded-circle bg-light d-flex align-items-center justify-content-center">
+                                                    <i class="mdi mdi-account-outline"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-semibold">{{ optional($progress->lamarlowongan->kandidat->user)->name ?? '-' }}</div>
+                                                    <div class="text-muted small">{{ optional($progress->lamarlowongan->kandidat)->email ?? '' }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ optional($progress->waktu_pelaksanaan)->format('d M Y H:i') }}</td>
+                                        <td>
+                                            @if($progress->link_zoom)
+                                                <a href="{{ $progress->link_zoom }}" target="_blank" class="d-block small text-primary">
+                                                    <i class="mdi mdi-video me-1"></i> Link Zoom
+                                                </a>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm" wire:click="openResultModal({{ $progress->id }})">
+                                                <i class="mdi mdi-upload"></i> Hasil Interview
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center">Tidak ada jadwal interview.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                            @if (session()->has('success'))
-                                <div class="alert alert-success d-flex align-items-center" role="alert">
-                                    <i class="mdi mdi-check-circle-outline me-2"></i>
-                                    <div>{{ session('success') }}</div>
-                                </div>
-                            @endif
-                            @if (session()->has('error'))
-                                <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                    <i class="mdi mdi-alert-circle-outline me-2"></i>
-                                    <div>{{ session('error') }}</div>
-                                </div>
-                            @endif
-
-                            <div class="table-responsive">
-                                <table class="table table-centered table-hover align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="text-center" style="width:5%;">#</th>
-                                            <th style="width:35%;">Kandidat</th>
-                                            <th style="width:25%;">Waktu</th>
-                                            <th style="width:20%;">Link Zoom</th>
-                                            <th style="width:15%;">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($interviews as $index => $progress)
-                                            <tr>
-                                                <td class="text-center">{{ $interviews->firstItem() + $index }}</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center gap-3">
-                                                        <div class="avatar avatar-md rounded-circle bg-light d-flex align-items-center justify-content-center">
-                                                            <i class="mdi mdi-account-outline"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="fw-semibold">{{ optional($progress->lamarlowongan->kandidat->user)->name ?? '-' }}</div>
-                                                            <div class="text-muted small">{{ optional($progress->lamarlowongan->kandidat)->email ?? '' }}</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>{{ optional($progress->waktu_pelaksanaan)->format('d M Y H:i') }}</td>
-                                                <td>
-                                                    @if($progress->link_zoom)
-                                                        <a href="{{ $progress->link_zoom }}" target="_blank" class="d-block small text-primary">
-                                                            <i class="mdi mdi-video me-1"></i> Link Zoom
-                                                        </a>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-outline-primary btn-sm" wire:click="openResultModal({{ $progress->id }})">
-                                                        <i class="mdi mdi-upload"></i> Hasil Interview
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="5" class="text-center">Tidak ada jadwal interview.</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="mt-3">
-                                {{ $interviews->links() }}
-                            </div>
-                        </div>
+                    <div class="mt-3">
+                        {{ $interviews->links() }}
                     </div>
                 </div>
             </div>
