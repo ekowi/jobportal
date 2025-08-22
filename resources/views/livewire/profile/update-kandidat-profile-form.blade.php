@@ -627,7 +627,9 @@
                     reason: el.querySelector('[name="reason[]"]').value,
                 }));
                 localStorage.setItem('work_experiences', JSON.stringify(workData));
-                document.getElementById('riwayat_pengalaman_kerja').value = JSON.stringify(workData);
+                const workInput = document.getElementById('riwayat_pengalaman_kerja');
+                workInput.value = JSON.stringify(workData);
+                workInput.dispatchEvent(new Event('input'));
 
                 const eduData = collect(eduList, '.education-item', el => ({
                     start: el.querySelector('[name="edu_start[]"]').value,
@@ -637,7 +639,9 @@
                     level: el.querySelector('[name="edu_level[]"]').value,
                 }));
                 localStorage.setItem('education_history', JSON.stringify(eduData));
-                document.getElementById('riwayat_pendidikan').value = JSON.stringify(eduData);
+                const eduInput = document.getElementById('riwayat_pendidikan');
+                eduInput.value = JSON.stringify(eduData);
+                eduInput.dispatchEvent(new Event('input'));
 
                 const langData = collect(langList, '.language-item', el => ({
                     language: el.querySelector('[name="language_name[]"]').value,
@@ -646,7 +650,9 @@
                     writing: el.querySelector('[name="writing[]"]').value,
                 }));
                 localStorage.setItem('language_skills', JSON.stringify(langData));
-                document.getElementById('kemampuan_bahasa').value = JSON.stringify(langData);
+                const langInput = document.getElementById('kemampuan_bahasa');
+                langInput.value = JSON.stringify(langData);
+                langInput.dispatchEvent(new Event('input'));
 
                 const specData = {
                     pernah: pernah.value,
@@ -654,7 +660,9 @@
                     info: document.getElementById('info-lowongan').value,
                 };
                 localStorage.setItem('specific_info', JSON.stringify(specData));
-                document.getElementById('informasi_spesifik').value = JSON.stringify(specData);
+                const specInput = document.getElementById('informasi_spesifik');
+                specInput.value = JSON.stringify(specData);
+                specInput.dispatchEvent(new Event('input'));
             }, true);
         });
     </script>
