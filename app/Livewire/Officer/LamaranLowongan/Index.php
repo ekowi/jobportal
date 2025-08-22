@@ -68,12 +68,7 @@ class Index extends Component
         }
 
         $lamaran = LamarLowongan::findOrFail($id);
-
-        if ($status === 'psikotes' && !$lamaran->progressRekrutmen()->where('status', 'interview')->exists()) {
-            session()->flash('error', 'Kandidat belum menjalani interview.');
-            return;
-        }
-
+    
         try {
             // Tambahkan progress baru
             $lamaran->progressRekrutmen()->create([

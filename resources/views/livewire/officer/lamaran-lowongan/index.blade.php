@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
 <div>
     <!-- Hero Start -->
     <section class="bg-half-170 d-table w-100" style="background: url('{{ asset('images/hero/bg.jpg') }}');">
@@ -41,7 +40,7 @@
                             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
                                 <div>
                                     <h6 class="mb-1">Daftar Lamaran</h6>
-                                    <p class="text-muted mb-0">Kelola status lamaran kandidat melalui alur rekrutmen yang tersedia.</p>
+                                    <p class="text-muted mb-0">Ubah status lamaran kandidat melalui tombol aksi.</p>
                                 </div>
                                 <div class="w-100 w-md-50" style="max-width: 360px;">
                                     <div class="position-relative">
@@ -64,25 +63,26 @@
                                 </div>
                             @endif
 
-                            <div class="table-responsive shadow rounded">
-                                <table class="table table-center bg-white mb-0 align-middle">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover align-middle">
+                                    {{-- Atur persentase kolom dengan colgroup --}}
                                     <colgroup>
                                         <col style="width:5%;">
                                         <col style="width:25%;">   {{-- Kandidat --}}
-                                        <col style="width:20%;">   {{-- Posisi --}}
-                                        <col style="width:15%;">   {{-- Tanggal Lamar --}}
-                                        <col style="width:10%;">   {{-- Informasi Kandidat --}}
-                                        <col style="width:25%;">   {{-- Alur Rekrutmen --}}
+                                        <col style="width:22%;">   {{-- Posisi --}}
+                                        <col style="width:16%;">   {{-- Tanggal Lamar --}}
+                                        <col style="width:16%;">   {{-- Informasi Kandidat --}}
+                                        <col style="width:16%;">   {{-- Aksi --}}
                                     </colgroup>
 
-                                    <thead>
+                                    <thead class="table-light">
                                         <tr>
-                                            <th class="border-bottom p-3 text-center">#</th>
-                                            <th class="border-bottom p-3">Kandidat</th>
-                                            <th class="border-bottom p-3">Posisi</th>
-                                            <th class="border-bottom p-3 text-center">Tanggal Lamar</th>
-                                            <th class="border-bottom p-3 text-center">Detail</th>
-                                            <th class="border-bottom p-3 text-center">Alur Rekrutmen</th>
+                                            <th class="text-center">#</th>
+                                            <th>Kandidat</th>
+                                            <th>Posisi</th>
+                                            <th class="text-center">Tanggal Lamar</th>
+                                            <th class="text-center">Informasi Kandidat</th>
+                                            <th class="text-center">Aksi</th>
                                         </tr>
                                     </thead>
 
@@ -90,18 +90,11 @@
                                         @forelse ($lamaranList as $index => $lamaran)
                                             @php
                                                 $latest = optional($lamaran->progressRekrutmen)->last();
-                                                $interviewProgress = $lamaran->progressRekrutmen->firstWhere('status', 'interview');
-                                                $isRecruiter = strtolower(optional(auth()->user()->officer)->jabatan) === 'recruiter';
-                                                $canPsikotes = !is_null($interviewProgress);
-                                                
-                                                // Status terkini untuk menentukan tahap mana yang aktif
-                                                $currentStatus = $latest ? $latest->status : 'pending';
-                                                $isCompleted = in_array($currentStatus, ['diterima', 'ditolak']);
                                             @endphp
                                             <tr>
-                                                <td class="p-3 text-center">{{ $lamaranList->firstItem() + $index }}</td>
+                                                <td class="text-center">{{ $lamaranList->firstItem() + $index }}</td>
 
-                                                <td class="p-3">
+                                                <td>
                                                     <div class="d-flex align-items-center gap-3">
                                                         <div class="avatar avatar-md rounded-circle bg-light d-flex align-items-center justify-content-center">
                                                             <i class="mdi mdi-account-outline"></i>
@@ -113,145 +106,82 @@
                                                     </div>
                                                 </td>
 
-                                                <td class="p-3">{{ optional($lamaran->lowongan)->nama_posisi ?? '-' }}</td>
+                                                <td>{{ optional($lamaran->lowongan)->nama_posisi ?? '-' }}</td>
 
-                                                <td class="p-3 text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
+                                                <td class="text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
 
-                                                <td class="p-3 text-center">
+                                                <td class="text-center">
                                                     <button class="btn btn-outline-primary btn-sm" title="Detail kandidat" wire:click="viewDetail({{ $lamaran->id }})">
                                                         <i class="mdi mdi-account-details"></i>
                                                     </button>
                                                 </td>
 
-                                                <td class="p-3">
-                                                    <div class="recruitment-flow">
-                                                        {{-- Step 1: Lamaran Masuk --}}
-                                                        <div class="flow-step completed">
-                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="step-icon bg-success text-white">
-                                                                        <i class="mdi mdi-file-document-outline"></i>
-                                                                    </div>
-                                                                    <span class="ms-2 fw-medium">Lamaran Masuk</span>
-                                                                </div>
-                                                                <small class="text-muted">{{ $lamaran->created_at->format('d/m') }}</small>
-                                                            </div>
-                                                        </div>
+                                                <td class="text-center">
+                                                    {{-- Badge status terakhir (jika ada) --}}
+                                                    @if($latest)
+                                                        @php
+                                                            $color = 'info';
+                                                            if ($latest->status === 'diterima') $color = 'success';
+                                                            elseif ($latest->status === 'ditolak') $color = 'danger';
+                                                        @endphp
+                                                        <span class="badge bg-{{ $color }} mb-2">{{ ucfirst($latest->status) }}</span>
+                                                    @endif
 
-                                                        {{-- Connection Line --}}
-                                                        <div class="flow-connector"></div>
-
-                                                        {{-- Step 2: Interview --}}
-                                                        <div class="flow-step {{ $interviewProgress ? 'completed' : ($currentStatus == 'pending' ? 'active' : 'disabled') }}">
-                                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="step-icon {{ $interviewProgress ? 'bg-success text-white' : ($currentStatus == 'pending' ? 'bg-primary text-white' : 'bg-light text-muted') }}">
-                                                                        <i class="mdi mdi-calendar-clock"></i>
-                                                                    </div>
-                                                                    <span class="ms-2 fw-medium">Interview</span>
-                                                                </div>
-                                                                @if(!$interviewProgress && $currentStatus == 'pending' && !$isRecruiter)
-                                                                    <button type="button" class="btn btn-primary btn-sm" 
-                                                                            wire:click.prevent="prepareInterview({{ $lamaran->id }})"
-                                                                            title="Jadwalkan Interview">
-                                                                        <i class="mdi mdi-plus"></i>
-                                                                    </button>
-                                                                @endif
-                                                            </div>
-                                                            
-                                                            @if($interviewProgress)
-                                                                <div class="interview-details bg-light rounded p-2 small">
-                                                                    <div class="d-flex align-items-center justify-content-between">
-                                                                        <div>
-                                                                            <div class="text-muted">Interviewer:</div>
-                                                                            <div class="fw-medium">{{ optional($interviewProgress->officer)->name }}</div>
-                                                                        </div>
-                                                                        <a href="{{ $interviewProgress->link_zoom }}" target="_blank" 
-                                                                           class="btn btn-outline-primary btn-sm">
-                                                                            <i class="mdi mdi-video me-1"></i> Zoom
-                                                                        </a>
-                                                                    </div>
-                                                                    @if($interviewProgress->waktu_pelaksanaan)
-                                                                        <div class="text-muted mt-1">
-                                                                            <i class="mdi mdi-clock-outline me-1"></i>
-                                                                            {{ \Carbon\Carbon::parse($interviewProgress->waktu_pelaksanaan)->format('d M Y, H:i') }}
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                            @elseif($isRecruiter && $currentStatus == 'pending')
-                                                                <div class="text-muted small">
-                                                                    <i class="mdi mdi-information-outline me-1"></i>
-                                                                    Hanya HRD yang dapat menjadwalkan interview
-                                                                </div>
+                                                    {{-- Detail Interview --}}
+                                                    @if($latest && $latest->is_interview)
+                                                        <div class="mb-2">
+                                                            <div class="small text-muted">Waktu: {{ optional($latest->waktu_pelaksanaan)->format('d M Y H:i') }}</div>
+                                                            <div class="small text-muted">Interviewer: {{ optional($latest->officer)->name }}</div>
+                                                            @if($latest->link_zoom)
+                                                                <a href="{{ $latest->link_zoom }}" target="_blank" class="d-block small text-primary">
+                                                                    <i class="mdi mdi-video me-1"></i> Link Zoom
+                                                                </a>
                                                             @endif
                                                         </div>
+                                                    @endif
 
-                                                        {{-- Connection Line --}}
-                                                        <div class="flow-connector {{ $canPsikotes ? '' : 'disabled' }}"></div>
+                                                    @php
+                                                        $isRecruiter = strtolower(optional(auth()->user()->officer)->jabatan) === 'recruiter';
+                                                    @endphp
 
-                                                        {{-- Step 3: Psikotes --}}
-                                                        <div class="flow-step {{ $currentStatus == 'psikotes' ? 'completed' : ($canPsikotes && $currentStatus == 'interview' ? 'active' : 'disabled') }}">
-                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="step-icon {{ $currentStatus == 'psikotes' ? 'bg-success text-white' : ($canPsikotes && $currentStatus == 'interview' ? 'bg-warning text-white' : 'bg-light text-muted') }}">
-                                                                        <i class="mdi mdi-brain"></i>
-                                                                    </div>
-                                                                    <span class="ms-2 fw-medium">Psikotes</span>
-                                                                </div>
-                                                                @if($canPsikotes && $currentStatus == 'interview' && !$isRecruiter && !$isCompleted)
-                                                                    <button type="button" class="btn btn-warning btn-sm" 
-                                                                            wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')"
-                                                                            title="Lanjut ke Psikotes">
-                                                                        <i class="mdi mdi-arrow-right"></i>
-                                                                    </button>
-                                                                @elseif(!$canPsikotes)
-                                                                    <small class="text-muted">Setelah interview</small>
-                                                                @endif
-                                                            </div>
+                                                    {{-- Aksi cepat --}}
+                                                    @if($isRecruiter)
+                                                        <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
+                                                            <button type="button" class="btn btn-outline-success" title="Terima" disabled>
+                                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" disabled>
+                                                                <i class="mdi mdi-calendar-clock"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-warning" title="Psikotes" disabled>
+                                                                <i class="mdi mdi-brain"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-danger" title="Tolak" disabled>
+                                                                <i class="mdi mdi-close-circle-outline"></i>
+                                                            </button>
                                                         </div>
-
-                                                        {{-- Connection Line --}}
-                                                        <div class="flow-connector {{ ($currentStatus == 'psikotes' || $isCompleted) ? '' : 'disabled' }}"></div>
-
-                                                        {{-- Step 4: Keputusan Final --}}
-                                                        <div class="flow-step {{ $isCompleted ? 'completed' : ($currentStatus == 'psikotes' ? 'active' : 'disabled') }}">
-                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="step-icon {{ $currentStatus == 'diterima' ? 'bg-success' : ($currentStatus == 'ditolak' ? 'bg-danger' : ($currentStatus == 'psikotes' ? 'bg-info' : 'bg-light')) }} {{ $isCompleted || $currentStatus == 'psikotes' ? 'text-white' : 'text-muted' }}">
-                                                                        <i class="mdi {{ $currentStatus == 'diterima' ? 'mdi-check-circle' : ($currentStatus == 'ditolak' ? 'mdi-close-circle' : 'mdi-gavel') }}"></i>
-                                                                    </div>
-                                                                    <span class="ms-2 fw-medium">Keputusan</span>
-                                                                </div>
-                                                                
-                                                                @if($currentStatus == 'psikotes' && !$isRecruiter)
-                                                                    <div class="d-flex gap-1">
-                                                                        <button type="button" class="btn btn-success btn-sm" 
-                                                                                wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')"
-                                                                                title="Terima Kandidat">
-                                                                            <i class="mdi mdi-check"></i>
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-danger btn-sm" 
-                                                                                wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')"
-                                                                                title="Tolak Kandidat">
-                                                                            <i class="mdi mdi-close"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                @elseif($isCompleted)
-                                                                    <span class="badge bg-{{ $currentStatus == 'diterima' ? 'success' : 'danger' }}">
-                                                                        {{ ucfirst($currentStatus) }}
-                                                                    </span>
-                                                                @elseif($currentStatus != 'psikotes')
-                                                                    <small class="text-muted">Setelah psikotes</small>
-                                                                @endif
-                                                            </div>
+                                                    @else
+                                                        <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
+                                                            <button type="button" class="btn btn-outline-success" title="Terima" wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')">
+                                                                <i class="mdi mdi-check-circle-outline"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" wire:click.prevent="prepareInterview({{ $lamaran->id }})">
+                                                                <i class="mdi mdi-calendar-clock"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-warning" title="Psikotes" wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')">
+                                                                <i class="mdi mdi-brain"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-danger" title="Tolak" wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')">
+                                                                <i class="mdi mdi-close-circle-outline"></i>
+                                                            </button>
                                                         </div>
-                                                    </div>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6" class="text-center p-3">
-                                                    <div class="py-5">
+                                                <td colspan="6">
+                                                    <div class="text-center py-5">
                                                         <img src="{{ asset('images/illustrations/empty.svg') }}" alt="" class="mb-3" style="height: 80px;">
                                                         <h6 class="mb-1">Belum Ada Lamaran</h6>
                                                         <p class="text-muted mb-0">Lamaran akan tampil di sini setelah kandidat melamar lowongan.</p>
@@ -275,50 +205,48 @@
     </section>
 
     <!-- Modal Jadwalkan Interview -->
-    @if($interviewModal)
-        <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <form wire:submit.prevent="saveInterview">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Jadwalkan Interview</h5>
-                            <button type="button" class="btn-close" wire:click="$set('interviewModal', false)"></button>
+    <div class="modal fade @if($interviewModal) show @endif" tabindex="-1" style="@if($interviewModal) display:block; @endif">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form wire:submit.prevent="saveInterview">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Jadwalkan Interview</h5>
+                        <button type="button" class="btn-close" wire:click="$set('interviewModal', false)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Link Zoom</label>
+                            <input type="url" class="form-control" wire:model.defer="interviewLink" required>
+                            @error('interviewLink') <div class="small text-danger">{{ $message }}</div> @enderror
                         </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Link Zoom</label>
-                                <input type="url" class="form-control" wire:model.defer="interviewLink" required>
-                                @error('interviewLink') <div class="small text-danger">{{ $message }}</div> @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Waktu Pelaksanaan</label>
-                                <input type="datetime-local" class="form-control" wire:model.defer="interviewWaktu" required>
-                                @error('interviewWaktu') <div class="small text-danger">{{ $message }}</div> @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Interviewer</label>
-                                <select class="form-select" wire:model.defer="interviewOfficer" required>
-                                    <option value="">Pilih Officer</option>
-                                    @foreach($officerList as $officer)
-                                        <option value="{{ $officer->id }}">{{ $officer->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('interviewOfficer') <div class="small text-danger">{{ $message }}</div> @enderror
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Waktu Pelaksanaan</label>
+                            <input type="datetime-local" class="form-control" wire:model.defer="interviewWaktu" required>
+                            @error('interviewWaktu') <div class="small text-danger">{{ $message }}</div> @enderror
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" wire:click="$set('interviewModal', false)">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        <div class="mb-3">
+                            <label class="form-label">Interviewer</label>
+                            <select class="form-select" wire:model.defer="interviewOfficer" required>
+                                <option value="">Pilih Officer</option>
+                                @foreach($officerList as $officer)
+                                    <option value="{{ $officer->id }}">{{ $officer->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('interviewOfficer') <div class="small text-danger">{{ $message }}</div> @enderror
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" wire:click="$set('interviewModal', false)">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
             </div>
         </div>
-    @endif
+    </div>
 
     <!-- Modal Detail Kandidat -->
-    <div class="modal fade @if($detailModal) show @endif" tabindex="-1" style="@if($detailModal) display:block; background-color: rgba(0,0,0,0.5); @endif">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal fade @if($detailModal) show @endif" tabindex="-1" style="@if($detailModal) display:block; @endif">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Detail Kandidat</h5>
