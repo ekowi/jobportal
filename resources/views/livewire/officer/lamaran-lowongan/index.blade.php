@@ -246,8 +246,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
     </section>
 
     <!-- Modal Jadwalkan Interview -->
