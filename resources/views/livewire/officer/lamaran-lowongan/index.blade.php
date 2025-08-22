@@ -117,6 +117,12 @@
                                                 </td>
 
                                                 <td class="text-center">
+                                                    @php
+                                                        $interviewProgress = $lamaran->progressRekrutmen->firstWhere('status', 'interview');
+                                                        $isRecruiter = strtolower(optional(auth()->user()->officer)->jabatan) === 'recruiter';
+                                                        $canPsikotes = !is_null($interviewProgress);
+                                                    @endphp
+
                                                     {{-- Badge status terakhir (jika ada) --}}
                                                     @if($latest)
                                                         @php
@@ -127,55 +133,36 @@
                                                         <span class="badge bg-{{ $color }} mb-2">{{ ucfirst($latest->status) }}</span>
                                                     @endif
 
-                                                    {{-- Detail Interview --}}
-                                                    @if($latest && $latest->is_interview)
-                                                        <div class="mb-2">
-                                                            <div class="small text-muted">Waktu: {{ optional($latest->waktu_pelaksanaan)->format('d M Y H:i') }}</div>
-                                                            <div class="small text-muted">Interviewer: {{ optional($latest->officer)->name }}</div>
-                                                            @if($latest->link_zoom)
-                                                                <a href="{{ $latest->link_zoom }}" target="_blank" class="d-block small text-primary">
-                                                                    <i class="mdi mdi-video me-1"></i> Link Zoom
-                                                                </a>
+                                                    <div class="d-flex flex-column align-items-center gap-1">
+                                                        <div class="small text-muted">Lamaran Masuk</div>
+                                                        <i class="mdi mdi-chevron-down"></i>
+                                                        <div class="d-flex align-items-center">
+                                                            <button type="button" class="btn btn-outline-info btn-sm" title="Jadwalkan Interview" @if($isRecruiter) disabled @else wire:click.prevent="prepareInterview({{ $lamaran->id }})" @endif>
+                                                                <i class="mdi mdi-calendar-clock"></i>
+                                                            </button>
+                                                            @if($interviewProgress)
+                                                                <div class="ms-2 text-start">
+                                                                    <a href="{{ $interviewProgress->link_zoom }}" target="_blank" class="d-block small text-primary">
+                                                                        <i class="mdi mdi-video me-1"></i> Link Zoom
+                                                                    </a>
+                                                                    <span class="d-block small text-muted">{{ optional($interviewProgress->officer)->name }}</span>
+                                                                </div>
                                                             @endif
                                                         </div>
-                                                    @endif
-
-                                                    @php
-                                                        $isRecruiter = strtolower(optional(auth()->user()->officer)->jabatan) === 'recruiter';
-                                                    @endphp
-
-                                                    {{-- Aksi cepat --}}
-                                                    @if($isRecruiter)
-                                                        <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
-                                                            <button type="button" class="btn btn-outline-success" title="Terima" disabled>
+                                                        <i class="mdi mdi-chevron-down"></i>
+                                                        <button type="button" class="btn btn-outline-warning btn-sm" title="Psikotes" @if($isRecruiter || !$canPsikotes) disabled @else wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')" @endif>
+                                                            <i class="mdi mdi-brain"></i>
+                                                        </button>
+                                                        <i class="mdi mdi-chevron-down"></i>
+                                                        <div class="d-flex gap-1">
+                                                            <button type="button" class="btn btn-outline-success btn-sm" title="Terima" @if($isRecruiter) disabled @else wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')" @endif>
                                                                 <i class="mdi mdi-check-circle-outline"></i>
                                                             </button>
-                                                            <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" disabled>
-                                                                <i class="mdi mdi-calendar-clock"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-outline-warning" title="Psikotes" disabled>
-                                                                <i class="mdi mdi-brain"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-outline-danger" title="Tolak" disabled>
+                                                            <button type="button" class="btn btn-outline-danger btn-sm" title="Tolak" @if($isRecruiter) disabled @else wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')" @endif>
                                                                 <i class="mdi mdi-close-circle-outline"></i>
                                                             </button>
                                                         </div>
-                                                    @else
-                                                        <div class="btn-group btn-group-sm" role="group" aria-label="Aksi lamaran">
-                                                            <button type="button" class="btn btn-outline-success" title="Terima" wire:click.prevent="setStatus({{ $lamaran->id }}, 'diterima')">
-                                                                <i class="mdi mdi-check-circle-outline"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-outline-info" title="Jadwalkan Interview" wire:click.prevent="prepareInterview({{ $lamaran->id }})">
-                                                                <i class="mdi mdi-calendar-clock"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-outline-warning" title="Psikotes" wire:click.prevent="setStatus({{ $lamaran->id }}, 'psikotes')">
-                                                                <i class="mdi mdi-brain"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-outline-danger" title="Tolak" wire:click.prevent="setStatus({{ $lamaran->id }}, 'ditolak')">
-                                                                <i class="mdi mdi-close-circle-outline"></i>
-                                                            </button>
-                                                        </div>
-                                                    @endif
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @empty
