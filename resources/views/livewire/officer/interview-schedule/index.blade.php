@@ -33,9 +33,13 @@
     <section class="section">
         <div class="container">
             <div class="row mb-4">
-                <div class="col-12">
-                    <h6 class="mb-1">Daftar Jadwal Interview</h6>
-                    <p class="text-muted mb-0">Kelola hasil interview kandidat Anda.</p>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari kandidat atau posisi..." wire:model.live="search">
+                        <button class="btn btn-primary" type="button">
+                            <i class="mdi mdi-magnify"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
