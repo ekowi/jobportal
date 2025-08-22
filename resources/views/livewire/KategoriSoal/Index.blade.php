@@ -88,7 +88,7 @@
                                     </td>
                                     <td class="p-3 text-center">
                                         <div class="btn-group" role="group">
-                                            <button wire:click="edit({{ $kategori->id_kategori_soal }})" class="btn btn-sm btn-soft-warning"><i class="mdi mdi-pencil"></i></button>
+                                            <button wire:click="edit({{ $kategori->id_kategori_soal }})" class="btn btn-sm btn-soft-warning me-2"><i class="mdi mdi-pencil"></i></button>
                                             <button wire:click="delete({{ $kategori->id_kategori_soal }})" wire:confirm="Yakin ingin menghapus kategori ini?" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-trash-can-outline"></i></button>
                                         </div>
                                     </td>
