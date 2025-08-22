@@ -109,11 +109,13 @@
                                                     {{ $soal->status ? 'Aktif' : 'Nonaktif' }}
                                                 </span>
                                             </td>
-                                            <td class="p-3 text-center">
-                                                <div class="btn-group" role="group">
-                                                    <button wire:click="edit({{ $soal->id_soal }})" class="btn btn-sm btn-soft-primary"><i class="mdi mdi-pencil"></i></button>
-                                                    <button wire:click="delete({{ $soal->id_soal }})" wire:confirm="Anda yakin ingin menghapus soal ini?" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-trash-can-outline"></i></button>
-                                                </div>
+                                            <td class="p-3">
+                                                <button wire:click="edit({{ $soal->id_soal }})" class="btn btn-sm btn-soft-warning me-1">
+                                                    <i class="mdi mdi-pencil"></i>
+                                                </button>
+                                                <button wire:click="delete({{ $soal->id_soal }})" wire:confirm="Anda yakin ingin menghapus soal ini?" class="btn btn-sm btn-soft-danger">
+                                                    <i class="mdi mdi-trash-can-outline"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                         @empty
