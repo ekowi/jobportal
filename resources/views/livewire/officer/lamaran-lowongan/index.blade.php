@@ -64,9 +64,8 @@
                                 </div>
                             @endif
 
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover align-middle">
-                                    {{-- Atur persentase kolom dengan colgroup --}}
+                            <div class="table-responsive shadow rounded">
+                                <table class="table table-center bg-white mb-0 align-middle">
                                     <colgroup>
                                         <col style="width:5%;">
                                         <col style="width:25%;">   {{-- Kandidat --}}
@@ -76,14 +75,14 @@
                                         <col style="width:25%;">   {{-- Alur Rekrutmen --}}
                                     </colgroup>
 
-                                    <thead class="table-light">
+                                    <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
-                                            <th>Kandidat</th>
-                                            <th>Posisi</th>
-                                            <th class="text-center">Tanggal Lamar</th>
-                                            <th class="text-center">Detail</th>
-                                            <th class="text-center">Alur Rekrutmen</th>
+                                            <th class="border-bottom p-3 text-center">#</th>
+                                            <th class="border-bottom p-3">Kandidat</th>
+                                            <th class="border-bottom p-3">Posisi</th>
+                                            <th class="border-bottom p-3 text-center">Tanggal Lamar</th>
+                                            <th class="border-bottom p-3 text-center">Detail</th>
+                                            <th class="border-bottom p-3 text-center">Alur Rekrutmen</th>
                                         </tr>
                                     </thead>
 
@@ -100,9 +99,9 @@
                                                 $isCompleted = in_array($currentStatus, ['diterima', 'ditolak']);
                                             @endphp
                                             <tr>
-                                                <td class="text-center">{{ $lamaranList->firstItem() + $index }}</td>
+                                                <td class="p-3 text-center">{{ $lamaranList->firstItem() + $index }}</td>
 
-                                                <td>
+                                                <td class="p-3">
                                                     <div class="d-flex align-items-center gap-3">
                                                         <div class="avatar avatar-md rounded-circle bg-light d-flex align-items-center justify-content-center">
                                                             <i class="mdi mdi-account-outline"></i>
@@ -114,17 +113,17 @@
                                                     </div>
                                                 </td>
 
-                                                <td>{{ optional($lamaran->lowongan)->nama_posisi ?? '-' }}</td>
+                                                <td class="p-3">{{ optional($lamaran->lowongan)->nama_posisi ?? '-' }}</td>
 
-                                                <td class="text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
+                                                <td class="p-3 text-center">{{ optional($lamaran->created_at)->format('d M Y') }}</td>
 
-                                                <td class="text-center">
+                                                <td class="p-3 text-center">
                                                     <button class="btn btn-outline-primary btn-sm" title="Detail kandidat" wire:click="viewDetail({{ $lamaran->id }})">
                                                         <i class="mdi mdi-account-details"></i>
                                                     </button>
                                                 </td>
 
-                                                <td>
+                                                <td class="p-3">
                                                     <div class="recruitment-flow">
                                                         {{-- Step 1: Lamaran Masuk --}}
                                                         <div class="flow-step completed">
@@ -251,8 +250,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6">
-                                                    <div class="text-center py-5">
+                                                <td colspan="6" class="text-center p-3">
+                                                    <div class="py-5">
                                                         <img src="{{ asset('images/illustrations/empty.svg') }}" alt="" class="mb-3" style="height: 80px;">
                                                         <h6 class="mb-1">Belum Ada Lamaran</h6>
                                                         <p class="text-muted mb-0">Lamaran akan tampil di sini setelah kandidat melamar lowongan.</p>
@@ -277,8 +276,8 @@
 
     <!-- Modal Jadwalkan Interview -->
     @if($interviewModal)
-        <div class="modal fade show d-block" tabindex="-1" role="dialog">
-            <div class="modal-dialog">
+        <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <form wire:submit.prevent="saveInterview">
                         <div class="modal-header">
@@ -315,12 +314,11 @@
                 </div>
             </div>
         </div>
-        <div class="modal-backdrop fade show"></div>
     @endif
 
     <!-- Modal Detail Kandidat -->
-    <div class="modal fade @if($detailModal) show @endif" tabindex="-1" style="@if($detailModal) display:block; @endif">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade @if($detailModal) show @endif" tabindex="-1" style="@if($detailModal) display:block; background-color: rgba(0,0,0,0.5); @endif">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Detail Kandidat</h5>
