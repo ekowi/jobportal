@@ -39,10 +39,12 @@ class Index extends Component
     {
         $lamaran = LamarLowongan::with(['kandidat.user', 'lowongan', 'progressRekrutmen.officer'])
             ->when($this->search, function ($q) {
-                $q->whereHas('lowongan', function ($qq) {
-                    $qq->where('nama_posisi', 'like', '%' . $this->search . '%');
-                })->orWhereHas('kandidat.user', function ($qq) {
-                    $qq->where('name', 'like', '%' . $this->search . '%');
+                $q->where(function ($query) {
+                    $query->whereHas('lowongan', function ($qq) {
+                        $qq->where('nama_posisi', 'like', '%' . $this->search . '%');
+                    })->orWhereHas('kandidat.user', function ($qq) {
+                        $qq->where('name', 'like', '%' . $this->search . '%');
+                    });
                 });
             })
             ->latest()

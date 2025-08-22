@@ -21,73 +21,51 @@
             </div>
         </div>
     </section>
-    <div class="position-relative">
-        <div class="shape overflow-hidden text-white">
-            <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
-            </svg>
-        </div>
-    </div>
     <!-- Hero End -->
 
     <section class="section">
         <div class="container">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari kandidat atau posisi..." wire:model.live="search">
+                        <button class="btn btn-primary" type="button">
+                            <i class="mdi mdi-magnify"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (session()->has('success'))
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                    <i class="mdi mdi-check-circle-outline me-2"></i>
+                    <div>{{ session('success') }}</div>
+                </div>
+            @endif
+            @if (session()->has('error'))
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="mdi mdi-alert-circle-outline me-2"></i>
+                    <div>{{ session('error') }}</div>
+                </div>
+            @endif
+
             <div class="row">
                 <div class="col-12">
+                    <div class="table-responsive shadow rounded">
+                        <table class="table table-center bg-white mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="border-bottom p-3 text-center">#</th>
+                                    <th class="border-bottom p-3">Kandidat</th>
+                                    <th class="border-bottom p-3">Posisi</th>
+                                    <th class="border-bottom p-3 text-center">Tanggal Lamar</th>
+                                    <th class="border-bottom p-3 text-center">Detail</th>
+                                    <th class="border-bottom p-3 text-center">Alur Rekrutmen</th>
+                                </tr>
+                            </thead>
 
-                    <div class="card border-0 shadow rounded-3">
-                        <div class="card-body p-4 p-md-5">
-                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-                                <div>
-                                    <h6 class="mb-1">Daftar Lamaran</h6>
-                                    <p class="text-muted mb-0">Kelola status lamaran kandidat melalui alur rekrutmen yang tersedia.</p>
-                                </div>
-                                <div class="w-100 w-md-50" style="max-width: 360px;">
-                                    <div class="position-relative">
-                                        <i class="mdi mdi-magnify position-absolute top-50 translate-middle-y ms-3"></i>
-                                        <input type="text" wire:model.debounce.300ms="search" class="form-control ps-5" placeholder="Cari kandidat atau posisi...">
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if (session()->has('success'))
-                                <div class="alert alert-success d-flex align-items-center" role="alert">
-                                    <i class="mdi mdi-check-circle-outline me-2"></i>
-                                    <div>{{ session('success') }}</div>
-                                </div>
-                            @endif
-                            @if (session()->has('error'))
-                                <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                    <i class="mdi mdi-alert-circle-outline me-2"></i>
-                                    <div>{{ session('error') }}</div>
-                                </div>
-                            @endif
-
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover align-middle">
-                                    {{-- Atur persentase kolom dengan colgroup --}}
-                                    <colgroup>
-                                        <col style="width:5%;">
-                                        <col style="width:25%;">   {{-- Kandidat --}}
-                                        <col style="width:20%;">   {{-- Posisi --}}
-                                        <col style="width:15%;">   {{-- Tanggal Lamar --}}
-                                        <col style="width:10%;">   {{-- Informasi Kandidat --}}
-                                        <col style="width:25%;">   {{-- Alur Rekrutmen --}}
-                                    </colgroup>
-
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="text-center">#</th>
-                                            <th>Kandidat</th>
-                                            <th>Posisi</th>
-                                            <th class="text-center">Tanggal Lamar</th>
-                                            <th class="text-center">Detail</th>
-                                            <th class="text-center">Alur Rekrutmen</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        @forelse ($lamaranList as $index => $lamaran)
+                            <tbody>
+                                @forelse ($lamaranList as $index => $lamaran)
                                             @php
                                                 $latest = optional($lamaran->progressRekrutmen)->last();
                                                 $interviewProgress = $lamaran->progressRekrutmen->firstWhere('status', 'interview');
@@ -262,13 +240,11 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            <div class="mt-3">
-                                {{ $lamaranList->links() }}
+                            <div class="mt-4">
+                                {{ $lamaranList->links('pagination::bootstrap-5') }}
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
