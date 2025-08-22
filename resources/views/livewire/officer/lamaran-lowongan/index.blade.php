@@ -115,7 +115,7 @@
                                                 <div class="flow-step completed">
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <div class="d-flex align-items-center">
-                                                            <div class="step-icon bg-success text-white">
+                                                            <div class="step-icon bg-success text-white blink">
                                                                 <i class="mdi mdi-file-document-outline"></i>
                                                             </div>
                                                             <span class="ms-2 fw-medium">Lamaran Masuk</span>
@@ -131,7 +131,7 @@
                                                 <div class="flow-step {{ $interviewProgress ? 'completed' : ($currentStatus == 'pending' ? 'active' : 'disabled') }}">
                                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                                         <div class="d-flex align-items-center">
-                                                            <div class="step-icon {{ $interviewProgress ? 'bg-success text-white' : ($currentStatus == 'pending' ? 'bg-primary text-white' : 'bg-light text-muted') }}">
+                                                            <div class="step-icon {{ $interviewProgress ? 'bg-success text-white' : ($currentStatus == 'pending' ? 'bg-primary text-white' : 'bg-light text-muted') }} blink">
                                                                 <i class="mdi mdi-calendar-clock"></i>
                                                             </div>
                                                             <span class="ms-2 fw-medium">Interview</span>
@@ -179,7 +179,7 @@
                                                 <div class="flow-step {{ $currentStatus == 'psikotes' ? 'completed' : ($canPsikotes && $currentStatus == 'interview' ? 'active' : 'disabled') }}">
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <div class="d-flex align-items-center">
-                                                            <div class="step-icon {{ $currentStatus == 'psikotes' ? 'bg-success text-white' : ($canPsikotes && $currentStatus == 'interview' ? 'bg-warning text-white' : 'bg-light text-muted') }}">
+                                                            <div class="step-icon {{ $currentStatus == 'psikotes' ? 'bg-success text-white' : ($canPsikotes && $currentStatus == 'interview' ? 'bg-warning text-white' : 'bg-light text-muted') }} blink">
                                                                 <i class="mdi mdi-brain"></i>
                                                             </div>
                                                             <span class="ms-2 fw-medium">Psikotes</span>
@@ -203,7 +203,7 @@
                                                 <div class="flow-step {{ $isCompleted ? 'completed' : ($currentStatus == 'psikotes' ? 'active' : 'disabled') }}">
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <div class="d-flex align-items-center">
-                                                            <div class="step-icon {{ $currentStatus == 'diterima' ? 'bg-success' : ($currentStatus == 'ditolak' ? 'bg-danger' : ($currentStatus == 'psikotes' ? 'bg-info' : 'bg-light')) }} {{ $isCompleted || $currentStatus == 'psikotes' ? 'text-white' : 'text-muted' }}">
+                                                            <div class="step-icon {{ $currentStatus == 'diterima' ? 'bg-success' : ($currentStatus == 'ditolak' ? 'bg-danger' : ($currentStatus == 'psikotes' ? 'bg-info' : 'bg-light')) }} {{ $isCompleted || $currentStatus == 'psikotes' ? 'text-white' : 'text-muted' }} blink">
                                                                 <i class="mdi {{ $currentStatus == 'diterima' ? 'mdi-check-circle' : ($currentStatus == 'ditolak' ? 'mdi-close-circle' : 'mdi-gavel') }}"></i>
                                                             </div>
                                                             <span class="ms-2 fw-medium">Keputusan</span>
