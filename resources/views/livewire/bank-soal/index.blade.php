@@ -47,97 +47,95 @@
     {{-- Content Start --}}
     <section class="section">
         <div class="container">
+            <!-- Filter dan Pencarian -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari soal atau kategori..." wire:model.live.debounce.300ms="search">
+                        <button class="btn btn-primary" type="button">
+                            <i class="mdi mdi-magnify"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <button wire:click="create" class="btn btn-primary">
+                        <i class="mdi mdi-plus-circle-outline me-1"></i> Tambah Soal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabel Soal -->
             <div class="row">
                 <div class="col-12">
-                    <div class="card border-0 rounded shadow-sm">
-                        <div class="card-body">
-                            {{-- Action Bar: Search and Add Button --}}
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div class="search-bar" style="max-width: 400px; flex-grow: 1;">
-                                    <div class="position-relative">
-                                        <i class="mdi mdi-magnify fs-5 position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                                        <input wire:model.live.debounce.300ms="search" type="text" class="form-control ps-5" placeholder="Cari soal atau kategori...">
-                                    </div>
-                                </div>
-                                <button wire:click="create" class="btn btn-primary">
-                                    <i class="mdi mdi-plus-circle-outline me-1"></i> Tambah Soal
-                                </button>
-                            </div>
+                    <div class="table-responsive shadow rounded">
+                        <table class="table table-center bg-white mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="border-bottom p-3" style="min-width: 250px;">Soal</th>
+                                    <th class="border-bottom p-3">Kategori</th>
+                                    <th class="border-bottom p-3 text-center" colspan="4">Pilihan Jawaban</th>
+                                    <th class="border-bottom p-3">Jawaban</th>
+                                    <th class="border-bottom p-3">Status</th>
+                                    <th class="border-bottom p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($soals as $soal)
+                                <tr class="align-middle">
+                                    <td class="p-3">
+                                        @if($soal->type_soal == 'foto')
+                                            <img src="{{ Storage::url($soal->soal) }}" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover;" alt="Soal">
+                                        @else
+                                            <span title="{{ $soal->soal }}">{{ Str::limit($soal->soal, 50) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="p-3">{{ $soal->kategori->nama_kategori }}</td>
 
-                            {{-- Table --}}
-                            <div class="table-responsive">
-                                <table class="table table-hover table-center mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="border-bottom p-3" style="min-width: 250px;">Soal</th>
-                                            <th class="border-bottom p-3">Kategori</th>
-                                            <th class="border-bottom p-3 text-center" colspan="4">Pilihan Jawaban</th>
-                                            <th class="border-bottom p-3">Jawaban</th>
-                                            <th class="border-bottom p-3">Status</th>
-                                            <th class="border-bottom p-3 text-center">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($soals as $soal)
-                                        <tr class="align-middle">
-                                            <td class="p-3">
-                                                @if($soal->type_soal == 'foto')
-                                                    <img src="{{ Storage::url($soal->soal) }}" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover;" alt="Soal">
-                                                @else
-                                                    <span title="{{ $soal->soal }}">{{ Str::limit($soal->soal, 50) }}</span>
-                                                @endif
-                                            </td>
-                                            <td class="p-3">{{ $soal->kategori->nama_kategori }}</td>
-                                            
-                                            {{-- Render Choices --}}
-                                            @for($i = 1; $i <= 4; $i++)
-                                                @php $pilihan = "pilihan_$i"; @endphp
-                                                <td class="p-3 text-center">
-                                                    @if($soal->type_jawaban == 'foto')
-                                                        <img src="{{ Storage::url($soal->$pilihan) }}" class="img-fluid rounded" style="width: 40px; height: 40px; object-fit: cover;" alt="Pilihan {{ $i }}">
-                                                    @else
-                                                        <span title="{{ $soal->$pilihan }}">{{ Str::limit($soal->$pilihan, 15) }}</span>
-                                                    @endif
-                                                </td>
-                                            @endfor
+                                    {{-- Render Choices --}}
+                                    @for($i = 1; $i <= 4; $i++)
+                                        @php $pilihan = "pilihan_$i"; @endphp
+                                        <td class="p-3 text-center">
+                                            @if($soal->type_jawaban == 'foto')
+                                                <img src="{{ Storage::url($soal->$pilihan) }}" class="img-fluid rounded" style="width: 40px; height: 40px; object-fit: cover;" alt="Pilihan {{ $i }}">
+                                            @else
+                                                <span title="{{ $soal->$pilihan }}">{{ Str::limit($soal->$pilihan, 15) }}</span>
+                                            @endif
+                                        </td>
+                                    @endfor
 
-                                            <td class="p-3 fw-bold">
-                                                Pilihan {{ $soal->jawaban }}
-                                            </td>
-                                            <td class="p-3">
-                                                <span class="badge {{ $soal->status ? 'bg-soft-success' : 'bg-soft-danger' }} text-capitalize">
-                                                    {{ $soal->status ? 'Aktif' : 'Nonaktif' }}
-                                                </span>
-                                            </td>
-                                            <td class="p-3 text-center">
-                                                <div class="btn-group" role="group">
-                                                    <button wire:click="edit({{ $soal->id_soal }})" class="btn btn-sm btn-soft-primary"><i class="mdi mdi-pencil"></i></button>
-                                                    <button wire:click="delete({{ $soal->id_soal }})" wire:confirm="Anda yakin ingin menghapus soal ini?" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-trash-can-outline"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="10" class="text-center p-5">
-                                                <div class="text-muted">
-                                                    <i class="mdi mdi-information-outline fs-3 d-block"></i>
-                                                    Data tidak ditemukan. Coba kata kunci lain atau buat soal baru.
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {{-- Pagination --}}
-                            @if ($soals->hasPages())
-                                <div class="mt-4 border-top pt-3">
-                                    {{ $soals->links() }}
-                                </div>
-                            @endif
-                        </div>
+                                    <td class="p-3 fw-bold">
+                                        Pilihan {{ $soal->jawaban }}
+                                    </td>
+                                    <td class="p-3">
+                                        <span class="badge {{ $soal->status ? 'bg-soft-success' : 'bg-soft-danger' }} text-capitalize">
+                                            {{ $soal->status ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
+                                    </td>
+                                    <td class="p-3 text-center">
+                                        <div class="btn-group" role="group">
+                                            <button wire:click="edit({{ $soal->id_soal }})" class="btn btn-sm btn-soft-primary"><i class="mdi mdi-pencil"></i></button>
+                                            <button wire:click="delete({{ $soal->id_soal }})" wire:confirm="Anda yakin ingin menghapus soal ini?" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-trash-can-outline"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="10" class="text-center p-5">
+                                        <div class="text-muted">
+                                            <i class="mdi mdi-information-outline fs-3 d-block"></i>
+                                            Data tidak ditemukan. Coba kata kunci lain atau buat soal baru.
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
+                    @if ($soals->hasPages())
+                        <div class="mt-4">
+                            {{ $soals->links('pagination::bootstrap-5') }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -270,21 +268,7 @@
         </div>
     </div>
     
-    @if($showModal)
-        <div class="modal-backdrop fade show"></div>
-    @endif
+    <div class="modal-backdrop fade show"></div>
 
-    @push('styles')
-    <style>
-        .bg-soft-success { background-color: rgba(40, 167, 69, 0.1) !important; color: #28a745 !important; }
-        .bg-soft-danger { background-color: rgba(220, 53, 69, 0.1) !important; color: #dc3545 !important; }
-        .btn-soft-primary { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; border: 1px solid rgba(13, 110, 253, 0.2); }
-        .btn-soft-primary:hover { background-color: #0d6efd; color: #fff; }
-        .btn-soft-danger { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.2); }
-        .btn-soft-danger:hover { background-color: #dc3545; color: #fff; }
-        .btn-soft-secondary { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; border: 1px solid rgba(108, 117, 125, 0.2); }
-        .btn-soft-secondary:hover { background-color: #6c757d; color: #fff; }
-    </style>
-    @endpush
     @endif
 </div>
