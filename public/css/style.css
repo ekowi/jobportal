@@ -4399,6 +4399,12 @@ footer .footer-bar {
     height: 28px;
 }
 
+/* Ensure action buttons remain clickable above hover effects */
+.flow-step .btn {
+    position: relative;
+    z-index: 1;
+}
+
 .flow-step .btn-primary {
     background-color: #007bff;
     border-color: #007bff;
@@ -4436,8 +4442,6 @@ footer .footer-bar {
 .flow-step:hover {
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 6px;
-    margin: -5px;
-    padding: 5px;
 }
 
 .flow-step.active:hover {
