@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\ProgressRekrutmen;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class Index extends Component
 {
@@ -66,14 +67,29 @@ class Index extends Component
 
         $progress = ProgressRekrutmen::findOrFail($this->resultProgressId);
 
-        $data = ['catatan' => $this->resultCatatan];
-        if ($this->resultDokumen) {
-            $data['dokumen_pendukung'] = $this->resultDokumen->store('dokumen-pendukung', 'public');
-        }
-
         try {
-            $progress->update($data);
-            $this->resultModal = false;
+            $progress->catatan = $this->resultCatatan;
+
+            if ($this->resultDokumen) {
+                if ($progress->dokumen_pendukung) {
+                    Storage::disk('public')->delete($progress->dokumen_pendukung);
+                }
+
+                $progress->dokumen_pendukung = $this->resultDokumen->store(
+                    'dokumen-pendukung',
+                    'public'
+                );
+            }
+
+            $progress->save();
+
+            $this->reset([
+                'resultModal',
+                'resultProgressId',
+                'resultCatatan',
+                'resultDokumen'
+            ]);
+
             session()->flash('success', 'Hasil interview tersimpan.');
             $this->dispatch('refreshSchedule');
         } catch (\Throwable $e) {
