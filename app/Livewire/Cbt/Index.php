@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 class Index extends Component
 {
     public $lamarans;
+    public $search = '';
 
     public function mount()
     {
@@ -29,7 +30,21 @@ class Index extends Component
 
     public function render()
     {
-        return view('livewire.cbt.index');
+        $filteredLamarans = $this->lamarans->filter(function ($lamaran) {
+            $query = strtolower($this->search);
+
+            if ($query === '') {
+                return true;
+            }
+
+            return str_contains(strtolower($lamaran->lowongan->nama_posisi), $query)
+                || str_contains(strtolower($lamaran->lowongan->departemen), $query)
+                || str_contains(strtolower($lamaran->lowongan->lokasi_penugasan), $query);
+        });
+
+        return view('livewire.cbt.index', [
+            'filteredLamarans' => $filteredLamarans,
+        ]);
     }
 }
 
