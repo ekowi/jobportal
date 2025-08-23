@@ -10,4 +10,9 @@ class JobController extends Controller
     {
         return view('jobs.list');
     }
+
+    public function browse()
+    {
+        return view('jobs.browse');
+    }
 }

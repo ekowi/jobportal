@@ -85,7 +85,7 @@
                 <div class="col-12 mt-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="mb-0">Lowongan Terbaru</h4>
-                        <a href="{{ route('jobs.index') }}" class="btn btn-link">Lihat Semua Lowongan <i class="mdi mdi-arrow-right"></i></a>
+                        <a href="{{ route('jobs.browse') }}" class="btn btn-link">Lihat Semua Lowongan <i class="mdi mdi-arrow-right"></i></a>
                     </div>
                 </div>
             </div>

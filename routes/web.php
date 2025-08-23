@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', App\Livewire\Kandidat\Dashboard::class)->name('dashboard');
 Route::get('/jobs', [App\Http\Controllers\JobController::class, 'index'])->name('jobs.index');
+Route::get('/jobs/browse', [App\Http\Controllers\JobController::class, 'browse'])->name('jobs.browse');
 Route::get('/kategori', App\Livewire\KategoriLowongan\ListKategori::class)->name('kategori.list');
 Route::get('/list-lowongan', App\Livewire\Lowongan\ListLowongan::class)->name('lowongan.list');
 Route::middleware([
