@@ -47,7 +47,7 @@ class Edit extends Component
         $this->nama_posisi = $this->lowongan->nama_posisi;
         $this->departemen = $this->lowongan->departemen;
         $this->lokasi_penugasan = $this->lowongan->lokasi_penugasan;
-        $this->is_remote = $this->lowongan->is_remote;
+        $this->is_remote = (int) $this->lowongan->is_remote;
         $this->tanggal_posting = optional($this->lowongan->tanggal_posting)->format('Y-m-d');
         $this->tanggal_berakhir = optional($this->lowongan->tanggal_berakhir)->format('Y-m-d');
         $this->oldFoto = $this->lowongan->foto;
@@ -112,11 +112,11 @@ class Edit extends Component
             $this->notificationMessage = 'Lowongan gagal diubah.';
         }
         $this->dispatch('lowonganUpdated');
-        return redirect()->route('lowongan.index');
+        return redirect()->route('Lowongan.index');
     }
 
     public function render()
     {
-        return view('livewire.lowongan.edit');
+        return view('livewire.Lowongan.edit');
     }
 }

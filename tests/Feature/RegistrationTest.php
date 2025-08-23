@@ -39,9 +39,16 @@ class RegistrationTest extends TestCase
             $this->markTestSkipped('Registration support is not enabled.');
         }
 
-        $response = $this->post('/register', [
-            'name' => 'Test User',
+        $response = $this->withSession([
+            'guest_test_data' => [
+                'bmi' => ['score' => 22, 'kategori' => 'Normal'],
+                'blind' => ['score' => 80],
+            ],
+        ])->post('/register', [
+            'nama_depan' => 'Test',
+            'nama_belakang' => 'User',
             'email' => 'test@example.com',
+            'negara' => 'Indonesia',
             'password' => 'password',
             'password_confirmation' => 'password',
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),

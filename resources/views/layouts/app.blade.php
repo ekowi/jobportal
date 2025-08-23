@@ -20,6 +20,7 @@
         <link href="css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
         <!-- Custom  Css -->
         <link href="css/style.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -73,6 +74,8 @@
         <link href="{{ asset('css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
 	    <!-- Custom  Css -->
 	    <link href="{{ asset('css/style.min.css') }}" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.css">
+        @livewireStyles
 	</head>
 
 	<body>
@@ -333,5 +336,17 @@
 	    <!-- Custom -->
 	    <script src="{{ asset('js/plugins.init.js') }}"></script>
 	    <script src="{{ asset('js/app.js') }}"></script>
+        <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        @livewireScripts
+        <script>
+            document.addEventListener('livewire:initialized', () => {
+                Livewire.on('redirect-to-login', (event) => {
+                    // Arahkan ke halaman login Anda
+                    window.location.href = '/login'; 
+                });
+            });
+        </script>
+        @stack('scripts')
     </body>
 </html>

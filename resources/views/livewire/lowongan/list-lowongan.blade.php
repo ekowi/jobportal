@@ -140,7 +140,7 @@
 
                                         <div class="col-md-3">
                                             <div class="mb-md-0 mb-3">
-                                                <h6 class="mb-0">{{ $job->formatted_gaji }}</h6>
+                                                <h6 class="mb-0">{{ $job->formatted_gaji }} Juta</h6>
                                                 <p class="text-muted mb-0">{{ 'Full-time' }}</p>
                                             </div>
                                         </div>

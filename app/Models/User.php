@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Kandidat;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -78,5 +79,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasRole('officer') &&
                 $this->officer &&
                 $this->officer->jabatan === $position;
+    }
+
+    // Tambahkan relasi officer untuk mengakses jabatan officer
+    public function officer()
+    {
+        return $this->hasOne(\App\Models\Officer::class, 'user_id');
+    }
+
+    public function kandidat()
+    {
+        return $this->hasOne(Kandidat::class, 'user_id');
     }
 }

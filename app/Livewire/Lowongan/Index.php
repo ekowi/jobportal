@@ -89,12 +89,12 @@ class Index extends Component
 
     public function openEdit($id)
     {
-        return redirect()->route('lowongan.edit', $id);
+        return redirect()->route('Lowongan.edit', $id);
     }
 
     public function openView($id)
     {
-        return redirect()->route('lowongan.view', $id);
+        return redirect()->route('Lowongan.view', $id);
     }
 
     // Open status confirmation modal

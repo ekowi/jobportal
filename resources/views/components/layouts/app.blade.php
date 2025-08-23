@@ -56,6 +56,7 @@
 <!doctype html>
 <html lang="{{  str_replace('_', '-', app()->getLocale()) }}">
 	<head>
+        @livewireStyles
 		<meta charset="UTF-8">
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	    <title>{{ config('app.name', 'Job Portal') }}</title>
@@ -200,15 +201,6 @@
                             </ul>
                         </li>
 
-                        <li class="has-submenu parent-menu-item">
-                            <a href="javascript:void(0)">Candidates</a><span class="menu-arrow"></span>
-                            <ul class="submenu">
-                                <li><a href="candidates.html" class="sub-menu-item">Candidates</a></li>
-                                <li><a href="candidate-profile.html" class="sub-menu-item">Candidate Profile</a></li>
-                                <li><a href="candidate-profile-setting.html" class="sub-menu-item">Profile Setting</a></li>
-                            </ul>
-                        </li>
-
                         <li class="has-submenu parent-parent-menu-item">
                             <a href="javascript:void(0)">Pages</a><span class="menu-arrow"></span>
                             <ul class="submenu">
@@ -259,8 +251,36 @@
                                 </li>
                             </ul>
                         </li>
-
-                        <li><a href="contactus.html" class="sub-menu-item">Contact Us</a></li>
+                        @role('officer')
+                        <li class="has-submenu parent-menu-item">
+                            <a href="{{ route('kandidat.index') }}">Kandidat</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('lamaran-lowongan.index') }}" class="nav-link">
+                                Kelola Lamaran
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('jadwal-interview.index') }}" class="nav-link">
+                                Jadwal Interview
+                            </a>
+                        </li>
+                        <li class="has-submenu parent-menu-item">
+                            <a href="javascript:void(0)">Bank Soal</a><span class="menu-arrow"></span>
+                            <ul class="submenu">
+                                <li><a href="{{ route('bank-soal.index') }}" class="sub-menu-item">Daftar Soal</a></li>
+                                <li><a href="{{ route('kategori-soal.index') }}" class="sub-menu-item">Kategori Soal</a></li>
+                                <li><a href="{{ route('test-results.index') }}" class="sub-menu-item">Hasil Test CBT</a></li>
+                            </ul>
+                        </li>
+                        <li class="has-submenu parent-menu-item">
+                            <a href="{{ route('Lowongan.Index') }}">Daftar Lowongan</a><span class="menu-arrow"></span>
+                            <ul class="submenu">
+                                <li><a href="{{ route('Lowongan.Create') }}" class="sub-menu-item">Tambah Lowongan</a></li>
+                                <li><a href="{{ route('kategori-lowongan.Index') }}" class="sub-menu-item">Tambah Kategori Lowongan</a></li>
+                            </ul>
+                        </li>
+                        @endrole
                     </ul><!--end navigation menu-->
                 </div><!--end navigation-->
             </div>
@@ -335,5 +355,6 @@
 	    <script src="{{ asset('js/plugins.init.js') }}"></script>
 	    <script src="{{ asset('js/app.js') }}"></script>
         @stack('scripts')
+        @livewireScripts
     </body>
 </html>

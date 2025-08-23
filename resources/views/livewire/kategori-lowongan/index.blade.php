@@ -30,7 +30,7 @@
             <div class="position-middle-bottom">
                 <nav aria-label="breadcrumb" class="d-block">
                     <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="#">{{ __('Home') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('officers.index') }}">{{ __('Home') }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ __('Category Vacancies') }}</li>
                     </ul>
                 </nav>
@@ -82,11 +82,16 @@
                                                 </td>
                                                 <td>{{ $kategori->nama_kategori }}</td>
                                                 <td>{{ \Illuminate\Support\Str::words($kategori->deskripsi, 8, '...') }}</td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <button class="btn btn-sm btn-outline-primary" wire:click="openEditModal({{ $kategori->id }})">{{ __('Edit') }}</button>
-                                                        <button class="btn btn-sm btn-outline-danger" wire:click="openDeleteModal({{ $kategori->id }})">{{ __('Delete') }}</button>
-                                                    </div>
+                                                <td class="p-3">
+                                                    {{-- Tombol Edit --}}
+                                                    <button class="btn btn-sm btn-soft-warning me-1" wire:click="openEditModal({{ $kategori->id }})">
+                                                        <i class="mdi mdi-pencil"></i>
+                                                    </button>
+
+                                                    {{-- Tombol Hapus --}}
+                                                    <button class="btn btn-sm btn-soft-danger" wire:click="openDeleteModal({{ $kategori->id }})">
+                                                        <i class="mdi mdi-trash-can"></i>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         @endforeach
