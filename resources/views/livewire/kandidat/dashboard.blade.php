@@ -56,7 +56,7 @@
                             <h5 class="fw-bold">Tes Seleksi</h5>
                             <p class="text-muted">Kerjakan tes seleksi yang tersedia untuk melanjutkan proses rekrutmen.</p>
                             @auth
-                                <a href="#" class="read-more">Mulai Tes <i class="mdi mdi-arrow-right"></i></a>
+                                <a href="{{ route('cbt.index') }}" class="read-more">Mulai Tes <i class="mdi mdi-arrow-right"></i></a>
                             @else
                                 <a href="javascript:void(0)" onclick="promptAuth()" class="read-more">Mulai Tes <i class="mdi mdi-arrow-right"></i></a>
                             @endauth
