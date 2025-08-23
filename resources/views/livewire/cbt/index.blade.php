@@ -20,37 +20,53 @@
         </div>
     </section>
 
-    <div class="position-relative">
-        <div class="shape overflow-hidden text-white">
-            <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
-            </svg>
-        </div>
-    </div>
-
     <section class="section">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <h4 class="mb-4 text-center">Daftar Psikotes</h4>
+            <!-- Filter dan Pencarian -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari psikotes..." wire:model.live="search">
+                        <button class="btn btn-primary" type="button">
+                            <i class="mdi mdi-magnify"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                    @forelse($lamarans as $lamaran)
-                        <div class="card shadow-sm mb-3">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-1">{{ $lamaran->lowongan->nama_posisi }}</h5>
-                                    <p class="mb-0 text-muted">{{ $lamaran->lowongan->departemen }} - {{ $lamaran->lowongan->lokasi_penugasan }}</p>
-                                </div>
-                                <a href="{{ route('cbt.test') }}" target="_blank" class="btn btn-primary btn-sm">
-                                    <i class="mdi mdi-pencil me-1"></i>Mulai Psikotes
-                                </a>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="alert alert-info text-center" role="alert">
-                            Belum ada tes psikotes yang tersedia untuk Anda.
-                        </div>
-                    @endforelse
+            <!-- Tabel Psikotes -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive shadow rounded">
+                        <table class="table table-center bg-white mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="border-bottom p-3">Posisi</th>
+                                    <th class="border-bottom p-3">Departemen</th>
+                                    <th class="border-bottom p-3">Lokasi Penugasan</th>
+                                    <th class="border-bottom p-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($filteredLamarans as $lamaran)
+                                    <tr>
+                                        <td class="p-3">{{ $lamaran->lowongan->nama_posisi }}</td>
+                                        <td class="p-3">{{ $lamaran->lowongan->departemen }}</td>
+                                        <td class="p-3">{{ $lamaran->lowongan->lokasi_penugasan }}</td>
+                                        <td class="p-3">
+                                            <a href="{{ route('cbt.test') }}" target="_blank" class="btn btn-sm btn-primary">
+                                                <i class="mdi mdi-pencil me-1"></i>Mulai Psikotes
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center p-3">Belum ada tes psikotes yang tersedia untuk Anda.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
