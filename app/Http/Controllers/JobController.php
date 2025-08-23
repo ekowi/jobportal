@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Lowongan;
 
 class JobController extends Controller
 {
@@ -14,7 +13,6 @@ class JobController extends Controller
 
     public function browse()
     {
-        $jobs = Lowongan::with('kategoriLowongan')->latest()->get();
-        return view('jobs.browse', compact('jobs'));
+        return view('jobs.browse');
     }
 }
