@@ -399,7 +399,7 @@
                         <p>{{ $resultCatatan }}</p>
                     @endif
                     @if($resultDokumen)
-                        <a href="{{ Storage::url($resultDokumen) }}" target="_blank">Dokumen Pendukung</a>
+                        <a href="{{ asset('storage/' . $resultDokumen) }}" target="_blank">Dokumen Pendukung</a>
                     @endif
                 </div>
                 <div class="modal-footer">
