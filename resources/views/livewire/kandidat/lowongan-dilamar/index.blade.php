@@ -207,14 +207,6 @@
                                                                 <i class="mdi mdi-video me-1"></i>Join Zoom
                                                             </a>
                                                         @endif
-                                                    @if($latestInterview->catatan)
-                                                        <div class="mt-2"><strong>Catatan:</strong> {{ $latestInterview->catatan }}</div>
-                                                    @endif
-                                                    @if($latestInterview->dokumen_pendukung)
-                                                        <div class="mt-1">
-                                                            <a href="{{ Storage::url($latestInterview->dokumen_pendukung) }}" target="_blank">Dokumen Pendukung</a>
-                                                        </div>
-                                                    @endif
                                                 </div>
                                             @endif
                                             @if($showCbtLink)

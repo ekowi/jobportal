@@ -144,10 +144,16 @@
                                                                             <div class="text-muted">Interviewer:</div>
                                                                             <div class="fw-medium">{{ optional($interviewProgress->officer)->name }}</div>
                                                                         </div>
-                                                                        <a href="{{ $interviewProgress->link_zoom }}" target="_blank" 
-                                                                           class="btn btn-outline-primary btn-sm">
-                                                                            <i class="mdi mdi-video me-1"></i> Zoom
-                                                                        </a>
+                                                                        @if($interviewProgress->catatan || $interviewProgress->dokumen_pendukung)
+                                                                            <button type="button" class="btn btn-outline-primary btn-sm" wire:click="openResult({{ $interviewProgress->id }})">
+                                                                                <i class="mdi mdi-file-document me-1"></i> Lihat Hasil
+                                                                            </button>
+                                                                        @else
+                                                                            <a href="{{ $interviewProgress->link_zoom }}" target="_blank"
+                                                                               class="btn btn-outline-primary btn-sm">
+                                                                                <i class="mdi mdi-video me-1"></i> Zoom
+                                                                            </a>
+                                                                        @endif
                                                                     </div>
                                                                     @if($interviewProgress->waktu_pelaksanaan)
                                                                         <div class="text-muted mt-1">
@@ -375,6 +381,29 @@
                             @endforeach
                         </div>
                     @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Hasil Interview -->
+    <div class="modal fade @if($resultModal) show @endif" tabindex="-1" style="@if($resultModal) display:block; @endif">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Hasil Interview</h5>
+                    <button type="button" class="btn-close" wire:click="closeResultModal"></button>
+                </div>
+                <div class="modal-body">
+                    @if($resultCatatan)
+                        <p>{{ $resultCatatan }}</p>
+                    @endif
+                    @if($resultDokumen)
+                        <a href="{{ Storage::url($resultDokumen) }}" target="_blank">Dokumen Pendukung</a>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" wire:click="closeResultModal">Tutup</button>
                 </div>
             </div>
         </div>
