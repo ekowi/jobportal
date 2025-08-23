@@ -54,7 +54,6 @@ class Test extends Component
     public function initializeNewTest()
     {
         $this->questions = Soal::where('status', true)
-            ->with(['typeSoal', 'typeJawaban']) // eager load relationships
             ->inRandomOrder()
             ->take($this->maxQuestions)
             ->get();
