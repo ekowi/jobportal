@@ -211,7 +211,7 @@
                                             @endif
                                             @if($showCbtLink)
                                                 <div class="mt-2">
-                                                    <a href="{{ route('cbt.test') }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <a href="{{ route('cbt.index') }}" class="btn btn-sm btn-outline-primary">
                                                         <i class="mdi mdi-pencil me-1"></i>Mulai Psikotes
                                                     </a>
                                                 </div>
