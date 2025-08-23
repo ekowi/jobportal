@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\LamarLowongan;
 use App\Models\User;
+use App\Models\ProgressRekrutmen;
 use Illuminate\Support\Facades\Log;
 
 class Index extends Component
@@ -28,6 +29,11 @@ class Index extends Component
     public $detailModal = false;
     public $selectedKandidat;
     public $documents = [];
+
+    // hasil interview
+    public $resultModal = false;
+    public $resultCatatan;
+    public $resultDokumen;
 
 
     public function mount()
@@ -174,4 +180,18 @@ class Index extends Component
         $this->documents = [];
     }
 
+    public function openResult($progressId)
+    {
+        $progress = ProgressRekrutmen::findOrFail($progressId);
+        $this->resultCatatan = $progress->catatan;
+        $this->resultDokumen = $progress->dokumen_pendukung;
+        $this->resultModal = true;
+    }
+
+    public function closeResultModal()
+    {
+        $this->resultModal = false;
+        $this->resultCatatan = null;
+        $this->resultDokumen = null;
+    }
 }
