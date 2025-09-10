@@ -15,14 +15,15 @@
             </div>
         @endif
     </div>
+    
     <!-- Hero Start -->
-    <section class="bg-half-170 d-table w-100" style="background: url('images/hero/bg.jpg');">
+    <section class="bg-half-170 d-table w-100" style="background: url('{{ asset('images/hero/bg.jpg') }}');">
         <div class="bg-overlay bg-gradient-overlay"></div>
         <div class="container">
             <div class="row mt-5 justify-content-center">
                 <div class="col-12">
                     <div class="title-heading text-center">
-                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Job Vacancies') }}</h5>
+                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Manajemen Lowongan') }}</h5>
                     </div>
                 </div><!--end col-->
             </div><!--end row-->
@@ -30,8 +31,8 @@
             <div class="position-middle-bottom">
                 <nav aria-label="breadcrumb" class="d-block">
                     <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="#">{{ __('Home') }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ __('Job Vacancies') }}</li>
+                        <li class="breadcrumb-item"><a href="{{ route('officers.index') }}">{{ __('Beranda') }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ __('Lowongan') }}</li>
                     </ul>
                 </nav>
             </div>
@@ -49,59 +50,80 @@
     <!-- Main Section -->
     <section class="section">
         <div class="container">
+            {{-- PERBAIKAN: Menambahkan blok judul yang terpusat --}}
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="section-title text-center mb-4 pb-2">
+                        <h4 class="title mb-4">Daftar Lowongan Pekerjaan</h4>
+                        <p class="text-muted para-desc mx-auto mb-0">Kelola, filter, dan perbarui status lowongan yang tersedia.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-12">
                     <div class="card border-0 rounded shadow">
                         <!-- Filter Form -->
                         <div class="m-4">
-                            <div class="row g-2">
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="{{ route('Lowongan.Create') }}"
+                                   class="btn btn-sm btn-soft-primary d-inline-flex align-items-center"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="{{ __('Tambah Lowongan') }}" aria-label="{{ __('Tambah Lowongan') }}">
+                                    <i class="mdi mdi-briefcase-plus me-1"></i> {{ __('Tambah Lowongan') }}
+                                </a>
+                            </div>
+                            <div class="row g-1 align-items-center">
                                 <div class="col-md-2">
-                                    <select wire:model.live="statusFilter" class="form-control">
-                                        <option value="">All Status</option>
-                                        <option value="posted">Posted</option>
-                                        <option value="archived">Archived</option>
+                                    <select wire:model.live="statusFilter" class="form-select form-select-sm py-1">
+                                        <option value="">Semua Status</option>
+                                        <option value="posted">Diposting</option>
+                                        <option value="archived">Diarsipkan</option>
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <select wire:model.live="kategoriFilter" class="form-control">
-                                        <option value="">All Category</option>
+                                    <select wire:model.live="kategoriFilter" class="form-select form-select-sm py-1">
+                                        <option value="">Semua Kategori</option>
                                         @foreach($kategoriLowonganOptions as $kategori)
                                             <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="text" wire:model.live="namaPosisiFilter" class="form-control" placeholder="Job Title">
+                                    <input type="text" wire:model.live="namaPosisiFilter" class="form-control form-control-sm py-1" placeholder="Judul Pekerjaan">
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="date" wire:model.live="tanggalMulaiFilter" class="form-control" placeholder="Start Date">
+                                    <input type="date" wire:model.live="tanggalMulaiFilter" class="form-control form-control-sm py-1" placeholder="Tanggal Mulai">
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="date" wire:model.live="tanggalAkhirFilter" class="form-control" placeholder="End Date">
+                                    <input type="date" wire:model.live="tanggalAkhirFilter" class="form-control form-control-sm py-1" placeholder="Tanggal Berakhir">
                                 </div>
-                                <div class="col-md-1">
-                                    <button type="button" wire:click="resetFilters" class="btn btn-secondary btn-sm w-100">
-                                        <i class="fas fa-redo"></i> Reset
+                                <div class="col-12 col-md-1">
+                                    <button type="button"
+                                            wire:click="resetFilters"
+                                            class="btn btn-soft-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center"
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="{{ __('Reset Filter') }}" aria-label="{{ __('Reset Filter') }}">
+                                        <i class="mdi mdi-filter-remove-outline"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Lowongan Pekerjaan</h5>
-                            <a href="{{ route('lowongan.create') }}" class="btn btn-primary btn-sm">Tambah Lowongan</a>
-                        </div>
-                        <div class="card-body">
+                        
+                        <div class="card-body pt-0">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover align-middle">
                                     <thead>
                                         <tr>
                                             <th>Status</th>
-                                            <th>Job Title</th>
+                                            <th>Foto</th>
+                                            <th>Judul</th>
+                                            <th>Deskripsi</th>
                                             <th>Departemen</th>
-                                            <th>Category</th>
-                                            <th>Posting Date</th>
-                                            <th>End Date</th>
-                                            <th class="text-center" style="width: 15%;">Action</th>
+                                            <th>Kategori</th>
+                                            <th>Tanggal Posting</th>
+                                            <th>Tanggal Berakhir</th>
+                                            <th class="text-center" style="width: 15%;">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -113,29 +135,40 @@
                                                     </span>
                                                 </td>
                                                 <td>
+                                                    @if($lowongan->foto)
+                                                        <img src="{{ asset('storage/image/lowongan/' . $lowongan->foto) }}" alt="Foto Lowongan" class="img-fluid rounded" style="max-width: 50px;">
+                                                    @else
+                                                        <span class="text-muted">Tanpa Gambar</span>
+                                                    @endif
+                                                </td>
+                                                <td>
                                                     <a href="#" wire:click.prevent="openView({{ $lowongan->id }})" class="fw-bold text-primary">
                                                         {{ $lowongan->nama_posisi }}
                                                     </a>
                                                 </td>
+                                                <td>{!! Str::limit(strip_tags($lowongan->deskripsi), 50) !!}</td>
                                                 <td>{{ $lowongan->departemen }}</td>
                                                 <td>{{ optional($lowongan->kategoriLowongan)->nama_kategori }}</td>
                                                 <td>{{ date('d M Y', strtotime($lowongan->tanggal_posting)) }}</td>
                                                 <td>{{ date('d M Y', strtotime($lowongan->tanggal_berakhir)) }}</td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                                        @if($lowongan->status === 'posted')
-                                                            <button class="btn btn-sm btn-outline-danger"
-                                                                wire:click="confirmStatusChange({{ $lowongan->id }}, 'archive')">
-                                                                Archive
-                                                            </button>
-                                                        @else
-                                                            <button class="btn btn-sm btn-outline-success"
-                                                                wire:click="confirmStatusChange({{ $lowongan->id }}, 'post')">
-                                                                Post
-                                                            </button>
-                                                        @endif
-                                                    </div>
+                                                <td class="p-3">
+                                                    {{-- Tombol Edit --}}
+                                                    <a href="{{ route('Lowongan.Edit', $lowongan->id) }}" class="btn btn-sm btn-soft-warning me-1">
+                                                        <i class="mdi mdi-pencil"></i>
+                                                    </a>
+
+                                                    {{-- Tombol Kondisional untuk Archive atau Post --}}
+                                                    @if($lowongan->status === 'posted')
+                                                        <button class="btn btn-sm btn-soft-danger me-1"
+                                                            wire:click="confirmStatusChange({{ $lowongan->id }}, 'archive')">
+                                                            <i class="mdi mdi-archive-arrow-down-outline"></i>
+                                                        </button>
+                                                    @else
+                                                        <button class="btn btn-sm btn-soft-success me-1"
+                                                            wire:click="confirmStatusChange({{ $lowongan->id }}, 'post')">
+                                                            <i class="mdi mdi-publish"></i>
+                                                        </button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

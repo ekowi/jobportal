@@ -22,7 +22,7 @@
             <div class="row mt-5 justify-content-center">
                 <div class="col-12">
                     <div class="title-heading text-center">
-                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Category Vacancies') }}</h5>
+                        <h5 class="heading fw-semibold mb-0 sub-heading text-white title-dark">{{ __('Kategori Lowongan') }}</h5>
                     </div>
                 </div><!--end col-->
             </div><!--end row-->
@@ -30,8 +30,8 @@
             <div class="position-middle-bottom">
                 <nav aria-label="breadcrumb" class="d-block">
                     <ul class="breadcrumb breadcrumb-muted mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="#">{{ __('Home') }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ __('Category Vacancies') }}</li>
+                        <li class="breadcrumb-item"><a href="{{ route('officers.index') }}">{{ __('Beranda') }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ __('Kategori Lowongan') }}</li>
                     </ul>
                 </nav>
             </div>
@@ -53,8 +53,21 @@
                 <div class="col-12">
                     <div class="card border-0 rounded shadow">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">{{ __('Category Vacancies') }}</h5>
-                            <button class="btn btn-primary btn-sm" wire:click="$dispatch('showCreateModal')">{{ __('Add Category') }}</button>
+                            <h5 class="card-title mb-0">{{ __('Kategori Lowongan') }}</h5>
+                            <div>
+                                <button class="btn btn-soft-secondary btn-sm d-inline-flex align-items-center me-1"
+                                        wire:click="exportPdf"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="{{ __('Export PDF') }}" aria-label="{{ __('Export PDF') }}">
+                                    <i class="mdi mdi-file-pdf-box me-1"></i> Export PDF
+                                </button>
+                                <button class="btn btn-soft-primary btn-sm d-inline-flex align-items-center"
+                                        wire:click="$dispatch('showCreateModal')"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="{{ __('Tambah Kategori') }}" aria-label="{{ __('Tambah Kategori') }}">
+                                    <i class="mdi mdi-plus-circle-outline me-1"></i> {{ __('Tambah Kategori') }}
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -62,9 +75,9 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center" style="width: 60px;">Logo</th>
-                                            <th>{{ __('Name Category') }}</th>
-                                            <th>{{ __('Description') }}</th>
-                                            <th class="text-center" style="width: 15%;">{{ __('Action') }}</th>
+                                            <th>{{ __('Nama Kategori') }}</th>
+                                            <th>{{ __('Deskripsi') }}</th>
+                                            <th class="text-center" style="width: 15%;">{{ __('Aksi') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -82,11 +95,16 @@
                                                 </td>
                                                 <td>{{ $kategori->nama_kategori }}</td>
                                                 <td>{{ \Illuminate\Support\Str::words($kategori->deskripsi, 8, '...') }}</td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <button class="btn btn-sm btn-outline-primary" wire:click="openEditModal({{ $kategori->id }})">{{ __('Edit') }}</button>
-                                                        <button class="btn btn-sm btn-outline-danger" wire:click="openDeleteModal({{ $kategori->id }})">{{ __('Delete') }}</button>
-                                                    </div>
+                                                <td class="p-3">
+                                                    {{-- Tombol Edit --}}
+                                                    <button class="btn btn-sm btn-soft-warning me-1" wire:click="openEditModal({{ $kategori->id }})">
+                                                        <i class="mdi mdi-pencil"></i>
+                                                    </button>
+
+                                                    {{-- Tombol Hapus --}}
+                                                    <button class="btn btn-sm btn-soft-danger" wire:click="openDeleteModal({{ $kategori->id }})">
+                                                        <i class="mdi mdi-trash-can"></i>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         @endforeach

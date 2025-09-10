@@ -20,6 +20,7 @@
         <link href="css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
         <!-- Custom  Css -->
         <link href="css/style.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -71,8 +72,38 @@
 	    <link href="{{ asset('css/bootstrap.min.css') }}" type="text/css" rel="stylesheet" />
         <link href="{{ asset('css/tobii.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
-	    <!-- Custom  Css -->
-	    <link href="{{ asset('css/style.min.css') }}" rel="stylesheet" type="text/css" id="theme-opt" />
+        <!-- Custom  Css -->
+        <link href="{{ asset('css/style.min.css') }}" rel="stylesheet" type="text/css" id="theme-opt" />
+        <!-- Overrides / additions -->
+        <link href="{{ asset('css/style.css') }}?v=1" rel="stylesheet" type="text/css" />
+        <style>
+            .btn.btn-icon { display: inline-flex; align-items: center; justify-content: center; }
+            .btn.btn-icon .icons, .btn.btn-icon svg.icons { display: block; }
+            .btn.btn-icon.dropdown-toggle::after { display: none; }
+            #topnav .navigation-menu { display: flex; align-items: center; gap: .5rem; margin-bottom: 0; }
+            #topnav .navigation-menu > li { display: flex; align-items: center; }
+            #topnav .navigation-menu > li > a { display: flex; align-items: center; height: 36px; padding-top: 0; padding-bottom: 0; }
+            #topnav .navigation-menu > li > .menu-arrow { align-self: center; }
+            /* Align top-level caret with text, override theme absolute pos */
+            #topnav .navigation-menu .has-submenu > .menu-arrow {
+                position: static !important;
+                right: auto; top: auto;
+                display: inline-block;
+                margin-left: .375rem;
+                vertical-align: middle;
+                align-self: center;
+            }
+            #topnav .buy-button { height: 74px; line-height: initial !important; display: flex; align-items: center; gap: .5rem; }
+            #topnav .buy-button > li { display: flex; align-items: center; }
+            #topnav .buy-button .btn.btn-icon { width: 36px; height: 36px; padding: 0; }
+            /* Fine-tune vertical alignment of right icon buttons on desktop */
+            @media (min-width: 992px) {
+                #topnav .buy-button .btn.btn-icon { transform: translateY(4px); }
+                #topnav.nav-sticky .buy-button .btn.btn-icon { transform: translateY(2px); }
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.css">
+        @livewireStyles
 	</head>
 
 	<body>
@@ -87,50 +118,38 @@
                     <img src="images/logo-light.png" class="logo-dark-mode" alt="">
                 </a>
 
-                <div class="menu-extras">
-                    <div class="menu-item">
-                        <a class="navbar-toggle" id="isToggle" onclick="toggleMenu()">
-                            <div class="lines">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+                <!-- Removed hamburger toggle -->
 
-                <ul class="buy-button list-inline mb-0">
-                    <li class="list-inline-item ps-1 mb-0">
-                        <div class="dropdown">
-                            <button type="button" class="dropdown-toggle btn btn-sm btn-icon btn-pills btn-primary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i data-feather="search" class="icons"></i>
-                            </button>
-                            <div class="dropdown-menu dd-menu dropdown-menu-end bg-white rounded border-0 mt-3 p-0" style="width: 240px;">
-                                <div class="search-bar">
-                                    <div id="itemSearch" class="menu-search mb-0">
-                                        <form role="search" method="get" id="searchItemform" class="searchform">
-                                            <input type="text" class="form-control rounded border" name="s" id="searchItem" placeholder="Search...">
-                                            <input type="submit" id="searchItemsubmit" value="Search">
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="list-inline-item ps-1 mb-0">
-                        <div class="dropdown dropdown-primary">
-                            <button type="button" class="dropdown-toggle btn btn-sm btn-icon btn-pills btn-primary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img src="images/team/01.jpg" class="img-fluid rounded-pill" alt="">
-                            </button>
+                <ul class="buy-button list-inline mb-0 d-flex align-items-center gap-2">
+                    @auth
+                    <li class="list-inline-item ps-1 mb-0 align-middle">
+                        @php
+                            $user = auth()->user();
+                            $firstName = optional($user->kandidat)->nama_depan ?? \Illuminate\Support\Str::before($user->name ?? '', ' ');
+                            $isOfficer = $user->is_officer;
+                            $badgeClass = $isOfficer ? $user->role_badge_class : 'bg-soft-success text-success';
+                            $icon = $isOfficer ? 'shield' : 'user';
+                            $label = $isOfficer ? $user->role_badge_label : null; // hide role label for kandidat
+                        @endphp
+                        <div class="dropdown role-dropdown d-inline-flex align-items-center">
+                            <a href="#" class="dropdown-toggle badge rounded-pill {{ $badgeClass }} px-3 py-2 d-inline-flex align-items-center role-badge-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i data-feather="{{ $icon }}" class="fea icon-sm me-1 align-middle"></i>
+                                <span class="fw-semibold">{{ $firstName }}</span>
+                                @if($label)
+                                    <span class="mx-1">-</span>
+                                    <span>{{ $label }}</span>
+                                @endif
+                                <i class="mdi mdi-chevron-down ms-1"></i>
+                            </a>
                             <div class="dropdown-menu dd-menu dropdown-menu-end bg-white rounded shadow border-0 mt-3">
-                                <a href="candidate-profile.html" class="dropdown-item fw-medium fs-6"><i data-feather="user" class="fea icon-sm me-2 align-middle"></i>Profile</a>
-                                <a href="candidate-profile-setting.html" class="dropdown-item fw-medium fs-6"><i data-feather="settings" class="fea icon-sm me-2 align-middle"></i>Settings</a>
+                                <a href="{{ auth()->user()->is_kandidat ? route('profile.show') : route('officers.index') }}" class="dropdown-item fw-medium fs-6 d-flex align-items-center">
+                                    <i data-feather="user" class="fea icon-sm me-2 align-middle"></i>
+                                    <span>Profile</span>
+                                </a>
                                 <div class="dropdown-divider border-top"></div>
-                                <a href="lock-screen.html" class="dropdown-item fw-medium fs-6"><i data-feather="lock" class="fea icon-sm me-2 align-middle"></i>Lockscreen</a>
                                 <form method="POST" action="{{ route('logout') }}" x-data class="d-inline w-100">
                                     @csrf
-                                    <button type="submit" class="dropdown-item fw-medium fs-6 border-0 bg-transparent p-0 ps-3 py-2 w-100 text-start"
+                                    <button type="submit" class="dropdown-item fw-medium fs-6 d-flex align-items-center w-100 text-start border-0"
                                             onclick="event.preventDefault(); this.closest('form').submit();">
                                         <i data-feather="log-out" class="fea icon-sm me-2 align-middle"></i>Logout
                                     </button>
@@ -138,6 +157,17 @@
                             </div>
                         </div>
                     </li>
+                    @endauth
+
+                    @auth @endauth
+                    @guest
+                    <li class="list-inline-item ps-1 mb-0">
+                        <a href="javascript:void(0)" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#guestAuthModal">
+                            <i data-feather="log-in" class="fea icon-sm me-1 align-middle"></i>
+                            Login
+                        </a>
+                    </li>
+                    @endguest
                 </ul>
 
                 <div id="navigation">
@@ -264,6 +294,49 @@
                 </div><!--end navigation-->
             </div>
         </header>
+
+        @guest
+        <!-- Guest Auth Modal -->
+        <div class="modal fade" id="guestAuthModal" tabindex="-1" aria-labelledby="guestAuthModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="guestAuthModalLabel">Masuk atau Tes Awal</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-muted mb-2">Pilih salah satu untuk melanjutkan. Untuk pengguna baru, tes BMI & buta warna wajib sebelum membuat akun.</div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-6">
+                                <div class="h-100 p-3 border rounded">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-soft-primary text-primary me-2"><i class="mdi mdi-account-check-outline"></i></span>
+                                        <h6 class="mb-0">Saya sudah punya akun</h6>
+                                    </div>
+                                    <p class="text-muted small mb-3">Masuk untuk melanjutkan lamaran dan menyimpan progres.</p>
+                                    <a href="{{ route('login') }}" class="btn btn-soft-primary w-100">
+                                        <i class="mdi mdi-login me-1"></i> Login
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="h-100 p-3 border rounded">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-soft-success text-success me-2"><i class="mdi mdi-clipboard-text-outline"></i></span>
+                                        <h6 class="mb-0">Belum punya akun</h6>
+                                    </div>
+                                    <p class="text-muted small mb-3">Selesaikan Blind Test & BMI Test agar bisa mendaftar.</p>
+                                    <a href="{{ route('dashboard') }}?start_test=1" class="btn btn-primary w-100">
+                                        <i class="mdi mdi-clipboard-text-outline me-1"></i> Mulai Tes (Blind & BMI)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endguest
         <!-- Navbar End -->
 
         {{ $slot }}
@@ -333,5 +406,17 @@
 	    <!-- Custom -->
 	    <script src="{{ asset('js/plugins.init.js') }}"></script>
 	    <script src="{{ asset('js/app.js') }}"></script>
+        <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        @livewireScripts
+        <script>
+            document.addEventListener('livewire:initialized', () => {
+                Livewire.on('redirect-to-login', (event) => {
+                    // Arahkan ke halaman login Anda
+                    window.location.href = '/login'; 
+                });
+            });
+        </script>
+        @stack('scripts')
     </body>
 </html>

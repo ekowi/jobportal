@@ -17,6 +17,7 @@ class Kandidat extends Model
     /** @use HasFactory<\Database\Factories\KandidatFactory> */
     use HasFactory, UserStampable;
 
+    protected $table = 'kandidats';
     protected $fillable = [
         'user_id',
         'nama_depan',
@@ -35,14 +36,24 @@ class Kandidat extends Model
         'bmi_score',
         'blind_score',
         'no_telpon_alternatif',
-        'pengalaman_kerja',
         'pendidikan',
+        'riwayat_pengalaman_kerja',
+        'riwayat_pendidikan',
         'kemampuan_bahasa',
+        'informasi_spesifik',
         'kemampuan',
+        'ktp_path',
+        'ijazah_path',
+        'sertifikat_path',
+        'surat_pengalaman_path',
+        'skck_path',
+        'surat_sehat_path',
+        'user_create',
+        'user_update',
     ];
 
     protected $casts = [
-        'tanggal_lahir' => 'date'
+        'tanggal_lahir' => 'date:Y-m-d'
     ];
 
     /**
@@ -57,7 +68,7 @@ class Kandidat extends Model
 
     public function lowongans()
     {
-        return $this->belongsToMany(Lowongan::class, 'lamarlowongan', 'kandidat_id', 'lowongan_id')
+        return $this->belongsToMany(Lowongan::class, 'lamar_lowongans', 'kandidat_id', 'lowongan_id')
                     ->withPivot('iklan_lowongan') // Menyertakan data pivot
                     ->withTimestamps(); // Menyertakan timestamps jika diperlukan
     }
@@ -83,4 +94,78 @@ class Kandidat extends Model
         return trim("{$this->alamat}, {$this->kode_pos}, {$this->negara}");
     }
 
+    /**
+     * Check apakah kandidat sudah menyelesaikan semua tes yang diperlukan
+     * @return bool
+     */
+    public function hasCompletedAllTests()
+    {
+        return $this->hasCompletedBmiTest() && $this->hasCompletedBlindTest();
+    }
+
+    /**
+     * Check apakah kandidat sudah menyelesaikan BMI test
+     * @return bool
+     */
+    public function hasCompletedBmiTest()
+    {
+        return !is_null($this->bmi_score);
+    }
+
+    /**
+     * Check apakah kandidat sudah menyelesaikan Blind test
+     * @return bool
+     */
+    public function hasCompletedBlindTest()
+    {
+        return !is_null($this->blind_score);
+    }
+
+    /**
+     * Get BMI category dalam bahasa Indonesia
+     * @return string|null
+     */
+    public function getBmiCategoryAttribute()
+    {
+        if (is_null($this->bmi_score)) {
+            return null;
+        }
+
+        $score = (float) $this->bmi_score;
+        return ($score < 18.5) ? 'Kurus' : (($score <= 24.9) ? 'Normal' : 'Gemuk');
+    }
+
+    /**
+     * Get Blind test percentage
+     * @return int|null
+     */
+    public function getBlindTestPercentageAttribute()
+    {
+        return $this->blind_score ? (int) $this->blind_score : null;
+    }
+
+    /**
+     * Get Blind test status
+     * @return string|null
+     */
+    public function getBlindTestStatusAttribute()
+    {
+        if (is_null($this->blind_score)) {
+            return null;
+        }
+
+        $score = (int) $this->blind_score;
+        if ($score >= 80) {
+            return 'Excellent';
+        } elseif ($score >= 60) {
+            return 'Good';
+        } elseif ($score >= 40) {
+            return 'Fair';
+        }
+        return 'Poor';
+    }
+    public function lamarLowongans()
+    {
+        return $this->hasMany(LamarLowongan::class, 'kandidat_id');
+    }
 }

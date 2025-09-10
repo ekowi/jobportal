@@ -1,0 +1,75 @@
+/* Styling untuk tes buta warna */
+.colorblind-test-image {
+    border: 3px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.colorblind-test-image:hover {
+    transform: scale(1.05);
+}
+
+/* Pola titik-titik untuk simulasi tes Ishihara */
+.ishihara-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 30%, #ff6b6b 2px, transparent 2px),
+        radial-gradient(circle at 80% 20%, #4ecdc4 2px, transparent 2px),
+        radial-gradient(circle at 40% 70%, #ff6b6b 2px, transparent 2px),
+        radial-gradient(circle at 60% 50%, #4ecdc4 2px, transparent 2px),
+        radial-gradient(circle at 30% 80%, #ff6b6b 2px, transparent 2px),
+        radial-gradient(circle at 70% 80%, #4ecdc4 2px, transparent 2px);
+    background-size: 20px 20px, 25px 25px, 30px 30px, 22px 22px, 28px 28px, 24px 24px;
+}
+
+/* Progress bar styling */
+.progress {
+    height: 8px;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+/* Button hover effects */
+.btn-outline-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+
+/* Modal animations */
+.modal.show {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* BMI result styling */
+.bmi-result {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+}
+
+.bmi-score {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.bmi-category {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
