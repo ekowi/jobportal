@@ -9,15 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string  $role
-     * @return mixed
-     */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, $role, ...$positions)
     {
         if (!Auth::check()) {
             return redirect('login');
@@ -33,8 +25,18 @@ class RoleMiddleware
             } elseif ($user->hasRole('kandidat')) {
                 return redirect()->route('dashboard');
             } else {
-                // User terautentikasi tapi tidak memiliki role yang valid
                 abort(403, 'Unauthorized action.');
+            }
+        }
+
+        // Validasi jabatan officer jika posisi ditentukan
+        if ($role === 'officer' && !empty($positions)) {
+            $allowed = array_map('strtolower', $positions);
+            $jabatan = optional($user->officer)->jabatan;
+
+            if (!$jabatan || !in_array(strtolower($jabatan), $allowed, true)) {
+                // Jika jabatan tidak diizinkan, arahkan kembali ke dashboard officer
+                return redirect()->route('officers.index');
             }
         }
 

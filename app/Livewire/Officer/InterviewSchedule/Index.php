@@ -1,0 +1,170 @@
+<?php
+
+namespace App\Livewire\Officer\InterviewSchedule;
+
+use Livewire\Component;
+use Livewire\WithPagination;
+use Livewire\WithFileUploads;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use App\Models\ProgressRekrutmen;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+class Index extends Component
+{
+    use WithPagination, WithFileUploads;
+
+    public $resultModal = false;
+    public $resultProgressId;
+    public $resultCatatan;
+    public $resultDokumen;
+    public $existingResultDokumen;
+    public $resultReadonly = false;
+
+    public $search = '';
+
+    protected $listeners = ['refreshSchedule' => '$refresh'];
+
+    private function getInterviewsQuery()
+    {
+        return ProgressRekrutmen::with(['lamarlowongan.kandidat.user', 'lamarlowongan.lowongan'])
+            ->where('status', 'interview')
+            ->where('officer_id', auth()->id())
+            ->where('is_interview', true)
+            ->when($this->search, function ($q) {
+                $q->where(function ($query) {
+                    $query->whereHas('lamarlowongan.lowongan', function ($qq) {
+                        $qq->where('nama_posisi', 'like', '%' . $this->search . '%');
+                    })->orWhereHas('lamarlowongan.kandidat.user', function ($qq) {
+                        $qq->where('name', 'like', '%' . $this->search . '%');
+                    });
+                });
+            })
+            ->orderBy('waktu_pelaksanaan');
+    }
+
+    public function render()
+    {
+        $interviews = $this->getInterviewsQuery()->paginate(10);
+
+        return view('livewire.officer.interview-schedule.index', [
+            'interviews' => $interviews,
+        ]);
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function openResultModal($progressId, $readonly = false)
+    {
+        $this->resultProgressId = $progressId;
+        $progress = ProgressRekrutmen::findOrFail($progressId);
+        $this->resultCatatan = $progress->catatan;
+        $this->existingResultDokumen = $progress->dokumen_pendukung;
+        $this->resultDokumen = null;
+        $this->resultReadonly = (bool) $readonly;
+        $this->resultModal = true;
+    }
+
+    public function saveResult()
+    {
+        if ($this->resultReadonly) {
+            // Mode read-only: jangan proses simpan
+            return;
+        }
+
+        $this->validate([
+            'resultCatatan' => 'nullable|string',
+            'resultDokumen' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:20480', // max 20MB
+        ]);
+
+        $progress = ProgressRekrutmen::findOrFail($this->resultProgressId);
+
+        try {
+            $progress->catatan = $this->resultCatatan;
+
+            // Simpan file jika ada upload baru
+            if ($this->resultDokumen instanceof TemporaryUploadedFile) {
+                // Hapus file lama (jika ada)
+                if (!empty($progress->dokumen_pendukung)) {
+                    Storage::disk('public')->delete($progress->dokumen_pendukung);
+                }
+
+                $ext = strtolower($this->resultDokumen->getClientOriginalExtension() ?: $this->resultDokumen->extension() ?: 'dat');
+                $safeName = 'progress-' . $progress->id . '-' . now()->format('Ymd_His') . '.' . $ext;
+                $path = $this->resultDokumen->storeAs(
+                    'dokumen-pendukung/' . $progress->id,
+                    $safeName,
+                    'public'
+                );
+                $progress->dokumen_pendukung = $path;
+            }
+
+            $progress->save();
+            $this->existingResultDokumen = $progress->dokumen_pendukung;
+
+            // Auto-advance to psikotes when interview result is present
+            $hasResult = !empty($progress->catatan) || !empty($progress->dokumen_pendukung);
+            if ($progress->status === 'interview' && $hasResult) {
+                $lamaran = $progress->lamarlowongan; // LamarLowongan instance
+                if ($lamaran) {
+                    $alreadyHasPsikotes = $lamaran->progressRekrutmen()
+                        ->where('status', 'psikotes')
+                        ->exists();
+                    if (!$alreadyHasPsikotes) {
+                        $lamaran->progressRekrutmen()->create([
+                            'status' => 'psikotes',
+                            'officer_id' => auth()->id(),
+                            'nama_progress' => 'Psikotes',
+                            'is_interview' => false,
+                            'is_psikotes' => true,
+                            'user_create' => auth()->user()->name,
+                        ]);
+                    }
+                }
+            }
+
+            $this->reset([
+                'resultModal',
+                'resultProgressId',
+                'resultCatatan',
+                'resultDokumen',
+                'resultReadonly'
+            ]);
+
+            session()->flash('success', 'Hasil interview tersimpan.');
+            $this->dispatch('refreshSchedule');
+        } catch (\Throwable $e) {
+            Log::error('Gagal menyimpan hasil interview: ' . $e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan saat menyimpan data.');
+        }
+    }
+
+    /**
+     * Export jadwal interview menjadi PDF berdasarkan filter saat ini.
+     */
+    public function exportPdf()
+    {
+        $interviews = $this->getInterviewsQuery()->get();
+
+        $html = view('livewire.officer.interview-schedule.pdf-export', compact('interviews'))->render();
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $fileName = 'jadwal-interview-' . now()->format('Y-m-d_H-i-s') . '.pdf';
+        return response()->streamDownload(function () use ($dompdf) {
+            echo $dompdf->output();
+        }, $fileName);
+    }
+}
