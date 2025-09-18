@@ -4,11 +4,13 @@ namespace App\Livewire\Cbt;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TestResult;
 
 class Dashboard extends Component
 {
     public $lamarans;
     public $search = '';
+    public $testResult = null;
 
     public function mount()
     {
@@ -27,6 +29,13 @@ class Dashboard extends Component
                 ->latest()
                 ->get();
         }
+
+        if ($user && TestResult::where('user_id', $user->id)->whereNotNull('completed_at')->exists()) {
+            $this->testResult = TestResult::where('user_id', $user->id)
+                ->whereNotNull('completed_at')
+                ->latest('completed_at')
+                ->first();
+        }
     }
 
     public function render()
@@ -40,9 +49,16 @@ class Dashboard extends Component
                 || str_contains(strtolower($l->lokasi_penugasan ?? ''), $query);
         });
 
+        $userId = Auth::id();
+        $ongoingTest = $userId ? TestResult::where('user_id', $userId)->whereNull('completed_at')->exists() : false;
+        $hasCompleted = !is_null($this->testResult);
+
         return view('livewire.cbt.dashboard', [
             'lamarans' => $filtered,
             'total' => $filtered->count(),
+            'ongoingTest' => $ongoingTest,
+            'hasCompleted' => $hasCompleted,
+            'testResult' => $this->testResult,
         ]);
     }
 }

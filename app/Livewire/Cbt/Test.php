@@ -5,7 +5,9 @@ namespace App\Livewire\Cbt;
 use Livewire\Component;
 use App\Models\Soal;
 use App\Models\TestResult;
+use App\Models\CbtSetting;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class Test extends Component
 {
@@ -18,11 +20,30 @@ class Test extends Component
     public $timeLeft;
     public $testResult;
     public $showConfirmModal = false;
+
+    public bool $scheduleValid = false;
+    public ?array $scheduleInfo = null;
     
     public $maxQuestions = 25; // Maximum number of questions
     public $testDuration = 30; // in minutes
+    public $passingGrade = 70; // percent
 
-    protected $listeners = ['timeUp' => 'completeTest'];
+    protected $listeners = ['timeUp' => 'completeTest', 'proctorEvent' => 'handleProctorEvent'];
+
+    protected function refreshCbtSettings(): void
+    {
+        try {
+            if (Schema::hasTable('cbt_settings')) {
+                if ($s = CbtSetting::query()->first()) {
+                    $this->maxQuestions = (int) ($s->max_questions ?? $this->maxQuestions);
+                    $this->testDuration = (int) ($s->test_duration ?? $this->testDuration);
+                    $this->passingGrade = (int) ($s->passing_grade ?? $this->passingGrade);
+                }
+            }
+        } catch (\Throwable $e) {
+            // ignore if table not migrated yet
+        }
+    }
 
     public function restoreState()
     {
@@ -66,8 +87,55 @@ class Test extends Component
         $this->testCompleted = false;
     }
 
+    public function validateSchedule()
+    {
+        // Jika tes sedang berlangsung, izinkan masuk kembali. Timer di dalam tes akan menangani batas waktu.
+        if ($this->testStarted && !$this->testCompleted) {
+            $this->scheduleValid = true;
+            return;
+        }
+
+        // Cari lamaran yang relevan untuk psikotes
+        $lamaran = \App\Models\LamarLowongan::where('kandidat_id', auth()->user()->kandidat->id)
+            ->whereHas('progressRekrutmen', fn($q) => $q->where('status', 'psikotes'))
+            ->whereDoesntHave('progressRekrutmen', fn($q) => $q->whereIn('status', ['diterima', 'ditolak']))
+            ->latest()
+            ->first();
+
+        if (!$lamaran) {
+            $this->scheduleValid = false;
+            return;
+        }
+
+        $psikotesProgress = $lamaran->progressRekrutmen
+            ->where('status', 'psikotes')
+            ->sortByDesc('created_at')
+            ->first();
+
+        $waktuMulai = optional($psikotesProgress)->waktu_pelaksanaan ? \Carbon\Carbon::parse($psikotesProgress->waktu_pelaksanaan) : null;
+        $waktuSelesai = optional($psikotesProgress)->waktu_selesai ? \Carbon\Carbon::parse($psikotesProgress->waktu_selesai) : null;
+
+        if (!$waktuMulai || !$waktuSelesai) {
+            $this->scheduleValid = false;
+            return;
+        }
+
+        // Siapkan info jadwal untuk ditampilkan di pesan "Akses Ditolak"
+        $this->scheduleInfo = [
+            'start' => $waktuMulai->translatedFormat('d F Y, H:i'),
+            'end' => $waktuSelesai->translatedFormat('d F Y, H:i'),
+        ];
+
+        // Jadwal valid jika waktu saat ini berada di antara waktu mulai dan selesai
+        $this->scheduleValid = now()->between($waktuMulai, $waktuSelesai);
+    }
+
     public function mount()
     {
+        // Load CBT settings if available
+        $this->validateSchedule();
+        $this->refreshCbtSettings();
+
         $user = Auth::user();
         $kandidat = $user->kandidat;
 
@@ -85,6 +153,20 @@ class Test extends Component
             abort(403, 'Anda belum memiliki akses ke tes ini.');
         }
 
+        // Cek apakah user sudah menyelesaikan tes sebelumnya
+        $completed = TestResult::where('user_id', Auth::id())
+            ->whereNotNull('completed_at')
+            ->latest('completed_at')
+            ->first();
+
+        if ($completed) {
+            // Tampilkan hasil selesai, jangan tampilkan tombol mulai lagi
+            $this->testResult = $completed;
+            $this->testStarted = false;
+            $this->testCompleted = true;
+            return;
+        }
+
         $ongoingTestId = session('test_in_progress');
 
         if ($ongoingTestId && $testResult = TestResult::where('id', $ongoingTestId)->where('user_id', Auth::id())->whereNull('completed_at')->first()) {
@@ -96,22 +178,41 @@ class Test extends Component
             $this->initializeNewTest();
             session()->forget('test_in_progress'); // Bersihkan sesi lama jika ada
         }
+    }
 
-        // Get 25 random active questions
-        // $this->questions = Soal::where('status', true)
-        //     ->inRandomOrder()
-        //     ->take($this->maxQuestions)
-        //     ->get();
-            
-        // Initialize answer array based on question count
-        // $this->userAnswers = array_fill(0, $this->questions->count(), null);
-        
-        // $this->timeLeft = $this->testDuration * 60; // Convert to seconds
-        // $this->markedQuestions = [];
+    // Used by wire:poll to keep settings in sync and avoid Livewire errors
+    public function ping(): void
+    {
+        // keep CBT settings synced while waiting to start
+        $oldMax = (int) $this->maxQuestions;
+        $oldDur = (int) $this->testDuration;
+        $this->refreshCbtSettings();
+
+        // If not started or completed, and settings changed, reprepare questions
+        if (!$this->testStarted && !$this->testCompleted) {
+            if (($this->questions?->count() ?? 0) !== (int) $this->maxQuestions || $oldDur !== (int) $this->testDuration) {
+                $this->initializeNewTest();
+            }
+        }
     }
 
     public function startTest()
     {
+        // Guard: cegah klik ganda / mulai lebih dari sekali
+        if ($this->testStarted) return;
+
+        // Jika ada tes berjalan, pulihkan saja
+        if ($existing = TestResult::where('user_id', Auth::id())->whereNull('completed_at')->first()) {
+            $this->testResult = $existing;
+            $this->restoreState();
+            return;
+        }
+        // Jika sudah pernah selesai, jangan mulai lagi
+        if (TestResult::where('user_id', Auth::id())->whereNotNull('completed_at')->exists()) {
+            $this->testCompleted = true;
+            return;
+        }
+
         $this->testStarted = true;
         $this->testResult = TestResult::create([
             'user_id' => Auth::id(),
@@ -235,7 +336,7 @@ class Test extends Component
         $this->testCompleted = true;
         $this->showConfirmModal = false;
 
-        // !! DIUBAH: Hapus sesi setelah ujian selesai !!
+        // Hapus sesi setelah ujian selesai
         session()->forget([
             'test_in_progress',
             'test_question_ids',
@@ -245,18 +346,61 @@ class Test extends Component
         ]);
     }
 
-    public function render()
-    {
-        // Perbarui totalQuestions di view agar dinamis
-        return view('livewire.cbt.test', [
-            'totalQuestions' => $this->questions->count()
-        ]);
-    }
-
-     public function selectAnswer($option)
+    public function selectAnswer($option)
     {
         $this->userAnswers[$this->currentQuestion] = $option;
         // Simpan jawaban ke sesi setiap kali user memilih
         session(['test_user_answers' => $this->userAnswers]);
+    }
+
+    public function handleProctorEvent($eventData)
+    {
+        try {
+            $evidencePath = null;
+            
+            // Handle image evidence if provided
+            if (isset($eventData['image_data'])) {
+                $imageData = $eventData['image_data'];
+                $evidencePath = 'proctor/evidence/'.auth()->id().'_'.time().'_'.uniqid().'.png';
+                \Illuminate\Support\Facades\Storage::disk('public')->put($evidencePath, base64_decode($imageData));
+                unset($eventData['image_data']);
+            }
+
+            \App\Models\ProctorEvent::create([
+                'user_id' => auth()->id(),
+                'test_result_id' => optional($this->testResult)->id,
+                'type' => $eventData['type'] ?? 'unknown',
+                'meta' => $eventData ? (array) $eventData : null,
+                'evidence_path' => $evidencePath,
+            ]);
+
+            // Jika pelanggaran adalah face_count (deteksi kamera), hitung dan akhiri saat >= 3
+            try {
+                $type = $eventData['type'] ?? null;
+                if ($type === 'face_count' && $this->testResult && is_null($this->testResult->completed_at)) {
+                    $count = \App\Models\ProctorEvent::query()
+                        ->where('user_id', auth()->id())
+                        ->where('test_result_id', $this->testResult->id)
+                        ->where('type', 'face_count')
+                        ->count();
+                    if ($count >= 3) {
+                        $this->completeTest();
+                    }
+                }
+            } catch (\Throwable $e) {
+                // ignore counting error
+            }
+        } catch (\Throwable $e) {
+            // Log error silently or handle as needed
+            \Illuminate\Support\Facades\Log::error('Proctor event handling failed: ' . $e->getMessage());
+        }
+    }
+
+    public function render()
+    {
+        return view('livewire.cbt.test', [
+            'totalQuestions' => $this->questions->count(),
+            'passingGrade' => (int) $this->passingGrade,
+        ]);
     }
 }

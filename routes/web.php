@@ -14,6 +14,7 @@ Route::middleware([
     'role:officer', // pastikan user adalah officer
 ])->group(function () {
     Route::get('/officers', App\Livewire\Officer\Index::class)->name('officers.index');
+    Route::get('/officer/profile', App\Livewire\Officer\Profile\ShowProfile::class)->name('officer.profile.show');
 
     // Kategori Lowongan - manager, recruiter, coordinator
     Route::get('/kategori-lowongan', App\Livewire\KategoriLowongan\Index::class)
@@ -44,6 +45,14 @@ Route::middleware([
     Route::get('/test-results', App\Livewire\Officer\TestResults\Index::class)
         ->middleware('role:officer,manager,recruiter,coordinator')
         ->name('test-results.index');
+    Route::get('/test-results/{id}', App\Livewire\Officer\TestResults\Show::class)
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('test-results.show');
+
+    // Inline media preview (for PDFs/images stored on public disk)
+    Route::get('/media/inline/{encoded}', [App\Http\Controllers\MediaController::class, 'inline'])
+        ->middleware('role:officer,manager,recruiter,coordinator')
+        ->name('media.inline');
 
     // Manajemen Kandidat - asumsi khusus manager
     Route::get('kandidat', App\Livewire\Officer\Kandidat\Index::class)
@@ -71,10 +80,12 @@ Route::middleware([
     Route::get('/lowongan-dilamar', App\Livewire\Kandidat\LowonganDilamar\Index::class)->name('kandidat.lowongan-dilamar');
     Route::get('/kandidat/lowongan-dilamar', App\Livewire\Kandidat\LowonganDilamar\Index::class)
         ->name('kandidat.lowongan-dilamar');
+    // Download Offering Letter (PDF) untuk kandidat pemilik lamaran
+    Route::get('/kandidat/offer-letter/{lamaranId}', [App\Http\Controllers\OfferLetterController::class, 'download'])
+        ->name('kandidat.offer-letter.download');
     Route::get('/cbt', App\Livewire\Cbt\Index::class)->name('cbt.index');
     Route::get('/cbt/test', App\Livewire\Cbt\Test::class)->name('cbt.test');
     Route::get('/cbt/dashboard', App\Livewire\Cbt\Dashboard::class)->name('cbt.dashboard');
     Route::get('/profile', App\Livewire\Profile\ShowProfile::class)->name('profile.show');
     Route::get('/profile/edit', App\Livewire\Profile\UpdateKandidatProfileForm::class)->name('profile.edit');
 });
-

@@ -8,12 +8,23 @@ use App\Models\KategoriSoal;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use App\Models\CbtSetting;
+use Illuminate\Support\Facades\Schema;
 
 class Index extends Component
 {
     use WithPagination, WithFileUploads;
 
     protected $paginationTheme = 'bootstrap';
+    public string $pageName = 'bank_soal_page';
+
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'id_kategori_soal' => ['except' => ''],
+        // intentionally NOT persisting page to URL to avoid refresh errors
+    ];
 
     public $search = '';
     public $showModal = false;
@@ -37,6 +48,11 @@ class Index extends Component
     ];
 
     public $oldSoal, $oldPilihan1, $oldPilihan2, $oldPilihan3, $oldPilihan4;
+
+    // CBT settings
+    public $cbt_max_questions = 25;
+    public $cbt_test_duration = 30;
+    public $cbt_passing_grade = 70;
 
 
     protected function rules()
@@ -73,21 +89,11 @@ class Index extends Component
 
     public function updated($propertyName)
     {
-        // Ketika tipe soal berubah, reset field soal
-        if ($propertyName === 'type_soal') {
-            $this->soal = '';
-            $this->tempImage = null;
-            // $this->emit('typeChanged');
-        }
+        // Logika reset field soal dan jawaban dipindahkan dari sini
+        // untuk mencegah data terhapus saat mode edit.
+        // Saat pengguna mengubah tipe di form, validasi akan
+        // secara otomatis meminta input baru yang sesuai.
 
-        // Ketika tipe jawaban berubah, reset semua field pilihan
-        if ($propertyName === 'type_jawaban') {
-            $this->pilihan_1 = '';
-            $this->pilihan_2 = '';
-            $this->pilihan_3 = '';
-            $this->pilihan_4 = '';
-        }
-        
         $this->validateOnly($propertyName);
     }
 
@@ -98,6 +104,15 @@ class Index extends Component
         $kategori = request()->query('kategori');
         if ($kategori) {
             $this->id_kategori_soal = $kategori;
+        }
+
+        // Load CBT settings (guard if table missing)
+        if (Schema::hasTable('cbt_settings')) {
+            if ($s = CbtSetting::query()->first()) {
+                $this->cbt_max_questions = (int) ($s->max_questions ?? 25);
+                $this->cbt_test_duration = (int) ($s->test_duration ?? 30);
+                $this->cbt_passing_grade = (int) ($s->passing_grade ?? 70);
+            }
         }
     }
 
@@ -126,11 +141,49 @@ class Index extends Component
             })
             ->latest();
 
+        $perPage = 10;
+        $soals = $query->paginate($perPage, ['*'], $this->pageName);
+
         return view('livewire.bank-soal.index', [
-            'soals'        => $query->paginate(10),
+            'soals'        => $soals,
             'kategoriSoals'=> KategoriSoal::where('status', true)->get(),
             'types'        => $this->types,
         ]);
+    }
+
+    public function saveCbtSettings()
+    {
+        $data = $this->validate([
+            'cbt_max_questions' => 'required|integer|min:1|max:200',
+            'cbt_test_duration' => 'required|integer|min:1|max:240',
+            'cbt_passing_grade' => 'required|integer|min:1|max:100',
+        ]);
+
+        if (!Schema::hasTable('cbt_settings')) {
+            session()->flash('message', 'Tabel cbt_settings belum ada. Jalankan migrasi: php artisan migrate');
+            return;
+        }
+
+        $setting = CbtSetting::query()->first();
+        if (!$setting) { $setting = new CbtSetting(); }
+        $setting->max_questions = $data['cbt_max_questions'];
+        $setting->test_duration = $data['cbt_test_duration'];
+        if (Schema::hasColumn('cbt_settings', 'passing_grade')) {
+            $setting->passing_grade = $data['cbt_passing_grade'];
+        }
+        $setting->save();
+
+        session()->flash('message', 'Pengaturan CBT berhasil disimpan.');
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage($this->pageName);
+    }
+
+    public function updatingIdKategoriSoal()
+    {
+        $this->resetPage($this->pageName);
     }
 
     public function create()
@@ -236,6 +289,14 @@ class Index extends Component
         session()->flash('message', 'Soal berhasil dihapus.');
     }
 
+    public function cancel()
+    {
+        // Clear validation errors and form state, keep current pagination/page
+        $this->resetValidation();
+        $this->resetForm();
+        $this->showModal = false;
+    }
+
     private function resetForm()
     {
         $this->soalId = null;
@@ -254,5 +315,44 @@ class Index extends Component
         $this->oldPilihan2 = null;
         $this->oldPilihan3 = null;
         $this->oldPilihan4 = null;
+    }
+
+    public function exportPdf()
+    {
+        $query = Soal::with('kategori')
+            ->when($this->id_kategori_soal, function ($q) {
+                $q->where('id_kategori_soal', $this->id_kategori_soal);
+            })
+            ->when($this->search, function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('soal', 'like', '%' . $this->search . '%')
+                        ->orWhere('pilihan_1', 'like', '%' . $this->search . '%')
+                        ->orWhere('pilihan_2', 'like', '%' . $this->search . '%')
+                        ->orWhere('pilihan_3', 'like', '%' . $this->search . '%')
+                        ->orWhere('pilihan_4', 'like', '%' . $this->search . '%')
+                        ->orWhereHas('kategori', function ($k) {
+                            $k->where('nama_kategori', 'like', '%' . $this->search . '%');
+                        });
+                });
+            })
+            ->latest();
+
+        $soals = $query->get();
+
+        $html = view('livewire.bank-soal.pdf-export', compact('soals'))->render();
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        $fileName = 'bank-soal-' . now()->format('Y-m-d_H-i-s') . '.pdf';
+        return response()->streamDownload(function () use ($dompdf) {
+            echo $dompdf->output();
+        }, $fileName);
     }
 }

@@ -45,11 +45,204 @@
                                 <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-contrast-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit profil Anda">
                                     <i class="mdi mdi-pencil me-1"></i>Edit Profil
                                 </a>
+                                <button type="button" class="btn btn-sm btn-contrast-primary d-inline-flex align-items-center"
+                                        wire:click="exportCv"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Export CV (ATS)" aria-label="Export CV (ATS)">
+                                    <i class="mdi mdi-file-account-outline me-1"></i> Export CV
+                                </button>
                             </div>
                         </div>
 
                         <div class="card-body p-4">
+                            @foreach (['status', 'success'] as $flashKey)
+                                @if (session($flashKey))
+                                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                                        <i class="mdi mdi-check-circle-outline me-1"></i>{{ session($flashKey) }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                            @endforeach
+
                             @if ($kandidat)
+                                <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <h6 class="fw-bold text-primary border-bottom pb-2">
+                                            <i class="mdi mdi-camera-account me-2"></i>Foto Profil
+                                        </h6>
+                                        <div class="text-center mb-4">
+                                            @php
+                                                $currentPhotoUrl = $photo
+                                                    ? $photo->temporaryUrl()
+                                                    : (optional($kandidat)->profile_photo_url ?? Auth::user()->profile_photo_url);
+                                            @endphp
+                                            <div class="position-relative d-inline-block">
+                                                <img id="profile-photo-preview" src="{{ $currentPhotoUrl }}" alt="{{ optional($kandidat)->full_name ?? Auth::user()->name }}" class="rounded-circle border" style="width: 112px; height: 112px; object-fit: contain; background-color: #f8f9fa;">
+                                                <span class="position-absolute top-50 start-50 translate-middle d-none" wire:loading.class.remove="d-none" wire:target="photo">
+                                                    <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+                                                </span>
+                                            </div>
+                                            <h5 class="fw-semibold mb-0 mt-3">{{ optional($kandidat)->full_name ?? Auth::user()->name }}</h5>
+                                            <span class="badge bg-soft-success text-success px-3 py-1 mt-2">Kandidat</span>
+                                        </div>
+
+                                        <div x-data="{ photo: @entangle('photo').live }"
+                                             x-init="$watch('photo', value => {
+                                                let modalEl = document.getElementById('photoPreviewModal');
+                                                if (!modalEl) return;
+                                                let modal = bootstrap.Modal.getInstance(modalEl);
+                                                if (!modal) {
+                                                    modal = new bootstrap.Modal(modalEl, {
+                                                        backdrop: 'static',
+                                                        keyboard: false
+                                                    });
+                                                }
+                                                if (value && !document.querySelector('.modal.show')) {
+                                                    modal.show();
+                                                } else if (!value && modal._isShown) {
+                                                    modal.hide();
+                                                }
+                                             })">
+                                            <div class="mb-4">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <label class="btn btn-outline-primary mb-0" for="kandidat-photo" title="{{ __('Pilih Foto Baru') }}">
+                                                        <i class="mdi mdi-camera"></i>
+                                                        <input type="file" id="kandidat-photo" class="d-none" wire:model.live="photo" accept="image/*">
+                                                    </label>
+                                                    @if(optional($kandidat)->profile_photo_path && !$photo)
+                                                        <button type="button" class="btn btn-outline-danger" wire:click="removeProfilePhoto" @click="document.getElementById('profile-photo-preview').src = 'https://ui-avatars.com/api/?name={{ urlencode(optional($kandidat)->full_name ?? Auth::user()->name) }}&color=7F9CF5&background=EBF4FF'" wire:loading.attr="disabled" wire:target="removeProfilePhoto" title="{{ __('Hapus Foto') }}">
+                                                            <i class="mdi mdi-trash-can-outline"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                                <p class="text-muted small mt-2 mb-0 text-center">{{ __('Format yang didukung: JPG, JPEG, PNG. Maksimal 2 MB.') }}</p>
+                                                @error('photo')
+                                                    <div class="text-danger small mt-2 text-center">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+
+                                            <!-- Modal -->
+                                            <div wire:ignore.self class="modal fade" id="photoPreviewModal" tabindex="-1" aria-labelledby="photoPreviewModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="photoPreviewModalLabel">{{ __('Pratinjau Foto Profil') }}</h5>
+                                                            <button type="button" class="btn-close" wire:click="$set('photo', null)"></button>
+                                                        </div>
+                                                        <div class="modal-body text-center">
+                                                            @if ($photo && !$errors->has('photo'))
+                                                                <p>{{ __('Anda akan mengunggah foto ini:') }}</p>
+                                                                <img src="{{ $photo->temporaryUrl() }}" class="img-fluid rounded-3" style="max-height: 300px;" alt="{{ __('Pratinjau') }}">
+                                                            @endif
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-outline-secondary" wire:click="$set('photo', null)">{{ __('Batal') }}</button>
+                                                            <button type="button" class="btn btn-primary" wire:click="saveProfilePhoto" wire:loading.attr="disabled" wire:target="saveProfilePhoto, photo">
+                                                                <span wire:loading.remove wire:target="saveProfilePhoto, photo"><i class="mdi mdi-content-save me-1"></i>{{ __('Simpan & Unggah') }}</span>
+                                                                <div wire:loading wire:target="saveProfilePhoto, photo">
+                                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                                    <span>{{ __('Menyimpan...') }}</span>
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @push('scripts')
+                                        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" integrity="sha512-9KkIqdfN7ipEW6B6k+Aq20PVSAaPruyoGD4Vo4xRxOBdxPywv2r2KGPEcVvC1deZZCJBqrDAeACi3dStHwG8dQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                                        <script>
+                                            function imageEditor() {
+                                                return {
+                                                    wire: null, cropper: null, imageSrc: null, isSaving: false, filterClass: '', modal: null,
+                                                    init(wireInstance) {
+                                                        this.wire = wireInstance;
+                                                        this.modal = new bootstrap.Modal(document.getElementById('photoEditorModal'), { backdrop: 'static', keyboard: false });
+                                                        document.getElementById('photoEditorModal').addEventListener('hidden.bs.modal', () => {
+                                                            if (this.imageSrc) { URL.revokeObjectURL(this.imageSrc); this.imageSrc = null; }
+                                                            if(this.cropper) { this.cropper.destroy(); this.cropper = null; }
+                                                        });
+                                                    },
+                                                    onFileChange(event) {
+                                                        let file = event.target.files[0];
+                                                        if (!file) return;
+                                                        if(file.size > 2 * 1024 * 1024) { alert('File size cannot exceed 2MB.'); return; }
+                                                        this.imageSrc = URL.createObjectURL(file);
+                                                        // Add listener before showing modal to avoid race condition
+                                                        document.getElementById('photoEditorModal').addEventListener('shown.bs.modal', () => { this.initCropper(); }, { once: true });
+                                                        this.modal.show();
+                                                    },
+                                                    initCropper() {
+                                                        if (this.cropper) {
+                                                            this.cropper.destroy();
+                                                        }
+                                                        const image = document.getElementById('image-to-crop');
+                                                        
+                                                        const initialize = () => {
+                                                            console.log('Initializing Cropper...');
+                                                            this.cropper = new Cropper(image, {
+                                                                aspectRatio: 1,
+                                                                viewMode: 1,
+                                                                autoCropArea: 0.8,
+                                                                minCropBoxWidth: 50,
+                                                                minCropBoxHeight: 50,
+                                                                ready: () => {
+                                                                    console.log('Cropper is ready.');
+                                                                }
+                                                            });
+                                                        };
+
+                                                        if (image.complete && image.naturalWidth > 0) {
+                                                            console.log('Image already complete, initializing cropper.');
+                                                            initialize();
+                                                        } else {
+                                                            console.log('Image not complete, adding load event listener.');
+                                                            image.addEventListener('load', initialize, { once: true });
+                                                            image.addEventListener('error', () => {
+                                                                console.error('Image failed to load.');
+                                                                alert('There was an error loading the image.');
+                                                            }, { once: true });
+                                                        }
+                                                    },
+                                                    cancel() { this.modal.hide(); },
+                                                    save() {
+                                                        console.log('Save button clicked.');
+                                                        if (!this.cropper) {
+                                                            console.error('Cropper is not initialized.');
+                                                            alert('Error: Cropper not ready. Please select the image again.');
+                                                            this.isSaving = false;
+                                                            return;
+                                                        }
+                                                        this.isSaving = true;
+                                                        console.log('Getting cropped canvas...');
+                                                        this.cropper.getCroppedCanvas({ width: 512, height: 512, imageSmoothingQuality: 'high' }).toBlob((blob) => {
+                                                            console.log('Canvas blob created. Uploading to Livewire...');
+                                                            this.wire.upload('photo', blob, 
+                                                                (uploadedFilename) => {
+                                                                    console.log('Livewire upload successful. Filename:', uploadedFilename);
+                                                                    console.log('Calling saveProfilePhoto backend method...');
+                                                                    this.wire.call('saveProfilePhoto').then(() => {
+                                                                        console.log('Backend method call successful.');
+                                                                        this.isSaving = false; this.modal.hide();
+                                                                    });
+                                                                }, 
+                                                                (error) => { 
+                                                                    console.error('Livewire upload failed:', error);
+                                                                    this.isSaving = false; 
+                                                                    alert('Upload failed. Please try again.'); 
+                                                                }
+                                                            );
+                                                        }, 'image/jpeg');
+                                                    }
+                                                }
+                                            }
+                                        </script>
+                                        @endpush
+                                    </div>
+                                </div>
+
                                 {{-- Data Test Section --}}
                                 <div class="row">
                                     <div class="col-12 mb-4">
@@ -203,24 +396,24 @@
                                             <i class="mdi mdi-briefcase-outline me-2"></i>Riwayat Pengalaman Kerja
                                         </h6>
                                     </div>
-@php
-    $workData = $kandidat->riwayat_pengalaman_kerja ?? [];
-    if (!is_array($workData)) {
-        $workData = json_decode($workData, true) ?: [];
-    }
-@endphp
-@if($workData)
-    @foreach($workData as $item)
-        <div class="col-12 mb-3">
-            <p class="mb-0 fw-medium">{{ $item['position'] ?? '-' }} - {{ $item['company'] ?? '-' }}</p>
-            <small class="text-muted">{{ $item['start'] ?? '-' }} - {{ $item['end'] ?? '-' }}</small>
-            <p class="mb-0">Bisnis: {{ $item['business'] ?? '-' }}</p>
-            <p class="mb-0">Alasan keluar: {{ $item['reason'] ?? '-' }}</p>
-        </div>
-    @endforeach
-@else
-    <div class="col-12"><p class="text-muted">Belum ada riwayat pengalaman kerja.</p></div>
-@endif
+                                    @php
+                                        $workData = $kandidat->riwayat_pengalaman_kerja ?? [];
+                                        if (!is_array($workData)) {
+                                            $workData = json_decode($workData, true) ?: [];
+                                        }
+                                    @endphp
+                                    @if($workData)
+                                        @foreach($workData as $item)
+                                            <div class="col-12 mb-3">
+                                                <p class="mb-0 fw-medium">{{ $item['position'] ?? '-' }} - {{ $item['company'] ?? '-' }}</p>
+                                                <small class="text-muted">{{ $item['start'] ?? '-' }} - {{ $item['end'] ?? '-' }}</small>
+                                                <p class="mb-0">Bisnis: {{ $item['business'] ?? '-' }}</p>
+                                                <p class="mb-0">Alasan keluar: {{ $item['reason'] ?? '-' }}</p>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="col-12"><p class="text-muted">Belum ada riwayat pengalaman kerja.</p></div>
+                                    @endif
                                 </div>
 
                                 <div class="row mt-4">
@@ -290,7 +483,7 @@
                                             @if(isset($spec['pernah']) && $spec['pernah'] === 'Ya')
                                                 <p class="mb-1">Lokasi: <strong>{{ $spec['lokasi'] ?? '-' }}</strong></p>
                                             @endif
-        <p class="mb-0">Sumber informasi pekerjaan: <strong>{{ $spec['info'] ?? '-' }}</strong></p>
+                                            <p class="mb-0">Sumber informasi pekerjaan: <strong>{{ $spec['info'] ?? '-' }}</strong></p>
                                         </div>
                                     @else
                                         <div class="col-12"><p class="text-muted">Belum ada informasi spesifik.</p></div>
@@ -373,8 +566,24 @@
                         <div class="mb-3">
                             <label class="form-label">KTP</label>
                             @if(isset($documents['ktp']))
+                                @php
+                                    $path = ltrim($documents['ktp'], '/');
+                                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                    $exists = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
+                                    $url = $exists ? '/storage/' . $path : null;
+                                @endphp
                                 <div class="mb-2">
-                                    <a href="{{ Storage::url($documents['ktp']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if($exists && in_array($ext, ['jpg','jpeg','png','gif','webp']))
+                                        <img src="{{ $url }}" alt="KTP" class="img-fluid rounded border" style="max-height: 220px;">
+                                    @elseif($exists && $ext === 'pdf')
+                                        <iframe src="{{ $url }}" class="w-100" style="height: 400px; border:1px solid #e5e7eb; border-radius:6px;"></iframe>
+                                    @elseif($exists)
+                                        <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-soft-primary">
+                                            <i class="mdi mdi-file-download-outline me-1"></i> Lihat Dokumen
+                                        </a>
+                                    @else
+                                        <div class="small text-warning">Dokumen tidak ditemukan.</div>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="ktp">
@@ -382,7 +591,12 @@
                                 <div class="mt-2">
                                     <span class="d-block">Preview:</span>
                                     @if(str_contains($ktp->getMimeType(), 'pdf'))
-                                        <iframe src="{{ $ktp->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                        @php $previewPath = $tempPreview['ktp'] ?? null; @endphp
+                                        @if($previewPath)
+                                            <iframe src="{{ Storage::url($previewPath) }}" class="w-100" style="height: 400px;"></iframe>
+                                        @else
+                                            <div class="small text-muted">Menyiapkan pratinjau PDF…</div>
+                                        @endif
                                     @else
                                         <img src="{{ $ktp->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
@@ -394,8 +608,24 @@
                         <div class="mb-3">
                             <label class="form-label">Ijazah</label>
                             @if(isset($documents['ijazah']))
+                                @php
+                                    $path = ltrim($documents['ijazah'], '/');
+                                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                    $exists = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
+                                    $url = $exists ? '/storage/' . $path : null;
+                                @endphp
                                 <div class="mb-2">
-                                    <a href="{{ Storage::url($documents['ijazah']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if($exists && in_array($ext, ['jpg','jpeg','png','gif','webp']))
+                                        <img src="{{ $url }}" alt="Ijazah" class="img-fluid rounded border" style="max-height: 220px;">
+                                    @elseif($exists && $ext === 'pdf')
+                                        <iframe src="{{ $url }}" class="w-100" style="height: 400px; border:1px solid #e5e7eb; border-radius:6px;"></iframe>
+                                    @elseif($exists)
+                                        <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-soft-primary">
+                                            <i class="mdi mdi-file-download-outline me-1"></i> Lihat Dokumen
+                                        </a>
+                                    @else
+                                        <div class="small text-warning">Dokumen tidak ditemukan.</div>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="ijazah">
@@ -403,7 +633,12 @@
                                 <div class="mt-2">
                                     <span class="d-block">Preview:</span>
                                     @if(str_contains($ijazah->getMimeType(), 'pdf'))
-                                        <iframe src="{{ $ijazah->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                        @php $previewPath = $tempPreview['ijazah'] ?? null; @endphp
+                                        @if($previewPath)
+                                            <iframe src="{{ Storage::url($previewPath) }}" class="w-100" style="height: 400px;"></iframe>
+                                        @else
+                                            <div class="small text-muted">Menyiapkan pratinjau PDF…</div>
+                                        @endif
                                     @else
                                         <img src="{{ $ijazah->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
@@ -415,8 +650,24 @@
                         <div class="mb-3">
                             <label class="form-label">Sertifikat</label>
                             @if(isset($documents['sertifikat']))
+                                @php
+                                    $path = ltrim($documents['sertifikat'], '/');
+                                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                    $exists = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
+                                    $url = $exists ? '/storage/' . $path : null;
+                                @endphp
                                 <div class="mb-2">
-                                    <a href="{{ Storage::url($documents['sertifikat']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if($exists && in_array($ext, ['jpg','jpeg','png','gif','webp']))
+                                        <img src="{{ $url }}" alt="Sertifikat" class="img-fluid rounded border" style="max-height: 220px;">
+                                    @elseif($exists && $ext === 'pdf')
+                                        <iframe src="{{ $url }}" class="w-100" style="height: 400px; border:1px solid #e5e7eb; border-radius:6px;"></iframe>
+                                    @elseif($exists)
+                                        <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-soft-primary">
+                                            <i class="mdi mdi-file-download-outline me-1"></i> Lihat Dokumen
+                                        </a>
+                                    @else
+                                        <div class="small text-warning">Dokumen tidak ditemukan.</div>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="sertifikat">
@@ -424,7 +675,12 @@
                                 <div class="mt-2">
                                     <span class="d-block">Preview:</span>
                                     @if(str_contains($sertifikat->getMimeType(), 'pdf'))
-                                        <iframe src="{{ $sertifikat->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                        @php $previewPath = $tempPreview['sertifikat'] ?? null; @endphp
+                                        @if($previewPath)
+                                            <iframe src="{{ Storage::url($previewPath) }}" class="w-100" style="height: 400px;"></iframe>
+                                        @else
+                                            <div class="small text-muted">Menyiapkan pratinjau PDF…</div>
+                                        @endif
                                     @else
                                         <img src="{{ $sertifikat->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
@@ -436,8 +692,24 @@
                         <div class="mb-3">
                             <label class="form-label">Surat Pengalaman Kerja</label>
                             @if(isset($documents['surat_pengalaman']))
+                                @php
+                                    $path = ltrim($documents['surat_pengalaman'], '/');
+                                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                    $exists = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
+                                    $url = $exists ? '/storage/' . $path : null;
+                                @endphp
                                 <div class="mb-2">
-                                    <a href="{{ Storage::url($documents['surat_pengalaman']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if($exists && in_array($ext, ['jpg','jpeg','png','gif','webp']))
+                                        <img src="{{ $url }}" alt="Surat Pengalaman" class="img-fluid rounded border" style="max-height: 220px;">
+                                    @elseif($exists && $ext === 'pdf')
+                                        <iframe src="{{ $url }}" class="w-100" style="height: 400px; border:1px solid #e5e7eb; border-radius:6px;"></iframe>
+                                    @elseif($exists)
+                                        <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-soft-primary">
+                                            <i class="mdi mdi-file-download-outline me-1"></i> Lihat Dokumen
+                                        </a>
+                                    @else
+                                        <div class="small text-warning">Dokumen tidak ditemukan.</div>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="surat_pengalaman">
@@ -445,7 +717,12 @@
                                 <div class="mt-2">
                                     <span class="d-block">Preview:</span>
                                     @if(str_contains($surat_pengalaman->getMimeType(), 'pdf'))
-                                        <iframe src="{{ $surat_pengalaman->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                        @php $previewPath = $tempPreview['surat_pengalaman'] ?? null; @endphp
+                                        @if($previewPath)
+                                            <iframe src="{{ Storage::url($previewPath) }}" class="w-100" style="height: 400px;"></iframe>
+                                        @else
+                                            <div class="small text-muted">Menyiapkan pratinjau PDF…</div>
+                                        @endif
                                     @else
                                         <img src="{{ $surat_pengalaman->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
@@ -457,8 +734,24 @@
                         <div class="mb-3">
                             <label class="form-label">SKCK</label>
                             @if(isset($documents['skck']))
+                                @php
+                                    $path = ltrim($documents['skck'], '/');
+                                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                    $exists = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
+                                    $url = $exists ? '/storage/' . $path : null;
+                                @endphp
                                 <div class="mb-2">
-                                    <a href="{{ Storage::url($documents['skck']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if($exists && in_array($ext, ['jpg','jpeg','png','gif','webp']))
+                                        <img src="{{ $url }}" alt="SKCK" class="img-fluid rounded border" style="max-height: 220px;">
+                                    @elseif($exists && $ext === 'pdf')
+                                        <iframe src="{{ $url }}" class="w-100" style="height: 400px; border:1px solid #e5e7eb; border-radius:6px;"></iframe>
+                                    @elseif($exists)
+                                        <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-soft-primary">
+                                            <i class="mdi mdi-file-download-outline me-1"></i> Lihat Dokumen
+                                        </a>
+                                    @else
+                                        <div class="small text-warning">Dokumen tidak ditemukan.</div>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="skck">
@@ -466,7 +759,12 @@
                                 <div class="mt-2">
                                     <span class="d-block">Preview:</span>
                                     @if(str_contains($skck->getMimeType(), 'pdf'))
-                                        <iframe src="{{ $skck->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                        @php $previewPath = $tempPreview['skck'] ?? null; @endphp
+                                        @if($previewPath)
+                                            <iframe src="{{ Storage::url($previewPath) }}" class="w-100" style="height: 400px;"></iframe>
+                                        @else
+                                            <div class="small text-muted">Menyiapkan pratinjau PDF…</div>
+                                        @endif
                                     @else
                                         <img src="{{ $skck->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif
@@ -478,8 +776,24 @@
                         <div class="mb-3">
                             <label class="form-label">Surat Sehat</label>
                             @if(isset($documents['surat_sehat']))
+                                @php
+                                    $path = ltrim($documents['surat_sehat'], '/');
+                                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                    $exists = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
+                                    $url = $exists ? '/storage/' . $path : null;
+                                @endphp
                                 <div class="mb-2">
-                                    <a href="{{ Storage::url($documents['surat_sehat']) }}" target="_blank" class="text-primary">Lihat dokumen yang sudah diunggah</a>
+                                    @if($exists && in_array($ext, ['jpg','jpeg','png','gif','webp']))
+                                        <img src="{{ $url }}" alt="Surat Sehat" class="img-fluid rounded border" style="max-height: 220px;">
+                                    @elseif($exists && $ext === 'pdf')
+                                        <iframe src="{{ $url }}" class="w-100" style="height: 400px; border:1px solid #e5e7eb; border-radius:6px;"></iframe>
+                                    @elseif($exists)
+                                        <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-soft-primary">
+                                            <i class="mdi mdi-file-download-outline me-1"></i> Lihat Dokumen
+                                        </a>
+                                    @else
+                                        <div class="small text-warning">Dokumen tidak ditemukan.</div>
+                                    @endif
                                 </div>
                             @endif
                             <input type="file" class="form-control" wire:model="surat_sehat">
@@ -487,7 +801,12 @@
                                 <div class="mt-2">
                                     <span class="d-block">Preview:</span>
                                     @if(str_contains($surat_sehat->getMimeType(), 'pdf'))
-                                        <iframe src="{{ $surat_sehat->temporaryUrl() }}" class="w-100" style="height: 400px;"></iframe>
+                                        @php $previewPath = $tempPreview['surat_sehat'] ?? null; @endphp
+                                        @if($previewPath)
+                                            <iframe src="{{ Storage::url($previewPath) }}" class="w-100" style="height: 400px;"></iframe>
+                                        @else
+                                            <div class="small text-muted">Menyiapkan pratinjau PDF…</div>
+                                        @endif
                                     @else
                                         <img src="{{ $surat_sehat->temporaryUrl() }}" class="img-fluid rounded" style="max-width: 200px;"/>
                                     @endif

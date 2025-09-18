@@ -2,22 +2,27 @@
 
 namespace App\Livewire\Officer\LamaranLowongan;
 
+use Livewire\WithFileUploads;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\LamarLowongan;
 use App\Models\User;
 use App\Models\ProgressRekrutmen;
+use App\Models\TestResult;
 use Illuminate\Support\Facades\Log;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use App\Models\ProctorEvent;
 use App\Services\ZoomService;
 use Illuminate\Support\Carbon;
+use App\Notifications\LamaranDecisionNotification;
 
 class Index extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
+    public $decisionLocked = [];
 
     protected $listeners = ['refreshLamaran' => '$refresh'];
 
@@ -39,6 +44,26 @@ class Index extends Component
     public $resultModal = false;
     public $resultCatatan;
     public $resultDokumen;
+
+    // psikotes schedule
+    public $psikotesModal = false;
+    public $psikotesProgressId;
+    public $psikotesWaktu;
+    public $psikotesWaktuSelesai;
+
+    // offering letter
+    public $offeringModal = false;
+    public $offeringLamaranId;
+    public $offeringType = 'online';
+    public $offeringFile;
+    public $offeringWaktu;
+    public $offeringWaktuSelesai;
+    public $offeringLokasi;
+    
+    // Proctoring
+    public $proctorModal = false;
+    public $proctorEvents = [];
+    public $proctorUserName = null;
 
 
     public function mount()
@@ -65,8 +90,41 @@ class Index extends Component
     {
         $lamaran = $this->getLamaranQuery()->paginate(10);
 
+        // Build map of latest (prefer completed) TestResult per user on this page
+        $userIds = $lamaran->getCollection()
+            ->map(fn($l) => optional(optional($l->kandidat)->user)->id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $resultMap = [];
+        $proctorCountMap = [];
+        if (!empty($userIds)) {
+            $results = TestResult::whereIn('user_id', $userIds)
+                ->orderByRaw('CASE WHEN completed_at IS NULL THEN 1 ELSE 0 END ASC')
+                ->orderByDesc('completed_at')
+                ->orderByDesc('started_at')
+                ->get();
+
+            foreach ($results as $res) {
+                if (!isset($resultMap[$res->user_id])) {
+                    $resultMap[$res->user_id] = $res->id;
+                }
+            }
+
+            // Count proctor events per user for quick badge
+            $counts = ProctorEvent::selectRaw('user_id, COUNT(*) as c')
+                ->whereIn('user_id', $userIds)
+                ->groupBy('user_id')
+                ->pluck('c','user_id');
+            foreach ($userIds as $uid) { $proctorCountMap[$uid] = (int) ($counts[$uid] ?? 0); }
+        }
+
         return view('livewire.officer.lamaran-lowongan.index', [
-            'lamaranList' => $lamaran
+            'lamaranList' => $lamaran,
+            'resultMap' => $resultMap,
+            'proctorCountMap' => $proctorCountMap,
         ]);
     }
 
@@ -78,13 +136,27 @@ class Index extends Component
 
     public function setStatus($id, $status)
     {
-        $allowed = ['diterima', 'psikotes', 'ditolak'];
+        $allowed = ['screening', 'psikotes', 'ditolak'];
         if (!in_array($status, $allowed, true)) {
             session()->flash('error', 'Status tidak valid.');
             return;
         }
 
         $lamaran = LamarLowongan::findOrFail($id);
+        // Cegah klik ganda dan pengubahan keputusan final
+        if (in_array($status, ['diterima','ditolak'], true)) {
+            if (($this->decisionLocked[$id] ?? false)) {
+                return; // sudah terkunci pada sesi ini
+            }
+            $hasFinal = $lamaran->progressRekrutmen()
+                ->whereIn('status', ['diterima','ditolak'])
+                ->exists();
+            if ($hasFinal) {
+                session()->flash('warning', 'Keputusan sudah ditetapkan sebelumnya.');
+                $this->decisionLocked[$id] = true;
+                return;
+            }
+        }
     
         try {
             // Tambahkan progress baru
@@ -96,10 +168,22 @@ class Index extends Component
                 'is_psikotes' => $status === 'psikotes',
                 'user_create' => auth()->user()->name
             ]);
-    
+
             // Refresh tabel dan beri notifikasi
             $this->dispatch('refreshLamaran');
             session()->flash('success', "Status lamaran diubah ke: {$status}.");
+            if (in_array($status, ['diterima','ditolak'], true)) {
+                $this->decisionLocked[$id] = true; // kunci setelah keputusan diambil
+                // Kirim email ke kandidat
+                $user = optional($lamaran->kandidat)->user;
+                if ($user && !empty($user->email)) {
+                    try {
+                        $user->notify(new LamaranDecisionNotification($lamaran, $status, auth()->user()->name));
+                    } catch (\Throwable $e) {
+                        Log::warning('Gagal mengirim email keputusan/offering: '.$e->getMessage());
+                    }
+                }
+            }
         } catch (\Throwable $e) {
             Log::error('Gagal ubah status lamaran: ' . $e->getMessage());
             session()->flash('error', 'Terjadi kesalahan saat menyimpan status.');
@@ -187,6 +271,113 @@ class Index extends Component
         }
     }
 
+    public function preparePsikotesSchedule($progressId)
+    {
+        $progress = ProgressRekrutmen::findOrFail($progressId);
+        $this->psikotesProgressId = $progress->id;
+        $this->psikotesWaktu = $progress->waktu_pelaksanaan ? Carbon::parse($progress->waktu_pelaksanaan)->format('Y-m-d\TH:i') : '';
+        $this->psikotesWaktuSelesai = $progress->waktu_selesai ? Carbon::parse($progress->waktu_selesai)->format('Y-m-d\TH:i') : '';
+        $this->psikotesModal = true;
+    }
+
+    public function savePsikotesSchedule()
+    {
+        $this->validate([
+            'psikotesWaktu' => 'required|date',
+            'psikotesWaktuSelesai' => 'required|date|after:psikotesWaktu',
+        ], [
+            'psikotesWaktu.required' => 'Waktu mulai wajib diisi.',
+            'psikotesWaktuSelesai.required' => 'Waktu selesai wajib diisi.',
+            'psikotesWaktuSelesai.after' => 'Waktu selesai harus setelah waktu mulai.',
+        ]);
+
+        try {
+            $progress = ProgressRekrutmen::findOrFail($this->psikotesProgressId);
+            $progress->update([
+                'waktu_pelaksanaan' => $this->psikotesWaktu,
+                'waktu_selesai' => $this->psikotesWaktuSelesai,
+            ]);
+
+            session()->flash('success', 'Jadwal psikotes berhasil disimpan.');
+            $this->psikotesModal = false;
+            $this->dispatch('refreshLamaran');
+        } catch (\Throwable $e) {
+            Log::error('Gagal menyimpan jadwal psikotes: ' . $e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan saat menyimpan jadwal.');
+        }
+    }
+
+    public function prepareOffering($lamaranId)
+    {
+        $this->offeringLamaranId = $lamaranId;
+        $this->reset(['offeringFile', 'offeringWaktu', 'offeringWaktuSelesai', 'offeringLokasi']);
+        $this->offeringType = 'online';
+        $this->offeringModal = true;
+    }
+
+    public function sendOffer()
+    {
+        $lamaran = LamarLowongan::with('kandidat.user', 'lowongan')->findOrFail($this->offeringLamaranId);
+        $user = optional($lamaran->kandidat)->user;
+
+        if ($this->offeringType === 'online') {
+            $this->validate([
+                'offeringFile' => 'required|file|mimes:pdf|max:2048', // 2MB max
+            ], [
+                'offeringFile.required' => 'File offering letter wajib diunggah.',
+                'offeringFile.mimes' => 'File harus berformat PDF.',
+                'offeringFile.max' => 'Ukuran file maksimal 2MB.',
+            ]);
+
+            $filePath = $this->offeringFile->store('offering-letters', 'public');
+
+            $lamaran->progressRekrutmen()->create([
+                'status' => 'diterima',
+                'officer_id' => auth()->id(),
+                'nama_progress' => 'Diterima (Online)',
+                'dokumen_pendukung' => $filePath,
+                'user_create' => auth()->user()->name,
+            ]);
+
+            if ($user && !empty($user->email)) {
+                $notificationData = ['attachment' => storage_path('app/public/' . $filePath)];
+                $user->notify(new LamaranDecisionNotification($lamaran, 'diterima', auth()->user()->name, $notificationData));
+            }
+
+        } else { // offline
+            $this->validate([
+                'offeringWaktu' => 'required|date',
+                'offeringWaktuSelesai' => 'required|date|after:offeringWaktu',
+                'offeringLokasi' => 'required|string|max:255',
+            ], [
+                'offeringWaktu.required' => 'Waktu mulai pertemuan wajib diisi.',
+                'offeringWaktuSelesai.required' => 'Waktu selesai pertemuan wajib diisi.',
+                'offeringWaktuSelesai.after' => 'Waktu selesai harus setelah waktu mulai.',
+                'offeringLokasi.required' => 'Lokasi pertemuan wajib diisi.',
+            ]);
+
+            $lamaran->progressRekrutmen()->create([
+                'status' => 'diterima',
+                'officer_id' => auth()->id(),
+                'nama_progress' => 'Diterima (Offline)',
+                'waktu_pelaksanaan' => $this->offeringWaktu,
+                'waktu_selesai' => $this->offeringWaktuSelesai,
+                'catatan' => $this->offeringLokasi, // Menggunakan kolom 'catatan' untuk lokasi
+                'user_create' => auth()->user()->name,
+            ]);
+
+            if ($user && !empty($user->email)) {
+                $scheduleDetails = ['waktu' => $this->offeringWaktu, 'waktu_selesai' => $this->offeringWaktuSelesai, 'lokasi' => $this->offeringLokasi];
+                $user->notify(new LamaranDecisionNotification($lamaran, 'diterima', auth()->user()->name, ['schedule' => $scheduleDetails]));
+            }
+        }
+
+        $this->decisionLocked[$lamaran->id] = true;
+        $this->offeringModal = false;
+        session()->flash('success', "Status lamaran diubah ke 'Diterima' dan notifikasi telah dikirim ke kandidat.");
+        $this->dispatch('refreshLamaran');
+    }
+
     /**
      * Tampilkan detail kandidat beserta dokumen pendukungnya.
      */
@@ -236,6 +427,33 @@ class Index extends Component
         $this->resultModal = false;
         $this->resultCatatan = null;
         $this->resultDokumen = null;
+    }
+
+    public function openProctor($userId)
+    {
+        $user = User::find($userId);
+        $this->proctorUserName = optional($user)->name;
+        $events = ProctorEvent::where('user_id', $userId)
+            ->latest()
+            ->limit(100)
+            ->get()
+            ->map(function($e){
+                return [
+                    'type' => $e->type,
+                    'meta' => $e->meta,
+                    'evidence' => $e->evidence_path ? (\Illuminate\Support\Facades\Storage::disk('public')->url($e->evidence_path)) : null,
+                    'time' => optional($e->created_at)->format('d M Y H:i:s'),
+                ];
+            })->toArray();
+        $this->proctorEvents = $events;
+        $this->proctorModal = true;
+    }
+
+    public function closeProctor()
+    {
+        $this->proctorModal = false;
+        $this->proctorEvents = [];
+        $this->proctorUserName = null;
     }
 
     /**
